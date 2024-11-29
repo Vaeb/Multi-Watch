@@ -1,10 +1,12 @@
 "use client";
 
 import { memo } from "react";
-import { Player } from "./player";
+import { Player } from "./video";
 import { type MainState, useMainStore } from "../stores/mainStore";
-import { Chat } from "./chat";
+import { Chat, ChatContainer } from "./chat";
 import { useShallow } from "zustand/shallow";
+import { ChatWrapper } from "./chatWrapper";
+import { PlayerWrapper } from "./playerWrapper";
 
 const selector = (state: MainState) => ({
   streams: state.streams,
@@ -14,33 +16,30 @@ const selector = (state: MainState) => ({
 function StreamsComponent() {
   const { streams, newestStream } = useMainStore(useShallow(selector));
 
-  const [_, ...remainingStreams] = streams;
-  const firstStreamArr = streams.slice(0, 1);
-
   return (
     <div className="flex flex-1">
-      <div className="flex h-full flex-1 flex-col">
-        {firstStreamArr.map((stream) => (
-          <Player
-            key={`${stream.value}-${stream.type}`}
-            type={stream.type}
+      <div className="flex h-full flex-1 flex-wrap">
+        {/* <div className="grid h-full flex-1 grid-flow-row-dense grid-cols-2 grid-rows-2"> */}
+        {streams.map((stream, i) => (
+          <PlayerWrapper
+            key={`video-${stream.value}-${stream.type}`}
             channel={stream.value}
-            focus={true}
-            first={newestStream === stream.value}
-          />
+            focus={i === 0}
+          >
+            <Player type={stream.type} channel={stream.value} />
+          </PlayerWrapper>
         ))}
-        <div className="flex flex-1 flex-row">
-          {remainingStreams.map((stream) => (
-            <Player
-              key={`${stream.value}-${stream.type}`}
-              type={stream.type}
-              channel={stream.value}
-              first={newestStream === stream.value}
-            />
-          ))}
-        </div>
       </div>
-      <Chat type="twitch" channel="dripp" />
+      <ChatContainer>
+        {streams.map((stream) => (
+          <ChatWrapper
+            key={`chat-${stream.value}-${stream.type}`}
+            channel={stream.value}
+          >
+            <Chat type={stream.type} channel={stream.value} />
+          </ChatWrapper>
+        ))}
+      </ChatContainer>
     </div>
   );
 }

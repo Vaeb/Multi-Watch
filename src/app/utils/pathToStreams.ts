@@ -7,8 +7,8 @@ export const pathToStreams = (pathname: string): Stream[] =>
     .filter(Boolean)
     .map((value) => {
       let type: Platform = "twitch";
-      if (value.startsWith("k-")) {
-        value = value.slice(2);
+      if (value.endsWith("-k")) {
+        value = value.slice(0, -2);
         type = "kick";
       }
       return { value, type };

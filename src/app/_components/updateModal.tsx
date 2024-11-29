@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { type Platform } from "~/types";
 import { type MainState, useMainStore } from "../stores/mainStore";
+import { streamsToPath } from "../utils/streamsToPath";
 
 interface ModalButtonProps {
   text: string;
@@ -75,9 +76,7 @@ function UpdateModal() {
   const submitClick = useCallback(() => {
     const finalChannels = channels.filter(({ value }) => value);
 
-    const newPathname = `/${finalChannels
-      .map(({ value, type }) => `${type === "kick" ? "k-" : ""}${value}`)
-      .join("/")}`;
+    const newPathname = streamsToPath(finalChannels);
 
     window.history.pushState({}, "", newPathname);
 
@@ -98,7 +97,7 @@ function UpdateModal() {
   }, [channels, streams, setStreams, setNewestStream, setUpdateShown]);
 
   return (
-    <div className="border-1 absolute ml-[64px] mt-[10px]">
+    <div className="border-1 absolute z-10 ml-[64px] mt-[10px]">
       <div className="flex w-[500px] max-w-[80%] flex-col gap-2 bg-slate-200 p-2 text-black opacity-100">
         {inputBoxData.map((inputStream, i) => (
           <div className="flex" key={inputStream.key}>

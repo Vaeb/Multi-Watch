@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { pathToStreams } from "../utils/pathToStreams";
