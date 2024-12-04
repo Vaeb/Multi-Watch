@@ -13,6 +13,7 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
+    "watch": "watch \"npm run preview\" ./src",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "next": "^15.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-twitch-embed": "^3.0.2",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
@@ -35,7 +37,8 @@
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "watch": "^1.0.2"
   },
   "packageManager": "npm@10.9.0"
 }

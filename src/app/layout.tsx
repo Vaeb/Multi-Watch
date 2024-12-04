@@ -2,7 +2,6 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "MultiWatch",
@@ -19,13 +18,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${GeistSans.variable}`}
     >
-      <body suppressHydrationWarning={true}>
-        <Script
-          src="https://player.twitch.tv/js/embed/v1.js"
-          strategy="beforeInteractive"
-        />
-        {children}
-      </body>
+      <body suppressHydrationWarning={true}>{children}</body>
     </html>
   );
 }

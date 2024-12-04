@@ -3,14 +3,14 @@
 import { memo } from "react";
 import { type ChatProps } from "./chat";
 import { useMainStore } from "../stores/mainStore";
-import { checkShowChat } from "../utils/checkShowChat";
+import { getShowChat } from "../utils/getShowChat";
 
 interface ChatWrapperProps extends ChatProps {
   children: React.ReactNode;
 }
 
 function ChatWrapperComponent({ children, channel }: ChatWrapperProps) {
-  const showChat = useMainStore((state) => checkShowChat(channel, state));
+  const showChat = useMainStore((state) => getShowChat(state) === channel);
 
   console.log(`[ChatWrapper] Showing ${channel} chat:`, showChat);
 

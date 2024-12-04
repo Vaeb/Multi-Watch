@@ -3,14 +3,26 @@ import { LeftBar } from "../_components/leftBar";
 import { Manager } from "../_components/manager";
 import { Streams } from "../_components/streams";
 
-export default function Home() {
+interface HomeParams {
+  params: Promise<{
+    slug: string[];
+  }>;
+}
+
+export default async function Home({ params }: HomeParams) {
+  const { slug } = await params;
+
+  if (slug.length === 0 || !/^[\w-]+$/.test(slug[0]!)) {
+    return null;
+  }
+
   return (
     <>
       <Manager />
-      <main className="flex min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <main className="flex min-h-screen bg-black text-white">
         <LeftBar />
         <UpdateModalWrapper />
-        <Streams />
+        <Streams slugStreams={slug} />
       </main>
     </>
   );

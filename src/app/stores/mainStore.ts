@@ -1,28 +1,40 @@
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { type Platform } from "~/types";
+import { streamsToPath } from "../utils/streamsToPath";
+import { orderStreams } from "../utils/orderStreams";
 
 export interface Stream {
   value: string;
   type: Platform;
 }
 
+export type ViewMode = "focused" | "grid";
+
 export interface MainState {
   streams: Stream[];
   streamsMap: Record<string, Stream>;
+  streamPositions: Record<string, number>;
   streamPlayer: Record<string, any>;
   manuallyMuted: Record<string, boolean>;
   newestStream: string;
   selectedChat: string;
 
+  viewMode: ViewMode;
+
   updateShown: boolean;
 
   actions: {
     setStreams: (streams: Stream[]) => void;
+    cycleStreams: () => void;
     setStreamPlayer: (channel: string, player: any) => void;
     setManuallyMuted: (channel: string, muted: boolean) => void;
     setNewestStream: (newestStream: string) => void;
     setSelectedChat: (selectedChat: string) => void;
+
+    setViewMode: (viewMode: ViewMode) => void;
+    toggleViewMode: () => void;
+
     setUpdateShown: (updateShown: boolean) => void;
     toggleUpdateShown: () => void;
   };
@@ -46,10 +58,13 @@ export const useMainStore = create<MainState>()(
     log((set) => ({
       streams: [],
       streamsMap: {},
+      streamPositions: {},
       streamPlayer: {},
       manuallyMuted: {},
       newestStream: "",
       selectedChat: "",
+
+      viewMode: "focused",
 
       updateShown: false,
 
@@ -64,6 +79,10 @@ export const useMainStore = create<MainState>()(
             return {
               streams,
               streamsMap,
+              streamPositions: Object.assign(
+                {},
+                ...streams.map((stream, i) => ({ [stream.value]: i })),
+              ) as Record<string, number>,
               streamPlayer: {},
               manuallyMuted: {},
               newestStream: streamsMap[state.newestStream]
@@ -73,6 +92,25 @@ export const useMainStore = create<MainState>()(
                 ? state.selectedChat
                 : "",
             };
+          }),
+        cycleStreams: () =>
+          set((state) => {
+            const { streams, streamPositions: streamPositionsBase } = state;
+            const entries = Object.entries(streamPositionsBase);
+            const streamPositions = Object.assign(
+              {},
+              ...entries.map(([channel, pos]) => ({
+                [channel]: (pos + 1) % entries.length,
+              })),
+            );
+
+            window.history.pushState(
+              {},
+              "",
+              streamsToPath(orderStreams(streams, streamPositions)),
+            );
+
+            return { streamPositions };
           }),
         setStreamPlayer: (channel, player) =>
           set((state) => ({
@@ -85,6 +123,12 @@ export const useMainStore = create<MainState>()(
           })),
         setNewestStream: (newestStream) => set({ newestStream }),
         setSelectedChat: (selectedChat) => set({ selectedChat }),
+
+        setViewMode: (viewMode) => set({ viewMode }),
+        toggleViewMode: () =>
+          set(({ viewMode }) => ({
+            viewMode: viewMode === "focused" ? "grid" : "focused",
+          })),
 
         setUpdateShown: (updateShown) => set({ updateShown }),
         toggleUpdateShown: () =>

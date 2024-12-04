@@ -6,6 +6,7 @@ import { useShallow } from "zustand/shallow";
 import { type Platform } from "~/types";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { streamsToPath } from "../utils/streamsToPath";
+import { orderStreams } from "../utils/orderStreams";
 
 interface ModalButtonProps {
   text: string;
@@ -37,9 +38,10 @@ const selector2 = (state: MainState) => state.updateShown;
 
 function UpdateModal() {
   const {
-    streams,
+    streams: _streams,
     actions: { setUpdateShown, setStreams, setNewestStream },
   } = useMainStore(useShallow(selector1));
+  const streams = orderStreams(_streams);
 
   const pathname = usePathname();
 
@@ -49,6 +51,7 @@ function UpdateModal() {
   );
 
   const [channels, setChannels] = useState<InputData[]>(initialStreams);
+
   const inputBoxData: InputData[] = [
     ...channels,
     ...(channels[channels.length - 1]?.value !== ""
@@ -98,7 +101,7 @@ function UpdateModal() {
 
   return (
     <div className="border-1 absolute z-10 ml-[64px] mt-[10px]">
-      <div className="flex w-[500px] max-w-[80%] flex-col gap-2 bg-slate-200 p-2 text-black opacity-100">
+      <div className="flex w-[500px] max-w-[80%] flex-col gap-2 rounded-sm bg-slate-200 p-2 text-black opacity-100">
         {inputBoxData.map((inputStream, i) => (
           <div className="flex" key={inputStream.key}>
             <input

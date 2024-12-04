@@ -1,44 +1,50 @@
-"use client";
-
 import { memo } from "react";
-import { Player } from "./video";
-import { type MainState, useMainStore } from "../stores/mainStore";
+import { Player } from "./videq";
 import { Chat, ChatContainer } from "./chat";
-import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chatWrapper";
 import { PlayerWrapper } from "./playerWrapper";
+import { slugToStream } from "../utils/slugToStream";
 
-const selector = (state: MainState) => ({
-  streams: state.streams,
-  newestStream: state.newestStream,
-});
+interface StreamsProps {
+  slugStreams: string[];
+}
 
-function StreamsComponent() {
-  const { streams, newestStream } = useMainStore(useShallow(selector));
+function StreamsComponent({ slugStreams }: StreamsProps) {
+  console.log("[Streams] Re-rendered", slugStreams);
 
   return (
     <div className="flex flex-1">
-      <div className="flex h-full flex-1 flex-wrap">
+      <div className="relative h-full flex-1">
         {/* <div className="grid h-full flex-1 grid-flow-row-dense grid-cols-2 grid-rows-2"> */}
-        {streams.map((stream, i) => (
-          <PlayerWrapper
-            key={`video-${stream.value}-${stream.type}`}
-            channel={stream.value}
-            focus={i === 0}
-          >
-            <Player type={stream.type} channel={stream.value} />
-          </PlayerWrapper>
-        ))}
+        {slugStreams.map((slug, i) => {
+          const stream = slugToStream(slug);
+          return (
+            <PlayerWrapper
+              key={`video-${stream.value}-${stream.type}`}
+              total={slugStreams.length}
+              channel={stream.value}
+            >
+              <Player
+                type={stream.type}
+                channel={stream.value}
+                first={i === 0}
+              />
+            </PlayerWrapper>
+          );
+        })}
       </div>
       <ChatContainer>
-        {streams.map((stream) => (
-          <ChatWrapper
-            key={`chat-${stream.value}-${stream.type}`}
-            channel={stream.value}
-          >
-            <Chat type={stream.type} channel={stream.value} />
-          </ChatWrapper>
-        ))}
+        {slugStreams.map((slug) => {
+          const stream = slugToStream(slug);
+          return (
+            <ChatWrapper
+              key={`chat-${stream.value}-${stream.type}`}
+              channel={stream.value}
+            >
+              <Chat type={stream.type} channel={stream.value} />
+            </ChatWrapper>
+          );
+        })}
       </ChatContainer>
     </div>
   );

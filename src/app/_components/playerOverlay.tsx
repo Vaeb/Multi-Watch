@@ -7,10 +7,7 @@ import Image from "next/image";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
-function PlayerOverlayComponent({
-  children,
-  channel,
-}: PlayerOverlayProps) {
+function PlayerOverlayComponent({ channel }: PlayerOverlayProps) {
   const audioClick = useCallback(() => {
     const { streams, streamPlayer, actions } = useMainStore.getState();
     console.log(11, streamPlayer);
