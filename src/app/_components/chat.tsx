@@ -23,15 +23,23 @@ export function ChatContainer({ children }: { children?: React.ReactNode }) {
   );
 }
 
+const getSrc = (type: Platform, channel: string) => {
+  if (type === "twitch")
+    return `https://www.twitch.tv/embed/${channel}/chat?darkpopout&parent=localhost`;
+  if (type === "kick") return `https://kick.com/${channel}/chatroom`;
+};
+
 function ChatComponent({ type = "twitch", channel }: ChatProps) {
-  return (
-    <iframe
-      className="absolute h-full w-full border-none"
-      src={`https://www.twitch.tv/embed/${channel}/chat?darkpopout&parent=localhost`}
-      scrolling="no"
-      frameBorder="0"
-    ></iframe>
-  );
+  if (type === "twitch" || true) {
+    return (
+      <iframe
+        className="absolute h-full w-full border-none"
+        src={getSrc(type, channel)}
+        scrolling="no"
+        frameBorder="0"
+      ></iframe>
+    );
+  }
 }
 
 export const Chat = memo(ChatComponent);
