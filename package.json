@@ -13,19 +13,23 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
-    "watch": "watch \"npm run preview\" ./src",
+    "watch": "nodemon --exec \"echo 1\" --verbose --watch 'src/**/*' -e tsx,ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@retconned/kick-js": "^0.3.0",
+    "express": "^4.21.2",
     "geist": "^1.3.0",
     "next": "^15.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-twitch-embed": "^3.0.2",
+    "tree-kill": "^1.2.2",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/eslint": "^8.56.10",
+    "@types/express": "^5.0.0",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -33,6 +37,7 @@
     "@typescript-eslint/parser": "^8.1.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.0.1",
+    "nodemon": "^3.1.7",
     "postcss": "^8.4.39",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.5",
