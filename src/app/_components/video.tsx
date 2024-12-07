@@ -22,7 +22,7 @@ const iframePlayerProps: Record<
 
 const getSrc = (type: Platform, channel: string, muted = false) => {
   if (type === "twitch")
-    return `https://player.twitch.tv/?channel=${channel}&parent=localhost&muted=${muted}`;
+    return `https://player.twitch.tv/?channel=${channel}&parent=localhost&parent=multi.vaeb.io&parent=vaeb.io&muted=${muted}`;
   if (type === "kick")
     return `https://player.kick.com/${channel}?muted=${muted}`;
 };

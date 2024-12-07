@@ -10,7 +10,8 @@ import {
 } from "react";
 import { useStableCallback } from "../hooks/useStableCallback";
 import { useMainStore } from "../stores/mainStore";
-import { TwitchPlayer, TwitchPlayerInstance } from "react-twitch-embed";
+import { TwitchPlayer, type TwitchPlayerInstance } from "react-twitch-embed";
+import { checkShowChat } from "../utils/checkShowChat";
 
 type Platform = "twitch" | "kick";
 
@@ -35,7 +36,7 @@ const iframePlayerProps: Record<
 
 const getSrc = (type: Platform, channel: string, muted = false) => {
   if (type === "twitch")
-    return `https://player.twitch.tv/?channel=${channel}&parent=localhost&muted=${muted}`;
+    return `https://player.twitch.tv/?channel=${channel}&parent=localhost&parent=multi.vaeb.io&parent=vaeb.io&muted=${muted}`;
   if (type === "kick")
     // return `https://player.kick.com/${channel}?muted=true&autoplay=true`;
     return `https://player.kick.com/${channel}?muted=${muted}`;
@@ -45,7 +46,11 @@ let totalPlayers = 0;
 
 const getId = () => `tframe-${++totalPlayers}`;
 
-function PlayerComponent({ type = "twitch", channel, first }: PlayerProps) {
+function PlayerComponent({
+  type = "twitch",
+  channel,
+  first: _first,
+}: PlayerProps) {
   // const selfMute = useMainStore(
   //   useCallback((state) => !!state.manuallyMuted[channel], [channel]),
   // );
@@ -54,10 +59,9 @@ function PlayerComponent({ type = "twitch", channel, first }: PlayerProps) {
   const playerRef = useRef<TwitchPlayerInstance | null>(null);
 
   // Intentionally non-reactive
-  const { streams: _streams, newestStream: _newestStream } =
-    useMainStore.getState();
+  const { streams: _streams } = useMainStore.getState();
   const focus = channel === _streams[0]?.value;
-  // const first = channel === _newestStream;
+  const first = _first || checkShowChat(channel);
 
   useEffect(() => {
     console.log("[Player] Mounted:", channel);

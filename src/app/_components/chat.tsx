@@ -25,7 +25,7 @@ export function ChatContainer({ children }: { children?: React.ReactNode }) {
 
 const getSrc = (type: Platform, channel: string) => {
   if (type === "twitch")
-    return `https://www.twitch.tv/embed/${channel}/chat?darkpopout&parent=localhost`;
+    return `https://www.twitch.tv/embed/${channel}/chat?darkpopout&parent=localhost&parent=multi.vaeb.io&parent=vaeb.io`;
   if (type === "kick") return `https://kick.com/${channel}/chatroom`;
 };
 

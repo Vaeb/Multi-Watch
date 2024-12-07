@@ -39,7 +39,7 @@ const selector2 = (state: MainState) => state.updateShown;
 function UpdateModal() {
   const {
     streams: _streams,
-    actions: { setUpdateShown, setStreams, setNewestStream },
+    actions: { setUpdateShown, setStreams, setNewestStream, setSelectedChat },
   } = useMainStore(useShallow(selector1));
   const streams = orderStreams(_streams);
 
@@ -81,23 +81,32 @@ function UpdateModal() {
 
     const newPathname = streamsToPath(finalChannels);
 
-    window.history.pushState({}, "", newPathname);
-
-    setStreams(
-      finalChannels.map(({ value, type }) => ({ value: value, type })),
-    );
-    setNewestStream(
+    const firstNewStream =
       finalChannels.find(
         ({ value, type }) =>
           !streams.some(
             ({ value: value2, type: type2 }) =>
               value === value2 && type === type2,
           ),
-      )?.value ?? "",
+      )?.value ?? "";
+
+    window.history.pushState({}, "", newPathname);
+
+    setStreams(
+      finalChannels.map(({ value, type }) => ({ value: value, type })),
     );
+    setNewestStream(firstNewStream);
+    setSelectedChat(firstNewStream);
 
     setUpdateShown(false);
-  }, [channels, streams, setStreams, setNewestStream, setUpdateShown]);
+  }, [
+    channels,
+    streams,
+    setStreams,
+    setNewestStream,
+    setSelectedChat,
+    setUpdateShown,
+  ]);
 
   return (
     <div className="border-1 absolute z-10 ml-[64px] mt-[10px]">

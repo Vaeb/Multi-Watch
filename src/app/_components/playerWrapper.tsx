@@ -1,111 +1,12 @@
-"use client";
-
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import { PlayerOverlay } from "./playerOverlay";
-import {
-  type MainState,
-  useMainStore,
-  type ViewMode,
-} from "../stores/mainStore";
-import { useShallow } from "zustand/shallow";
+import { type ViewMode } from "../stores/mainStore";
 
 interface Dimensions {
   height: string;
   width: string;
   top: string;
   left: string;
-}
-
-function generateColumnsPerRow(N) {
-  const maxCols = Math.ceil(Math.sqrt(N));
-  let remainingElements = N;
-  const columnsPerRow = [];
-
-  // Handle special cases for small N
-  if (N === 1) return [1];
-  if (N === 2) return [1, 1];
-  if (N === 3) return [1, 2];
-
-  // Start building the columnsPerRow array
-  while (remainingElements > 0) {
-    if (remainingElements >= maxCols) {
-      columnsPerRow.push(maxCols);
-      remainingElements -= maxCols;
-    } else {
-      // For balancing, sometimes we need to adjust the first row
-      if (columnsPerRow.length === 0 && remainingElements <= maxCols - 1) {
-        columnsPerRow.push(remainingElements);
-        remainingElements = 0;
-      } else {
-        columnsPerRow.push(remainingElements);
-        remainingElements = 0;
-      }
-    }
-  }
-
-  // Adjust the first row if needed to match your pattern
-  if (columnsPerRow.length > 1) {
-    const firstRowColumns = columnsPerRow[0];
-    const secondRowColumns = columnsPerRow[1];
-
-    if (
-      firstRowColumns === maxCols &&
-      secondRowColumns < maxCols &&
-      firstRowColumns - secondRowColumns >= 2
-    ) {
-      columnsPerRow[0] = firstRowColumns - 1;
-      columnsPerRow[1] = secondRowColumns + 1;
-    }
-  }
-
-  return columnsPerRow;
-}
-
-function mapKeyToPosition(key, columnsPerRow) {
-  let indexCounter = 0;
-  let rowIndex = 0;
-  let colIndex = 0;
-
-  for (let i = 0; i < columnsPerRow.length; i++) {
-    const columnsInRow = columnsPerRow[i];
-    if (key < indexCounter + columnsInRow) {
-      rowIndex = i;
-      colIndex = key - indexCounter;
-      break;
-    }
-    indexCounter += columnsInRow;
-  }
-
-  return { rowIndex, colIndex };
-}
-
-function calculatePercentages(rowIndex, colIndex, columnsPerRow) {
-  const totalRows = columnsPerRow.length;
-
-  const height = (1 / totalRows) * 100;
-  const width = (1 / columnsPerRow[rowIndex]) * 100;
-  const top = 100 * (columnsPerRow.length - 1 - rowIndex);
-  const left = 100 * colIndex;
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    height: `${height}%`,
-    width: `${width}%`,
-  };
-}
-
-function calculateGridPosition(key, totalElements) {
-  // Step 2: Generate columnsPerRow based on N
-  const columnsPerRow = generateColumnsPerRow(totalElements);
-
-  // Step 3: Map key to grid position
-  const { rowIndex, colIndex } = mapKeyToPosition(key, columnsPerRow);
-
-  // Step 4: Calculate percentages
-  const position = calculatePercentages(rowIndex, colIndex, columnsPerRow);
-
-  return position;
 }
 
 const getDimensions = (
@@ -255,30 +156,28 @@ const getDimensions = (
 
 interface PlayerWrapperProps {
   children: React.ReactNode;
-  total: number;
   channel: string;
+  total: number;
+  pos: number;
+  viewMode: ViewMode;
 }
 
 function PlayerWrapperComponent({
   children,
-  total,
   channel,
+  total,
+  pos,
+  viewMode,
 }: PlayerWrapperProps) {
-  const { pos, viewMode } = useMainStore(
-    useShallow(
-      useCallback(
-        (state) => ({
-          pos: state.streamPositions[channel]!,
-          viewMode: state.viewMode,
-        }),
-        [channel],
-      ),
-    ),
-  );
-
   const { height, width, top, left } = getDimensions(pos, total, viewMode);
 
-  console.log(`[PlayerWrapper] ${channel}:`, height, width, top, left);
+  console.log(
+    `[PlayerWrapper] Re-rendered ${channel}:`,
+    height,
+    width,
+    top,
+    left,
+  );
 
   return (
     <div

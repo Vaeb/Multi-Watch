@@ -1,41 +1,48 @@
+"use client";
+
 import { memo } from "react";
-import { Player } from "./videq";
+import { Player } from "./videoClient";
+import { type MainState, useMainStore } from "../stores/mainStore";
 import { Chat, ChatContainer } from "./chat";
+import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chatWrapper";
 import { PlayerWrapper } from "./playerWrapper";
-import { slugToStream } from "../utils/slugToStream";
 
-interface StreamsProps {
-  slugStreams: string[];
-}
+const selector = (state: MainState) => ({
+  streams: state.streams,
+  streamPositions: state.streamPositions,
+  viewMode: state.viewMode,
+});
 
-function StreamsComponent({ slugStreams }: StreamsProps) {
-  console.log("[Streams] Re-rendered", slugStreams);
+function StreamsComponent() {
+  const { streams, streamPositions, viewMode } = useMainStore(
+    useShallow(selector),
+  );
+  console.log("[Streams] Re-rendered");
 
   return (
     <div className="flex flex-1">
       <div className="relative h-full flex-1">
-        {/* <div className="grid h-full flex-1 grid-flow-row-dense grid-cols-2 grid-rows-2"> */}
-        {slugStreams.map((slug, i) => {
-          const stream = slugToStream(slug);
+        {streams.map((stream, i) => {
           return (
             <PlayerWrapper
               key={`video-${stream.value}-${stream.type}`}
-              total={slugStreams.length}
               channel={stream.value}
+              total={streams.length}
+              pos={streamPositions[stream.value]!}
+              viewMode={viewMode}
             >
               <Player
                 type={stream.type}
                 channel={stream.value}
-                first={i === 0}
+                first={streamPositions[stream.value] === 0}
               />
             </PlayerWrapper>
           );
         })}
       </div>
       <ChatContainer>
-        {slugStreams.map((slug) => {
-          const stream = slugToStream(slug);
+        {streams.map((stream) => {
           return (
             <ChatWrapper
               key={`chat-${stream.value}-${stream.type}`}
