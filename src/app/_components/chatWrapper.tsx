@@ -12,9 +12,11 @@ interface ChatWrapperProps extends ChatProps {
 function ChatWrapperComponent({ children, channel }: ChatWrapperProps) {
   const showChat = useMainStore((state) => getShowChat(state) === channel);
 
-  console.log(`[ChatWrapper] Showing ${channel} chat:`, showChat);
+  console.log(
+    `[ChatWrapper] ${showChat ? "Showing" : "Hiding"} ${channel} chat`,
+  );
 
-  return <div className={`${showChat ? "" : "hidden"}`}>{children}</div>;
+  return <div className={`${showChat ? "" : "invisible"}`}>{children}</div>;
 }
 
 export const ChatWrapper = memo(ChatWrapperComponent);
