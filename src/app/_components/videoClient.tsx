@@ -18,8 +18,6 @@ type Platform = "twitch" | "kick";
 export interface PlayerProps {
   type?: Platform;
   channel: string;
-  focus?: boolean;
-  first?: boolean;
 }
 
 const iframePlayerProps: Record<
@@ -46,11 +44,7 @@ let totalPlayers = 0;
 
 const getId = () => `tframe-${++totalPlayers}`;
 
-function PlayerComponent({
-  type = "twitch",
-  channel,
-  first: _first,
-}: PlayerProps) {
+function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   // const selfMute = useMainStore(
   //   useCallback((state) => !!state.manuallyMuted[channel], [channel]),
   // );
@@ -59,15 +53,15 @@ function PlayerComponent({
   const playerRef = useRef<TwitchPlayerInstance | null>(null);
 
   // Intentionally non-reactive
-  const { streams: _streams } = useMainStore.getState();
-  const focus = channel === _streams[0]?.value;
-  const first = _first || checkShowChat(channel);
+  const { streams: _streams, streamPositions } = useMainStore.getState();
+  const focus = streamPositions[channel] === 0;
+  const recent = focus || checkShowChat(channel);
 
   useEffect(() => {
     console.log("[Player] Mounted:", channel);
   }, []);
 
-  console.log("[Player] Re-rendered:", channel, type, first, focus);
+  console.log("[Player] Re-rendered:", channel, type, recent, focus);
 
   const handleReady = useStableCallback((player: TwitchPlayerInstance) => {
     playerRef.current = player;
@@ -82,14 +76,14 @@ function PlayerComponent({
       height="100%"
       width="100%"
       channel={channel}
-      autoplay={!!(first || focus)}
+      autoplay={!!recent}
       muted={false}
       onReady={handleReady}
     />
   ) : (
     <iframe
       className="h-full w-full border-none"
-      src={`${getSrc(type, channel, false)}&autoplay=${first || focus ? "true" : "false"}`}
+      src={`${getSrc(type, channel, false)}&autoplay=${recent ? "true" : "false"}`}
       allowFullScreen={true}
       scrolling="no"
       frameBorder="0"

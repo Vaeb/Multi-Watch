@@ -32,11 +32,7 @@ function StreamsComponent() {
               pos={streamPositions[stream.value]!}
               viewMode={viewMode}
             >
-              <Player
-                type={stream.type}
-                channel={stream.value}
-                first={streamPositions[stream.value] === 0}
-              />
+              <Player type={stream.type} channel={stream.value} />
             </PlayerWrapper>
           );
         })}
