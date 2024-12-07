@@ -9,12 +9,12 @@ interface HomeParams {
   }>;
 }
 
-export default async function Home({ params }: HomeParams) {
-  const { slug } = await params;
+export default function Home({ params }: HomeParams) {
+  // const { slug } = await params;
 
-  if (slug.length === 0 || !/^[\w-]+$/.test(slug[0]!)) {
-    return null;
-  }
+  // if (slug.length === 0 || !/^[\w-]+$/.test(slug[0]!)) {
+  //   return null;
+  // }
 
   return (
     <>
@@ -22,7 +22,7 @@ export default async function Home({ params }: HomeParams) {
       <main className="flex min-h-screen bg-black text-white">
         <LeftBar />
         <UpdateModalWrapper />
-        <Streams slugStreams={slug} />
+        <Streams />
       </main>
     </>
   );
