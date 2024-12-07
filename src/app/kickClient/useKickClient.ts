@@ -1,38 +1,154 @@
 "use client";
 
-import { createClient } from "@retconned/kick-js";
-import { useEffect, useState } from "react";
+import { type RefObject, useCallback, useEffect, useState } from "react";
+import { useMainStore } from "../stores/mainStore";
+import { type VirtuosoMessageListMethods } from "@virtuoso.dev/message-list";
 
-let a = 1;
+// [Client] If channel name not in list of chatrooms, send message to server
+// [Server] Lookup chatroom id for channel (first re-check cache), save it in json, respond to client
 
-export const useKickClient = (channel: string) => {
-  console.log(`Creating kick chat client for ${channel}`);
-  const [kickClient, setKickClient] = useState<ReturnType<
-    typeof createClient
-  > | null>(null);
+const BASE_URL = "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679";
+const createWebSocket = (channel: string, chatroomId: number) => {
+  const urlParams = new URLSearchParams({
+    protocol: "7",
+    client: "js",
+    version: "7.4.0",
+    flash: "false",
+  });
+
+  const url = `${BASE_URL}?${urlParams.toString()}`;
+  const socket = new WebSocket(url);
+
+  socket.onopen = () => {
+    const chatroomString = `chatrooms.${chatroomId}.v2`;
+    const connect = JSON.stringify({
+      event: "pusher:subscribe",
+      data: { auth: "", channel: chatroomString },
+    });
+
+    socket.send(connect);
+
+    console.log(
+      `[createWebSocket] Connected to Kick pusher socket. Subscribing to channel '${channel}': ${chatroomString}`,
+    );
+  };
+  return socket;
+};
+
+export interface Message {
+  id: string;
+  time: string;
+  author: string;
+  authorColor: string;
+  content: string;
+}
+
+const tzOffsetHours = new Date().getTimezoneOffset() / -60;
+
+const toChatMessage = (message: Record<string, any>): Message => {
+  const hoursNum =
+    (Number(message.created_at.slice(11, 13)) + tzOffsetHours) % 24;
+  const hours = hoursNum > 9 ? hoursNum : `0${hoursNum}`;
+  const minutes = message.created_at.slice(14, 16);
+
+  return {
+    id: message.id,
+    time: `${hours}:${minutes}`,
+    author: message.sender.username,
+    authorColor: message.sender.identity.color,
+    content: (message.content as string).replace(
+      /\[emote:(\d+):(\w+)\]/g,
+      (_, __, emoteName) => emoteName as string,
+    ),
+  };
+};
+
+const parseMessage = (message: string) => {
+  try {
+    const messageEventJSON: Record<string, any> = JSON.parse(message);
+    if (messageEventJSON.event === "App\\Events\\ChatMessageEvent") {
+      return {
+        type: "ChatMessage",
+        message: toChatMessage(JSON.parse(messageEventJSON.data)),
+      };
+    } else if (messageEventJSON.event === "App\\Events\\SubscriptionEvent") {
+    } else if (messageEventJSON.event === "App\\Events\\RaidEvent") {
+    }
+    return null;
+  } catch (error) {
+    console.error("[getMessage] Error checking for message:", error);
+    return null;
+  }
+};
+
+export const useKickClient = (
+  channel: string,
+  messageListRef: RefObject<VirtuosoMessageListMethods<Message, any>>,
+) => {
+  console.log(`[useKickClient] Re-rendered kick chat client for ${channel}`);
+
+  const [messages, setMessages] = useState<Message[]>([
+    // {
+    //   author: "AA",
+    //   authorColor: "#f00",
+    //   content: "111",
+    //   id: "001",
+    //   time: "777",
+    // },
+    // {
+    //   author: "BB",
+    //   authorColor: "#00f",
+    //   content: "222",
+    //   id: "002",
+    //   time: "888",
+    // },
+  ]);
+
+  const channelLower = channel.toLowerCase();
+  const chatroomId = useMainStore(
+    useCallback((state) => state.chatrooms[channelLower], [channelLower]),
+  );
 
   useEffect(() => {
-    const client = createClient(channel, { logger: true });
-    setKickClient(client);
+    if (!chatroomId) return;
 
-    client.on("ready", () => {
-      console.log(`Kick chat client ready for ${channel}`);
-    });
+    console.log(
+      `[useKickClient] Initialising kick chat client for ${channel}`,
+      chatroomId,
+    );
 
-    client.on("ChatMessage", (message) => {
+    const socket = createWebSocket(channel, chatroomId);
+
+    socket.onmessage = ({ data }) => {
+      const { type, message } = parseMessage(data.toString()) || {};
+      // console.log(`[useKickClient] onMessage`, type, message);
+      if (type === "ChatMessage" && message) {
+        messageListRef.current?.data.append(
+          [message],
+          ({ atBottom, scrollInProgress }) => {
+            if (atBottom || scrollInProgress) {
+              return "smooth";
+            } else {
+              return false;
+            }
+          },
+        );
+      }
+    };
+
+    socket.onclose = () => {
       console.log(
-        `[Chat-${channel}] ${message.sender.username}: ${message.content}`,
-      );
-    });
-
-    return () => {
-      console.log(
-        `Unmounting ${channel} kick chat - would try to destroy client but cannot.`,
+        `[useKickClient] Disconnected from ${channel} Kick pusher socket`,
       );
     };
-  }, [channel]);
+
+    return () => {
+      console.log(`[useKickClient] Unmounting ${channel} kick client`);
+      socket.close();
+    };
+  }, [messageListRef, channel, chatroomId]);
 
   // client.login({  })
 
-  return kickClient;
+  return messages;
 };

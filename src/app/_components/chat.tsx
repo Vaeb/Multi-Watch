@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { type Platform } from "~/types";
 import { ChatTitle } from "./chatTitle";
+import { KickChat } from "./kickChat";
 
 export interface ChatProps {
   type?: Platform;
@@ -30,7 +31,9 @@ const getSrc = (type: Platform, channel: string) => {
 };
 
 function ChatComponent({ type = "twitch", channel }: ChatProps) {
-  if (type === "twitch" || true) {
+  console.log("[Chat] Re-rendered", channel);
+
+  if (type === "twitch") {
     return (
       <iframe
         className="absolute h-full w-full border-none"
@@ -39,6 +42,8 @@ function ChatComponent({ type = "twitch", channel }: ChatProps) {
         frameBorder="0"
       ></iframe>
     );
+  } else if (type === "kick") {
+    return <KickChat channel={channel} />;
   }
 }
 

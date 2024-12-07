@@ -8,8 +8,12 @@ import { pathToStreams } from "../utils/pathToStreams";
 
 const selector = (state: MainState) => state.actions;
 
-export function Manager() {
-  const { setStreams } = useMainStore(selector);
+interface ManagerProps {
+  chatrooms: Record<string, number>;
+}
+
+export function Manager({ chatrooms }: ManagerProps) {
+  const { setStreams, setChatrooms } = useMainStore(selector);
   const hasSetInitialStreams = useRef(false);
 
   const pathname = usePathname();
@@ -24,6 +28,10 @@ export function Manager() {
     hasSetInitialStreams.current = true;
     setStreams(pathToStreams(pathname));
   }, [setStreams, pathname]);
+
+  useLayoutEffect(() => {
+    setChatrooms(chatrooms);
+  }, [setChatrooms, chatrooms]);
 
   return null;
 }

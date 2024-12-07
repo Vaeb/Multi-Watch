@@ -1,3 +1,5 @@
+"use client";
+
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { type Platform } from "~/types";
@@ -10,6 +12,19 @@ export interface Stream {
 }
 
 export type ViewMode = "focused" | "grid";
+
+const log =
+  (config: StateCreator<MainState, [], []>): any =>
+  (set: any, get: any, api: any) =>
+    config(
+      (...args) => {
+        console.log("[Store] Applying:", ...args);
+        set(...args);
+        console.log("[Store] New state:", get());
+      },
+      get,
+      api,
+    );
 
 export interface MainState {
   streams: Stream[];
@@ -24,6 +39,8 @@ export interface MainState {
 
   updateShown: boolean;
 
+  chatrooms: Record<string, number>;
+
   actions: {
     setStreams: (streams: Stream[]) => void;
     cycleStreams: () => void;
@@ -37,21 +54,10 @@ export interface MainState {
 
     setUpdateShown: (updateShown: boolean) => void;
     toggleUpdateShown: () => void;
+
+    setChatrooms: (chatrooms: MainState["chatrooms"]) => void;
   };
 }
-
-const log =
-  (config: StateCreator<MainState, [], []>): any =>
-  (set: any, get: any, api: any) =>
-    config(
-      (...args) => {
-        console.log("[Store] Applying:", ...args);
-        set(...args);
-        console.log("[Store] New state:", get());
-      },
-      get,
-      api,
-    );
 
 export const useMainStore = create<MainState>()(
   subscribeWithSelector(
@@ -67,6 +73,8 @@ export const useMainStore = create<MainState>()(
       viewMode: "focused",
 
       updateShown: false,
+
+      chatrooms: {},
 
       actions: {
         setStreams: (streams) =>
@@ -133,6 +141,8 @@ export const useMainStore = create<MainState>()(
         setUpdateShown: (updateShown) => set({ updateShown }),
         toggleUpdateShown: () =>
           set((state) => ({ updateShown: !state.updateShown })),
+
+        setChatrooms: (chatrooms) => set({ chatrooms }),
       },
     })),
   ),
