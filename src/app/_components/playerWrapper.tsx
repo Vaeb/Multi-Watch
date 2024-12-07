@@ -16,7 +16,7 @@ const getDimensions = (
 ): Dimensions => {
   const isFocused = viewMode === "focused";
 
-  if (isFocused || total <= 2) {
+  if (isFocused || total <= 1) {
     let height = "63%";
     let width = "100%";
     let top = "0vh";
