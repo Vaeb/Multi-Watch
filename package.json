@@ -14,7 +14,8 @@
     "preview": "next build && next start",
     "start": "next start",
     "watch": "nodemon --exec \"echo 1\" --verbose --watch 'src/**/*' -e tsx,ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "hook": "bun src/webhooks.js"
   },
   "dependencies": {
     "@retconned/kick-js": "^0.3.0",

@@ -126,10 +126,6 @@ async function updateBackend() {
   log('-> [Backend] Installing dependencies...');
   await spawnSync('backend', 'bun', ['install']);
   // await spawnSync('backend', 'node', ['./scripts/install.js']);
-  try {
-    log('-> [Backend] Building ts...');
-    await spawnSync('backend', 'bun', ['tsc', '--skipLibCheck']); // ['checkout', '-f', 'origin/master']
-  } catch (err) { }
 }
 
 async function update() {
