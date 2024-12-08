@@ -4,6 +4,7 @@ import { memo, useCallback } from "react";
 import { type PlayerProps } from "./video";
 import { useMainStore } from "../stores/mainStore";
 import Image from "next/image";
+import { useKickStore } from "../stores/kickStore";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
@@ -26,6 +27,7 @@ function PlayerOverlayComponent({ channel }: PlayerOverlayProps) {
 
   const chatClick = useCallback(() => {
     useMainStore.getState().actions.setSelectedChat(channel);
+    useKickStore.getState().chatMethods[channel]?.scrollToBottom();
   }, [channel]);
 
   return (

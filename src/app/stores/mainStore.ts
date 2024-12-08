@@ -1,30 +1,12 @@
 "use client";
 
-import { create, type StateCreator } from "zustand";
+import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { type Platform } from "~/types";
 import { streamsToPath } from "../utils/streamsToPath";
 import { orderStreams } from "../utils/orderStreams";
-
-export interface Stream {
-  value: string;
-  type: Platform;
-}
-
-export type ViewMode = "focused" | "grid";
-
-const log =
-  (config: StateCreator<MainState, [], []>): any =>
-  (set: any, get: any, api: any) =>
-    config(
-      (...args) => {
-        console.log("[Store] Applying:", ...args);
-        set(...args);
-        console.log("[Store] New state:", get());
-      },
-      get,
-      api,
-    );
+import { log } from "./storeUtils";
+import { type Stream, type ViewMode } from "./storeTypes";
+import { useKickStore } from "./kickStore";
 
 export interface MainState {
   streams: Stream[];
@@ -39,8 +21,6 @@ export interface MainState {
 
   updateShown: boolean;
 
-  chatrooms: Record<string, number>;
-
   actions: {
     setStreams: (streams: Stream[]) => void;
     cycleStreams: () => void;
@@ -54,14 +34,12 @@ export interface MainState {
 
     setUpdateShown: (updateShown: boolean) => void;
     toggleUpdateShown: () => void;
-
-    setChatrooms: (chatrooms: MainState["chatrooms"]) => void;
   };
 }
 
 export const useMainStore = create<MainState>()(
   subscribeWithSelector(
-    log((set) => ({
+    log<MainState>((set) => ({
       streams: [],
       streamsMap: {},
       streamPositions: {},
@@ -74,10 +52,10 @@ export const useMainStore = create<MainState>()(
 
       updateShown: false,
 
-      chatrooms: {},
-
       actions: {
-        setStreams: (streams) =>
+        setStreams: (streams) => {
+          const channels = streams.map((stream) => stream.value);
+
           set((state) => {
             const streamsMap = Object.assign(
               {},
@@ -89,7 +67,7 @@ export const useMainStore = create<MainState>()(
               streamsMap,
               streamPositions: Object.assign(
                 {},
-                ...streams.map((stream, i) => ({ [stream.value]: i })),
+                ...channels.map((channel, i) => ({ [channel]: i })),
               ) as Record<string, number>,
               streamPlayer: {},
               manuallyMuted: {},
@@ -100,7 +78,11 @@ export const useMainStore = create<MainState>()(
                 ? state.selectedChat
                 : "",
             };
-          }),
+          });
+
+          useKickStore.getState().actions.syncChannels(channels);
+        },
+
         cycleStreams: () =>
           set((state) => {
             const { streams, streamPositions: streamPositionsBase } = state;
@@ -120,29 +102,33 @@ export const useMainStore = create<MainState>()(
 
             return { streamPositions };
           }),
+
         setStreamPlayer: (channel, player) =>
           set((state) => ({
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             streamPlayer: { ...state.streamPlayer, [channel]: player },
           })),
+
         setManuallyMuted: (channel, muted) =>
           set((state) => ({
             manuallyMuted: { ...state.manuallyMuted, [channel]: muted },
           })),
+
         setNewestStream: (newestStream) => set({ newestStream }),
+
         setSelectedChat: (selectedChat) => set({ selectedChat }),
 
         setViewMode: (viewMode) => set({ viewMode }),
+
         toggleViewMode: () =>
           set(({ viewMode }) => ({
             viewMode: viewMode === "focused" ? "grid" : "focused",
           })),
 
         setUpdateShown: (updateShown) => set({ updateShown }),
+
         toggleUpdateShown: () =>
           set((state) => ({ updateShown: !state.updateShown })),
-
-        setChatrooms: (chatrooms) => set({ chatrooms }),
       },
     })),
   ),

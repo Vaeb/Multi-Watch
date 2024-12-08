@@ -1,5 +1,5 @@
 import { type Platform } from "~/types";
-import { type Stream } from "../stores/mainStore";
+import { type Stream } from "../stores/storeTypes";
 
 export const pathToStreams = (pathname: string): Stream[] =>
   pathname

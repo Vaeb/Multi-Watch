@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { PlayerOverlay } from "./playerOverlay";
-import { type ViewMode } from "../stores/mainStore";
+import { type ViewMode } from "../stores/storeTypes";
 
 interface Dimensions {
   height: string;

@@ -53,7 +53,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   const playerRef = useRef<TwitchPlayerInstance | null>(null);
 
   // Intentionally non-reactive
-  const { streams: _streams, streamPositions } = useMainStore.getState();
+  const { streamPositions } = useMainStore.getState();
   const focus = streamPositions[channel] === 0;
   const recent = focus || checkShowChat(channel);
 
@@ -81,15 +81,17 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       onReady={handleReady}
     />
   ) : (
-    <iframe
-      className="h-full w-full border-none"
-      src={`${getSrc(type, channel, false)}&autoplay=${recent ? "true" : "false"}`}
-      allowFullScreen={true}
-      scrolling="no"
-      frameBorder="0"
-      allow="autoplay; fullscreen"
-      {...iframePlayerProps[type]}
-    ></iframe>
+    <div className="flex h-full w-full justify-center">
+      <iframe
+        className="aspect-video h-full max-h-full max-w-full border-none"
+        src={`${getSrc(type, channel, false)}&autoplay=${recent ? "true" : "false"}`}
+        allowFullScreen={true}
+        scrolling="no"
+        frameBorder="0"
+        allow="autoplay; fullscreen"
+        {...iframePlayerProps[type]}
+      ></iframe>
+    </div>
   );
 }
 

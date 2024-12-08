@@ -5,15 +5,18 @@ import { useLayoutEffect, useRef } from "react";
 
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { pathToStreams } from "../utils/pathToStreams";
+import { type KickState, useKickStore } from "../stores/kickStore";
 
 const selector = (state: MainState) => state.actions;
+const kickSelector = (state: KickState) => state.actions;
 
 interface ManagerProps {
-  chatrooms: Record<string, number>;
+  chatrooms: KickState["chatrooms"];
 }
 
 export function Manager({ chatrooms }: ManagerProps) {
-  const { setStreams, setChatrooms } = useMainStore(selector);
+  const { setStreams } = useMainStore(selector);
+  const { setChatrooms } = useKickStore(kickSelector);
   const hasSetInitialStreams = useRef(false);
 
   const pathname = usePathname();

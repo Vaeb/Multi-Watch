@@ -1,8 +1,8 @@
 "use client";
 
 import { type RefObject, useCallback, useEffect, useState } from "react";
-import { useMainStore } from "../stores/mainStore";
 import { type VirtuosoMessageListMethods } from "@virtuoso.dev/message-list";
+import { useKickStore } from "../stores/kickStore";
 
 // [Client] If channel name not in list of chatrooms, send message to server
 // [Server] Lookup chatroom id for channel (first re-check cache), save it in json, respond to client
@@ -105,7 +105,7 @@ export const useKickClient = (
   ]);
 
   const channelLower = channel.toLowerCase();
-  const chatroomId = useMainStore(
+  const chatroomId = useKickStore(
     useCallback((state) => state.chatrooms[channelLower], [channelLower]),
   );
 

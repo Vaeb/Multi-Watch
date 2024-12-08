@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { type Message, useKickClient } from "../kickClient/useKickClient";
 import {
   VirtuosoMessageList,
@@ -8,6 +8,7 @@ import {
   type VirtuosoMessageListMethods,
   type VirtuosoMessageListProps,
 } from "@virtuoso.dev/message-list";
+import { type ChatMethods, useKickStore } from "../stores/kickStore";
 
 export interface ChatProps {
   channel: string;
@@ -29,6 +30,20 @@ const ChatItem: VirtuosoProps["ItemContent"] = ({ data }) => {
 function KickChatComponent({ channel }: ChatProps) {
   const messageListRef = useRef<VirtuosoMessageListMethods<Message>>(null);
   const messages = useKickClient(channel, messageListRef);
+
+  useEffect(() => {
+    const chatMethods: ChatMethods = {
+      scrollToBottom: () => {
+        messageListRef.current?.scrollToItem({
+          index: "LAST",
+          align: "end",
+          behavior: "smooth",
+        });
+      },
+    };
+
+    useKickStore.getState().actions.setChatMethods(channel, chatMethods);
+  }, [channel]);
 
   console.log(`[KickChat] Re-rendered ${channel}`);
 
