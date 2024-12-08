@@ -65,6 +65,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
 
   const handleReady = useStableCallback((player: TwitchPlayerInstance) => {
     playerRef.current = player;
+    player.setVolume(0.75);
     console.log("[Player] Creating twitch player:", channel, player);
     useMainStore.getState().actions.setStreamPlayer(channel, player);
   });

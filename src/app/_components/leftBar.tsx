@@ -38,7 +38,7 @@ export function LeftBar() {
         onClick={toggleUpdateShown}
       />
       <LeftBarButton
-        imageUrl={viewMode === "focused" ? "/squares2.png" : "/icon-128.png"}
+        imageUrl={viewMode === "focused" ? "/squares2.png" : "/rectangle1.png"}
         alt="Switch to grid"
         onClick={toggleViewMode}
       />
