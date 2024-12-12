@@ -3,7 +3,7 @@ import { LeftBar } from "../_components/leftBar";
 import { Manager } from "../_components/manager";
 import { Streams } from "../_components/streams";
 import { promises as fs } from "fs";
-import { NopixelBar } from "../_components/nopixelBar";
+import { NopixelBarWrapper } from "../_components/nopixelBarWrapper";
 
 interface PageParams {
   params: Promise<{
@@ -30,8 +30,9 @@ export default async function Page({ params }: PageParams) {
     <>
       <Manager chatrooms={chatrooms} />
       <main className="flex min-h-screen bg-black text-white">
-        {/* <NopixelBar /> */}
-        <LeftBar />
+        <LeftBar>
+          <NopixelBarWrapper />
+        </LeftBar>
         <UpdateModalWrapper />
         <Streams />
       </main>

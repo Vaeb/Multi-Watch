@@ -33,7 +33,7 @@ const LeftBarButton = ({
   );
 };
 
-export function LeftBar() {
+export function LeftBar({ children }: { children: React.ReactElement }) {
   const { toggleUpdateShown, cycleStreams, toggleViewMode, toggleNopixel } =
     useMainStore(selector);
   const nopixelShown = useMainStore(selector2);
@@ -41,12 +41,15 @@ export function LeftBar() {
 
   return (
     <>
-      <div className={`${nopixelShown ? "" : "invisible"}`}>
-        <NopixelBar />
-      </div>
+      <div className={`${nopixelShown ? "" : "invisible"}`}>{children}</div>
       <div
         className={`absolute z-10 flex h-[50%] w-[60px] flex-col gap-3 ${nopixelShown ? "invisible" : ""}`}
       >
+        <LeftBarButton
+          imageUrl="/np1.ico"
+          alt="Live NoPixel streams"
+          onClick={toggleNopixel}
+        />
         <LeftBarButton
           imageUrl="/Edit_Profile.svg"
           alt="Update streams"
@@ -58,11 +61,6 @@ export function LeftBar() {
           }
           alt="Switch to grid"
           onClick={toggleViewMode}
-        />
-        <LeftBarButton
-          imageUrl="/np1.ico"
-          alt="Live NoPixel streams"
-          onClick={toggleNopixel}
         />
         <LeftBarButton
           imageUrl="/cycle.svg"

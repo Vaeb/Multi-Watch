@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useEffect, useState } from "react";
+import { memo } from "react";
 import { addStream } from "../utils/addStream";
 import { useMainStore } from "../stores/mainStore";
 
@@ -25,7 +25,7 @@ interface RemoteStream {
   facebook: boolean;
 }
 
-interface RemoteLive {
+export interface RemoteLive {
   streams: RemoteStream[];
   streamerData: Record<string, Partial<RemoteStream>>;
   tick: number;
@@ -57,9 +57,9 @@ const NopixelBarButton = ({
   onClick,
 }: NopixelBarButtonProps) => {
   return (
-    <div className="mb-2 flex h-[42px] items-center justify-center">
+    <div className="flex h-0 items-center justify-center">
       <button
-        className="h-[42px] opacity-40 hover:opacity-100"
+        className="absolute top-[9px] h-[42px] opacity-40 hover:opacity-100"
         onClick={onClick}
       >
         <Image src={imageUrl} width={42} height={42} alt={alt} />
@@ -82,12 +82,14 @@ const StreamIcon = ({
       <button
         className="h-[42px] opacity-100 hover:opacity-100"
         onClick={onClick}
+        aria-label={channel}
       >
         <Image
           className="rounded-full"
           src={imageUrl}
           width={42}
           height={42}
+          aria-label={channel}
           alt={channel}
         />
       </button>
@@ -95,41 +97,14 @@ const StreamIcon = ({
   );
 };
 
-const getData = async () => {
-  const dataRaw = await fetch("https://vaeb.io:3030/live");
-  const data = await dataRaw.json();
-  console.log("[getData]", Object.keys(data));
-  return data as RemoteLive;
-};
-
-function NopixelBarComponent() {
-  const [data, setData] = useState<RemoteLive | null>(null);
+function NopixelBarComponent({ data }: { data: RemoteLive }) {
   const { toggleNopixel } = useMainStore.getState().actions;
   const { streams, useColorsDark } = data || {};
-
-  useEffect(() => {
-    getData()
-      .then((_data) => {
-        setData(_data);
-      })
-      .catch((err) => console.log(err));
-    const timer = setInterval(
-      () => {
-        getData()
-          .then((_data) => {
-            setData(_data);
-          })
-          .catch((err) => console.log(err));
-      },
-      1000 * 60 * 5,
-    );
-    return () => clearInterval(timer);
-  }, []);
 
   // 18+(42+12)*15-12
   // 816px
   return (
-    <div className="no-scrollbar absolute z-10 flex h-[63%] max-h-[90vh] w-[60px] flex-col gap-3 overflow-y-auto py-[9px]">
+    <div className="no-scrollbar absolute z-10 flex h-[63%] max-h-[90vh] w-[60px] flex-col gap-3 overflow-y-auto pt-[59px]">
       <NopixelBarButton
         imageUrl="/x1.png"
         alt="Update streams"
