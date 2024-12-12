@@ -5,10 +5,11 @@ import { type PlayerProps } from "./video";
 import { useMainStore } from "../stores/mainStore";
 import Image from "next/image";
 import { useKickStore } from "../stores/kickStore";
+import { removeStream } from "../utils/removeStream";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
-function PlayerOverlayComponent({ channel }: PlayerOverlayProps) {
+function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   const audioClick = useCallback(() => {
     const { streams, streamPlayer, actions } = useMainStore.getState();
     console.log(11, streamPlayer);
@@ -30,6 +31,10 @@ function PlayerOverlayComponent({ channel }: PlayerOverlayProps) {
     useKickStore.getState().chatMethods[channel]?.scrollToBottom();
   }, [channel]);
 
+  const closeStream = useCallback(() => {
+    removeStream(channel, type ?? "twitch");
+  }, [channel, type]);
+
   return (
     <div className="group absolute h-[110px] w-full">
       <div className="flex h-full items-center justify-center">
@@ -45,6 +50,9 @@ function PlayerOverlayComponent({ channel }: PlayerOverlayProps) {
             </button>
             <button onClick={chatClick}>
               <Image src="/chat3.png" width={28} height={28} alt="View chat" />
+            </button>
+            <button onClick={closeStream}>
+              <Image src="/x1.png" width={28} height={28} alt="Remove stream" />
             </button>
           </div>
         </div>

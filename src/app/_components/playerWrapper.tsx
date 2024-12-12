@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { PlayerOverlay } from "./playerOverlay";
 import { type ViewMode } from "../stores/storeTypes";
+import { Platform } from "~/types";
 
 interface Dimensions {
   height: string;
@@ -157,6 +158,7 @@ const getDimensions = (
 interface PlayerWrapperProps {
   children: React.ReactNode;
   channel: string;
+  type: Platform;
   total: number;
   pos: number;
   viewMode: ViewMode;
@@ -165,6 +167,7 @@ interface PlayerWrapperProps {
 function PlayerWrapperComponent({
   children,
   channel,
+  type,
   total,
   pos,
   viewMode,
@@ -191,7 +194,7 @@ function PlayerWrapperComponent({
         "--left": left,
       }}
     >
-      <PlayerOverlay channel={channel} />
+      <PlayerOverlay channel={channel} type={type} />
       {children}
     </div>
   );

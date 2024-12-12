@@ -20,6 +20,7 @@ export interface MainState {
   viewMode: ViewMode;
 
   updateShown: boolean;
+  nopixelShown: boolean;
 
   actions: {
     setStreams: (streams: Stream[]) => void;
@@ -34,6 +35,7 @@ export interface MainState {
 
     setUpdateShown: (updateShown: boolean) => void;
     toggleUpdateShown: () => void;
+    toggleNopixel: () => void;
   };
 }
 
@@ -51,6 +53,7 @@ export const useMainStore = create<MainState>()(
       viewMode: "focused",
 
       updateShown: false,
+      nopixelShown: false,
 
       actions: {
         setStreams: (streams) => {
@@ -129,6 +132,9 @@ export const useMainStore = create<MainState>()(
 
         toggleUpdateShown: () =>
           set((state) => ({ updateShown: !state.updateShown })),
+
+        toggleNopixel: () =>
+          set((state) => ({ nopixelShown: !state.nopixelShown })),
       },
     })),
   ),

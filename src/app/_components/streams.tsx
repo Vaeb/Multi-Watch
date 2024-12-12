@@ -28,6 +28,7 @@ function StreamsComponent() {
             <PlayerWrapper
               key={`video-${stream.value}-${stream.type}`}
               channel={stream.value}
+              type={stream.type}
               total={streams.length}
               pos={streamPositions[stream.value]!}
               viewMode={viewMode}

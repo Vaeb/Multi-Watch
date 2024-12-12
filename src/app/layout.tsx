@@ -18,7 +18,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${GeistSans.variable}`}
     >
-      <body suppressHydrationWarning={true}>{children}</body>
+      <body className="overflow-hidden" suppressHydrationWarning={true}>
+        {children}
+      </body>
     </html>
   );
 }
