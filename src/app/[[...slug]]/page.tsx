@@ -1,15 +1,10 @@
-import { UpdateModalWrapper } from "../_components/updateModal";
 import { LeftBar } from "../_components/leftBar";
 import { Manager } from "../_components/manager";
 import { Streams } from "../_components/streams";
 import { promises as fs } from "fs";
 import { NopixelBarWrapper } from "../_components/nopixelBarWrapper";
-
-interface PageParams {
-  params: Promise<{
-    slug: string[];
-  }>;
-}
+import { type PageParams } from "~/types";
+import { UpdateModalServerWrapper } from "../_components/updateModalServerWrapper";
 
 export default async function Page({ params }: PageParams) {
   // const { slug } = await params;
@@ -33,7 +28,7 @@ export default async function Page({ params }: PageParams) {
         <LeftBar>
           <NopixelBarWrapper />
         </LeftBar>
-        <UpdateModalWrapper />
+        <UpdateModalServerWrapper params={params} />
         <Streams />
       </main>
     </>

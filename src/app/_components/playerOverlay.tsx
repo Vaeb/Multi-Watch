@@ -40,6 +40,9 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
       <div className="flex h-full items-center justify-center">
         <div className="flex items-center justify-center rounded-md bg-black/0 transition duration-100 ease-out group-hover:bg-black/50">
           <div className="flex gap-4 p-4 opacity-0 group-hover:opacity-80">
+            <button onClick={chatClick}>
+              <Image src="/chat3.png" width={28} height={28} alt="View chat" />
+            </button>
             <button onClick={audioClick}>
               <Image
                 src="/speaker1.png"
@@ -47,9 +50,6 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
                 height={28}
                 alt="Select audio"
               />
-            </button>
-            <button onClick={chatClick}>
-              <Image src="/chat3.png" width={28} height={28} alt="View chat" />
             </button>
             <button onClick={closeStream}>
               <Image src="/x1.png" width={28} height={28} alt="Remove stream" />

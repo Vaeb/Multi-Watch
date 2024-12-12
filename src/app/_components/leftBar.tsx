@@ -43,17 +43,17 @@ export function LeftBar({ children }: { children: React.ReactElement }) {
     <>
       <div className={`${nopixelShown ? "" : "invisible"}`}>{children}</div>
       <div
-        className={`absolute z-10 flex h-[50%] w-[60px] flex-col gap-3 ${nopixelShown ? "invisible" : ""}`}
+        className={`absolute z-10 flex h-[50%] w-[60px] flex-col gap-[12px] ${nopixelShown ? "invisible" : ""}`}
       >
-        <LeftBarButton
-          imageUrl="/np1.ico"
-          alt="Live NoPixel streams"
-          onClick={toggleNopixel}
-        />
         <LeftBarButton
           imageUrl="/Edit_Profile.svg"
           alt="Update streams"
           onClick={toggleUpdateShown}
+        />
+        <LeftBarButton
+          imageUrl="/np1.ico"
+          alt="Live NoPixel streams"
+          onClick={toggleNopixel}
         />
         <LeftBarButton
           imageUrl={

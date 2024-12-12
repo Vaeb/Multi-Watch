@@ -1,7 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useCallback, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useShallow } from "zustand/shallow";
 import { type Platform } from "~/types";
 import { type MainState, useMainStore } from "../stores/mainStore";
@@ -42,6 +49,7 @@ function UpdateModal() {
     actions: { setUpdateShown, setStreams, setNewestStream, setSelectedChat },
   } = useMainStore(useShallow(selector1));
   const streams = orderStreams(_streams);
+  const isFirstRenderRef = useRef(true);
 
   const pathname = usePathname();
 
@@ -65,6 +73,14 @@ function UpdateModal() {
         ]
       : []),
   ];
+
+  const initialLastIdx = isFirstRenderRef.current
+    ? inputBoxData.length - 1
+    : -1;
+
+  useEffect(() => {
+    isFirstRenderRef.current = false;
+  }, []);
 
   console.log("pathname", pathname, initialStreams(), channels);
 
@@ -117,6 +133,7 @@ function UpdateModal() {
               className="border-1 flex flex-1 rounded-sm border border-gray-400 bg-slate-50 p-1"
               placeholder={`Stream ${i + 1}`}
               value={inputStream.value}
+              autoFocus={i === initialLastIdx}
               onChange={(e) =>
                 setChannels((_inputs) => [
                   ..._inputs.slice(0, i),
@@ -156,8 +173,21 @@ function UpdateModal() {
   );
 }
 
-export function UpdateModalWrapper() {
+export function UpdateModalWrapper({ isLanding }: { isLanding: boolean }) {
   const updateShown = useMainStore(selector2);
+  const hasRenderedRef = useRef(false);
+
+  const onLanding = isLanding && hasRenderedRef.current === false;
+
+  useLayoutEffect(() => {
+    if (!hasRenderedRef.current && isLanding) {
+      useMainStore.getState().actions.setUpdateShown(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    hasRenderedRef.current = true;
+  }, []);
 
   return updateShown ? <UpdateModal /> : null;
 }
