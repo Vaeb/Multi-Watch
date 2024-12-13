@@ -185,7 +185,7 @@ function PlayerWrapperComponent({
   return (
     <div
       className={
-        "duration-50 absolute h-[var(--height)] w-[var(--width)] translate-x-[var(--left)] translate-y-[var(--top)] transition ease-linear"
+        "duration-50 absolute flex h-[var(--height)] w-[var(--width)] translate-x-[var(--left)] translate-y-[var(--top)] flex-col items-center transition ease-linear"
       }
       style={{
         "--height": height,

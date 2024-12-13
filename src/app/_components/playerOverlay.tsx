@@ -39,20 +39,18 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   }, [channel, type]);
 
   return (
-    <div className="group absolute h-[110px] w-full">
-      <div className="flex h-full items-center justify-center">
-        <div className="flex items-center justify-center rounded-md bg-black/0 transition duration-100 ease-out group-hover:bg-black/50">
-          <div className="flex gap-4 p-4 opacity-0 group-hover:opacity-80">
-            <button onClick={chatClick}>
-              <WhiteChatIcon size={28} />
-            </button>
-            <button onClick={audioClick}>
-              <WhiteSpeakerIcon size={28} />
-            </button>
-            <button onClick={closeStream}>
-              <WhiteXIcon size={28} />
-            </button>
-          </div>
+    <div className="group absolute flex h-[110px] w-[50%] items-center justify-center">
+      <div className="flex items-center justify-center rounded-md bg-black/0 transition duration-100 ease-out group-hover:bg-black/50">
+        <div className="flex gap-4 p-4 opacity-0 group-hover:opacity-80">
+          <button onClick={chatClick}>
+            <WhiteChatIcon size={28} />
+          </button>
+          <button onClick={audioClick}>
+            <WhiteSpeakerIcon size={28} />
+          </button>
+          <button onClick={closeStream}>
+            <WhiteXIcon size={28} />
+          </button>
         </div>
       </div>
     </div>
