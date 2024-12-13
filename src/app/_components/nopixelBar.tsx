@@ -53,9 +53,9 @@ interface StreamIconProps {
 
 const NopixelBarButton = ({ alt, onClick }: NopixelBarButtonProps) => {
   return (
-    <div className="flex h-0 items-center justify-center">
+    <div className="mb-2 flex h-[42px] items-center justify-center">
       <button
-        className="absolute top-[9px] h-[42px] opacity-40 hover:opacity-100"
+        className="h-[42px] opacity-40 hover:opacity-100"
         onClick={onClick}
         aria-label={alt}
       >
@@ -77,7 +77,8 @@ const StreamIcon = ({
   return (
     <div className="flex h-[60px] items-center justify-center">
       <button
-        className="h-[42px] opacity-100 hover:opacity-100"
+        className="flex h-[42px] items-center gap-2 opacity-100 hover:opacity-100"
+        style={{ color }}
         onClick={onClick}
         aria-label={channel}
       >
@@ -89,6 +90,8 @@ const StreamIcon = ({
           aria-label={channel}
           alt={channel}
         />
+        <p>{channel}</p>
+        <p className="text-sm text-red-500">{viewers}</p>
       </button>
     </div>
   );
@@ -106,7 +109,7 @@ function NopixelBarComponent({ data }: { data: RemoteLive }) {
   // 816px
   return (
     <div
-      className={`${nopixelShown ? "" : "invisible"} no-scrollbar h-full w-full flex-col gap-3 overflow-y-auto pt-[59px]`}
+      className={`${nopixelShown ? "" : "invisible absolute"} no-scrollbar flex h-[100vh] w-full flex-col items-start gap-3 overflow-y-auto py-[9px]`}
     >
       <NopixelBarButton alt="Update streams" onClick={toggleNopixel} />
       {streams?.map((stream) => (

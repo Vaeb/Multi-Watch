@@ -27,8 +27,8 @@ export default async function Page({ params }: PageParams) {
       <Manager chatrooms={chatrooms} />
       <main className="flex min-h-screen bg-black text-white">
         <LeftBar>
-          <MainBar />
           <NopixelBarWrapper />
+          <MainBar />
         </LeftBar>
         <UpdateModalServerWrapper params={params} />
         <Streams />

@@ -62,7 +62,7 @@ export function MainBar() {
 
   return (
     <div
-      className={`absolute flex h-full w-full flex-col gap-[6px] ${nopixelShown ? "invisible" : ""}`}
+      className={`flex w-full flex-col items-start gap-[6px] ${nopixelShown ? "invisible absolute" : ""}`}
     >
       <LeftBarButton
         imageUrl="/Edit_Profile.svg"
