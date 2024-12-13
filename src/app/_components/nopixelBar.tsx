@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { memo } from "react";
 import { addStream } from "../utils/addStream";
-import { useMainStore } from "../stores/mainStore";
+import { MainState, useMainStore } from "../stores/mainStore";
+import WhiteXIcon from "./icons/whiteXIcon";
 
 interface RemoteStream {
   channelName: string;
@@ -36,7 +37,6 @@ export interface RemoteLive {
 }
 
 interface NopixelBarButtonProps {
-  imageUrl: string;
   alt: string;
   onClick: (...args: any[]) => any;
 }
@@ -51,18 +51,15 @@ interface StreamIconProps {
   onClick?: (...args: any[]) => any;
 }
 
-const NopixelBarButton = ({
-  imageUrl,
-  alt,
-  onClick,
-}: NopixelBarButtonProps) => {
+const NopixelBarButton = ({ alt, onClick }: NopixelBarButtonProps) => {
   return (
     <div className="flex h-0 items-center justify-center">
       <button
         className="absolute top-[9px] h-[42px] opacity-40 hover:opacity-100"
         onClick={onClick}
+        aria-label={alt}
       >
-        <Image src={imageUrl} width={42} height={42} alt={alt} />
+        <WhiteXIcon size={42} />
       </button>
     </div>
   );
@@ -97,19 +94,21 @@ const StreamIcon = ({
   );
 };
 
+const selector2 = (state: MainState) => state.nopixelShown;
+
 function NopixelBarComponent({ data }: { data: RemoteLive }) {
-  const { toggleNopixel } = useMainStore.getState().actions;
+  const nopixelShown = useMainStore(selector2);
+
   const { streams, useColorsDark } = data || {};
+  const { toggleNopixel } = useMainStore.getState().actions;
 
   // 18+(42+12)*15-12
   // 816px
   return (
-    <div className="no-scrollbar absolute z-10 flex h-[63%] max-h-[90vh] w-[60px] flex-col gap-3 overflow-y-auto pt-[59px]">
-      <NopixelBarButton
-        imageUrl="/x1.png"
-        alt="Update streams"
-        onClick={toggleNopixel}
-      />
+    <div
+      className={`${nopixelShown ? "" : "invisible"} no-scrollbar h-full w-full flex-col gap-3 overflow-y-auto pt-[59px]`}
+    >
+      <NopixelBarButton alt="Update streams" onClick={toggleNopixel} />
       {streams?.map((stream) => (
         <StreamIcon
           key={stream.channelName}

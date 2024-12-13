@@ -6,6 +6,9 @@ import { useMainStore } from "../stores/mainStore";
 import Image from "next/image";
 import { useKickStore } from "../stores/kickStore";
 import { removeStream } from "../utils/removeStream";
+import WhiteXIcon from "./icons/whiteXIcon";
+import WhiteSpeakerIcon from "./icons/whiteSpeakerIcon";
+import WhiteChatIcon from "./icons/whiteChatIcon";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
@@ -41,18 +44,13 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
         <div className="flex items-center justify-center rounded-md bg-black/0 transition duration-100 ease-out group-hover:bg-black/50">
           <div className="flex gap-4 p-4 opacity-0 group-hover:opacity-80">
             <button onClick={chatClick}>
-              <Image src="/chat3.png" width={28} height={28} alt="View chat" />
+              <WhiteChatIcon size={28} />
             </button>
             <button onClick={audioClick}>
-              <Image
-                src="/speaker1.png"
-                width={28}
-                height={28}
-                alt="Select audio"
-              />
+              <WhiteSpeakerIcon size={28} />
             </button>
             <button onClick={closeStream}>
-              <Image src="/x1.png" width={28} height={28} alt="Remove stream" />
+              <WhiteXIcon size={28} />
             </button>
           </div>
         </div>
