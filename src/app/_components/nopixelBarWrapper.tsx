@@ -1,5 +1,15 @@
 import { memo } from "react";
-import { NopixelBar, type RemoteLive } from "./nopixelBar";
+import { NopixelBar, type RemoteParsed, type RemoteStream } from "./nopixelBar";
+
+export interface RemoteLive {
+  streams: RemoteStream[];
+  streamerData: Record<string, Partial<RemoteStream>>;
+  tick: number;
+  factionCount: Record<string, number>;
+  npFactions: Record<string, number>;
+  filterFactions: [string, string, boolean, number][];
+  useColorsDark: Record<string, string>;
+}
 
 const getData = async () => {
   const dataRaw = await fetch("http://localhost:3029/live");
@@ -11,7 +21,20 @@ const getData = async () => {
 async function NopixelBarWrapperComponent() {
   const data = await getData();
 
-  return <NopixelBar data={data} />;
+  const { streams, useColorsDark } = data || {};
+
+  const parsed: RemoteParsed = {
+    streams: streams.filter(
+      (stream) =>
+        (stream.noOthersInclude &&
+          stream.noPublicInclude &&
+          stream.noInternationalInclude) ||
+        stream.wlOverride,
+    ),
+    useColorsDark,
+  };
+
+  return <NopixelBar parsedData={parsed} />;
 }
 
 export const NopixelBarWrapper = memo(NopixelBarWrapperComponent);

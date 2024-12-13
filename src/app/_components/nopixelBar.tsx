@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { memo } from "react";
 import { addStream } from "../utils/addStream";
-import { MainState, useMainStore } from "../stores/mainStore";
+import { type MainState, useMainStore } from "../stores/mainStore";
 import WhiteXIcon from "./icons/whiteXIcon";
 
-interface RemoteStream {
+export interface RemoteStream {
   channelName: string;
   title: string;
   viewers: number;
@@ -26,13 +26,8 @@ interface RemoteStream {
   facebook: boolean;
 }
 
-export interface RemoteLive {
+export interface RemoteParsed {
   streams: RemoteStream[];
-  streamerData: Record<string, Partial<RemoteStream>>;
-  tick: number;
-  factionCount: Record<string, number>;
-  npFactions: Record<string, number>;
-  filterFactions: [string, string, boolean, number][];
   useColorsDark: Record<string, string>;
 }
 
@@ -45,7 +40,6 @@ interface StreamIconProps {
   channel: string;
   imageUrl: string;
   viewers: number;
-  rpServer: string;
   char: string;
   color: string;
   onClick?: (...args: any[]) => any;
@@ -55,11 +49,14 @@ const NopixelBarButton = ({ alt, onClick }: NopixelBarButtonProps) => {
   return (
     <div className="mb-2 flex h-[42px] items-center justify-center">
       <button
-        className="h-[42px] opacity-40 hover:opacity-100"
+        className="group flex h-[42px] items-center gap-3"
         onClick={onClick}
         aria-label={alt}
       >
-        <WhiteXIcon size={42} />
+        <div className="h-[42px] w-[42px] opacity-40 group-hover:opacity-100">
+          <WhiteXIcon size={42} />
+        </div>
+        <p>Close</p>
       </button>
     </div>
   );
@@ -69,7 +66,6 @@ const StreamIcon = ({
   channel,
   imageUrl,
   viewers,
-  rpServer,
   char,
   color,
   onClick,
@@ -90,8 +86,13 @@ const StreamIcon = ({
           aria-label={channel}
           alt={channel}
         />
-        <p>{channel}</p>
-        <p className="text-sm text-red-500">{viewers}</p>
+        <div className="flex flex-col items-start">
+          <div className="flex gap-2">
+            <p>{channel}</p>
+            <p className="text-sm text-red-500">{viewers}</p>
+          </div>
+          <p className="text-xs">{char}</p>
+        </div>
       </button>
     </div>
   );
@@ -99,33 +100,36 @@ const StreamIcon = ({
 
 const selector2 = (state: MainState) => state.nopixelShown;
 
-function NopixelBarComponent({ data }: { data: RemoteLive }) {
+function NopixelBarComponent({ parsedData }: { parsedData: RemoteParsed }) {
   const nopixelShown = useMainStore(selector2);
 
-  const { streams, useColorsDark } = data || {};
+  const { streams, useColorsDark } = parsedData;
   const { toggleNopixel } = useMainStore.getState().actions;
 
   // 18+(42+12)*15-12
   // 816px
   return (
     <div
-      className={`${nopixelShown ? "" : "invisible absolute"} no-scrollbar flex h-[100vh] w-full flex-col items-start gap-3 overflow-y-auto py-[9px]`}
+      className={`${nopixelShown ? "" : "invisible absolute"} flex h-[100vh] w-full flex-col items-start gap-0 py-[9px]`}
     >
       <NopixelBarButton alt="Update streams" onClick={toggleNopixel} />
-      {streams?.map((stream) => (
-        <StreamIcon
-          key={stream.channelName}
-          channel={stream.channelName}
-          imageUrl={stream.profileUrl}
-          viewers={stream.viewers}
-          rpServer={stream.rpServer}
-          char={stream.tagText}
-          color={useColorsDark?.[stream.faction] ?? "#FFF"}
-          onClick={() => {
-            addStream(stream.channelName);
-          }}
-        />
-      ))}
+      <div className="no-scrollbar flex flex-col items-start gap-3 overflow-y-auto pt-3">
+        {streams?.map((stream) => (
+          <StreamIcon
+            key={stream.channelName}
+            channel={stream.channelName}
+            imageUrl={stream.profileUrl}
+            viewers={stream.viewers}
+            char={stream.tagText
+              .replace(/^\? *| *\?$/g, "")
+              .replace("Peacekeeper", "Deputy")}
+            color={useColorsDark?.[stream.faction] ?? "#FFF"}
+            onClick={() => {
+              addStream(stream.channelName);
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

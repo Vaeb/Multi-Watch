@@ -11,7 +11,7 @@ const selector3 = (state: MainState) => state.viewMode;
 
 interface LeftBarButtonProps {
   imageUrl?: string;
-  alt?: string;
+  message: string;
   onClick: (...args: any[]) => any;
   style?: any;
   children?: React.ReactElement;
@@ -19,7 +19,7 @@ interface LeftBarButtonProps {
 
 const LeftBarButton = ({
   imageUrl,
-  alt,
+  message,
   onClick,
   children,
   style,
@@ -27,18 +27,21 @@ const LeftBarButton = ({
   return (
     <div className="flex h-[60px] items-center justify-center">
       <button
-        className="h-[42px] opacity-50 hover:opacity-100"
+        className="group flex h-[42px] items-center gap-3 whitespace-nowrap"
         onClick={onClick}
       >
-        {children ?? (
-          <Image
-            style={style}
-            src={imageUrl!}
-            width={42}
-            height={42}
-            alt={alt!}
-          />
-        )}
+        <div className="w-[42px] opacity-50 group-hover:opacity-100">
+          {children ?? (
+            <Image
+              style={style}
+              src={imageUrl!}
+              width={42}
+              height={42}
+              alt={message}
+            />
+          )}
+        </div>
+        <p>{message}</p>
       </button>
     </div>
   );
@@ -66,22 +69,22 @@ export function MainBar() {
     >
       <LeftBarButton
         imageUrl="/Edit_Profile.svg"
-        alt="Update streams"
+        message="Update streams"
         onClick={toggleUpdateShown}
       />
       <LeftBarButton
         imageUrl="/np3.png"
-        alt="Live NoPixel streams"
+        message="View NoPixel streams"
         onClick={toggleNopixelCb}
       />
       <LeftBarButton
         imageUrl={viewMode === "focused" ? "/squares2.png" : "/rectangle1.png"}
-        alt="Switch to grid"
+        message={viewMode === "focused" ? "Switch to grid" : "Switch to focus"}
         onClick={toggleViewMode}
       />
       <LeftBarButton
         imageUrl="/cycle2.svg"
-        alt="Rotate streams"
+        message="Rotate streams"
         onClick={cycleStreams}
       />
     </div>
