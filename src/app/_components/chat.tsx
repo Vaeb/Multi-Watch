@@ -16,7 +16,8 @@ export function ChatContainer({ children }: { children?: React.ReactNode }) {
         {children}
         <div className="absolute h-[48px] w-full bg-[#18181b] p-4 text-sm font-bold">
           <p>
-            Tip: Hover at the top of a stream to view chat and audio controls.
+            Multi.vaeb.io tip: Hover at the top of a stream to view chat and
+            audio controls.
           </p>
         </div>
       </div>
