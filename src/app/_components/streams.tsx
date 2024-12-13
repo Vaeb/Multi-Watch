@@ -12,10 +12,11 @@ const selector = (state: MainState) => ({
   streams: state.streams,
   streamPositions: state.streamPositions,
   viewMode: state.viewMode,
+  chatShown: state.chatShown,
 });
 
 function StreamsComponent() {
-  const { streams, streamPositions, viewMode } = useMainStore(
+  const { streams, streamPositions, viewMode, chatShown } = useMainStore(
     useShallow(selector),
   );
   console.log("[Streams] Re-rendered");
@@ -38,18 +39,20 @@ function StreamsComponent() {
           );
         })}
       </div>
-      <ChatContainer>
-        {streams.map((stream) => {
-          return (
-            <ChatWrapper
-              key={`chat-${stream.value}-${stream.type}`}
-              channel={stream.value}
-            >
-              <Chat type={stream.type} channel={stream.value} />
-            </ChatWrapper>
-          );
-        })}
-      </ChatContainer>
+      {chatShown ? (
+        <ChatContainer>
+          {streams.map((stream) => {
+            return (
+              <ChatWrapper
+                key={`chat-${stream.value}-${stream.type}`}
+                channel={stream.value}
+              >
+                <Chat type={stream.type} channel={stream.value} />
+              </ChatWrapper>
+            );
+          })}
+        </ChatContainer>
+      ) : null}
     </div>
   );
 }

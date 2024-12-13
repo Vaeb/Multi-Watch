@@ -8,6 +8,7 @@ import { useCallback } from "react";
 const selector = (state: MainState) => state.actions;
 const selector2 = (state: MainState) => state.nopixelShown;
 const selector3 = (state: MainState) => state.viewMode;
+const selector4 = (state: MainState) => state.chatShown;
 
 interface LeftBarButtonProps {
   imageUrl?: string;
@@ -54,9 +55,11 @@ export function MainBar() {
     toggleViewMode,
     toggleNopixel,
     setUpdateShown,
+    toggleChat,
   } = useMainStore(selector);
   const nopixelShown = useMainStore(selector2);
   const viewMode = useMainStore(selector3);
+  const chatShown = useMainStore(selector4);
 
   const toggleNopixelCb = useCallback(() => {
     toggleNopixel();
@@ -86,6 +89,11 @@ export function MainBar() {
         imageUrl="/cycle2.svg"
         message="Rotate streams"
         onClick={cycleStreams}
+      />
+      <LeftBarButton
+        imageUrl="/chat3.png"
+        message={chatShown ? "Hide chat" : "Show chat"}
+        onClick={toggleChat}
       />
     </div>
   );

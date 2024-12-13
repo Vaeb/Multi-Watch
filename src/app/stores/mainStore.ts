@@ -21,6 +21,7 @@ export interface MainState {
 
   updateShown: boolean;
   nopixelShown: boolean;
+  chatShown: boolean;
 
   actions: {
     setStreams: (streams: Stream[]) => void;
@@ -36,6 +37,7 @@ export interface MainState {
     setUpdateShown: (updateShown: boolean) => void;
     toggleUpdateShown: () => void;
     toggleNopixel: () => void;
+    toggleChat: () => void;
   };
 }
 
@@ -54,6 +56,7 @@ export const useMainStore = create<MainState>()(
 
       updateShown: false,
       nopixelShown: false,
+      chatShown: true,
 
       actions: {
         setStreams: (streams) => {
@@ -135,6 +138,8 @@ export const useMainStore = create<MainState>()(
 
         toggleNopixel: () =>
           set((state) => ({ nopixelShown: !state.nopixelShown })),
+
+        toggleChat: () => set((state) => ({ chatShown: !state.chatShown })),
       },
     })),
   ),
