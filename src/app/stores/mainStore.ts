@@ -128,7 +128,12 @@ export const useMainStore = create<MainState>()(
 
         toggleViewMode: () =>
           set(({ viewMode }) => ({
-            viewMode: viewMode === "focused" ? "grid" : "focused",
+            viewMode:
+              viewMode === "focused"
+                ? "grid"
+                : viewMode === "grid"
+                  ? "grid-h"
+                  : "focused",
           })),
 
         setUpdateShown: (updateShown) => set({ updateShown }),

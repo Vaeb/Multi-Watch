@@ -89,12 +89,19 @@ const getDimensions = (
     const top = 100 * rowIndex;
     const left = 100 * colIndex;
 
-    return {
-      top: `${top}%`,
-      left: `${left}%`,
-      height: `${height}%`,
-      width: `${width}%`,
-    };
+    return viewMode === "grid"
+      ? {
+          top: `${top}%`,
+          left: `${left}%`,
+          height: `${height}%`,
+          width: `${width}%`,
+        }
+      : {
+          left: `${top}%`,
+          top: `${left}%`,
+          width: `${height}%`,
+          height: `${width}%`,
+        };
 
     /*
     For every Nth UI element added to the grid:

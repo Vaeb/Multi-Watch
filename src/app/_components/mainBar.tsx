@@ -4,6 +4,7 @@ import Image from "next/image";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { NopixelBar } from "./nopixelBar";
 import { useCallback } from "react";
+import { ViewMode } from "../stores/storeTypes";
 
 const selector = (state: MainState) => state.actions;
 const selector2 = (state: MainState) => state.nopixelShown;
@@ -48,6 +49,18 @@ const LeftBarButton = ({
   );
 };
 
+const nextViewImage = {
+  focused: "/rectangle1.png",
+  grid: "/squares2.png",
+  "grid-h": "/squaresH.png",
+};
+
+const nextViewText: Record<ViewMode, string> = {
+  focused: "Switch to focus",
+  grid: "Switch to grid",
+  "grid-h": "Switch to horizontal grid",
+};
+
 export function MainBar() {
   const {
     toggleUpdateShown,
@@ -66,6 +79,13 @@ export function MainBar() {
     setUpdateShown(false);
   }, [toggleNopixel, setUpdateShown]);
 
+  const nextViewMode: ViewMode =
+    viewMode === "focused"
+      ? "grid"
+      : viewMode === "grid"
+        ? "grid-h"
+        : "focused";
+
   return (
     <div
       className={`flex w-full flex-col items-start gap-[6px] ${nopixelShown ? "invisible absolute" : ""}`}
@@ -81,8 +101,8 @@ export function MainBar() {
         onClick={toggleNopixelCb}
       />
       <LeftBarButton
-        imageUrl={viewMode === "focused" ? "/squares2.png" : "/rectangle1.png"}
-        message={viewMode === "focused" ? "Switch to grid" : "Switch to focus"}
+        imageUrl={nextViewImage[nextViewMode]}
+        message={nextViewText[nextViewMode]}
         onClick={toggleViewMode}
       />
       <LeftBarButton
