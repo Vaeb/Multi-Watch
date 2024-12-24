@@ -165,7 +165,7 @@ function UpdateModal() {
         ))}
         <div className="flex gap-2">
           <ModalButton text="Cancel" onClick={cancelClick} />
-          <ModalButton text="Clear" onClick={clearClick} />
+          {/* <ModalButton text="Clear" onClick={clearClick} /> */}
           <ModalButton text="Update" onClick={submitClick} />
         </div>
       </div>
