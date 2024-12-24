@@ -7,6 +7,7 @@ import { LeftBar } from "../_components/leftBar";
 import { MainBar } from "../_components/mainBar";
 import { NopixelBarWrapper } from "../_components/nopixelBarWrapper";
 import { SettingsModalWrapper } from "../_components/settingsModal";
+import { log } from "../utils/log";
 
 export default async function Page({ params }: PageParams) {
   // const { slug } = await params;
@@ -21,7 +22,11 @@ export default async function Page({ params }: PageParams) {
   );
   const chatrooms = JSON.parse(chatroomsJson);
 
-  console.log("[Page] Re-rendered", chatrooms);
+  params
+    .then(({ slug }) => {
+      log("[Page] Re-rendered", slug?.join(", "));
+    })
+    .catch(console.error);
 
   return (
     <>

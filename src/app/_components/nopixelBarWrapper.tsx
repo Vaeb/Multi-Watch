@@ -14,7 +14,7 @@ export interface RemoteLive {
 const getData = async () => {
   const dataRaw = await fetch("http://localhost:3029/live");
   const data = await dataRaw.json();
-  console.log("[getData]", Object.keys(data));
+  // console.log("[getData]", Object.keys(data));
   return data as RemoteLive;
 };
 
