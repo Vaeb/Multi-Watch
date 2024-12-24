@@ -152,7 +152,7 @@ function NopixelBarComponent({
       <NopixelBarButton alt="Update streams" onClick={toggleNopixel} />
       <div className="no-scrollbar flex flex-col items-start gap-3 overflow-y-auto pt-3">
         <NopixelBarText
-          message={`${streams?.length ?? 0} streams live`}
+          message={`⦿ ${streams?.length ?? 0} streams live`}
           shortMessage={`⦿ ${streams?.length ?? 0}`}
           shortWrap={false}
         />
