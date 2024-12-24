@@ -64,11 +64,21 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   const streamAutoplay =
     autoplay === "all" || (autoplay === "one" && !!recent) || seed > -1;
 
+  const streamMuted = autoplay === "all" ? !recent : false;
+
   useEffect(() => {
     console.log("[Player] Mounted:", channel);
   }, []);
 
-  console.log("[Player] Re-rendered:", channel, type, recent, focus);
+  console.log(
+    "[Player] Re-rendered:",
+    channel,
+    type,
+    recent,
+    focus,
+    streamAutoplay,
+    streamMuted,
+  );
 
   const handleReady = useStableCallback((player: TwitchPlayerInstance) => {
     const oldSetChannel = player.setChannel;
@@ -105,7 +115,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       width="100%"
       channel={channel}
       autoplay={streamAutoplay}
-      muted={false}
+      muted={streamMuted}
       onReady={handleReady}
     />
   ) : (
@@ -113,7 +123,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       <iframe
         ref={ref}
         className="aspect-video h-full max-h-full max-w-full border-none"
-        src={`${getSrc(type, channel, false)}&autoplay=${streamAutoplay ? "true" : "false"}`}
+        src={`${getSrc(type, channel, streamMuted)}&autoplay=${streamAutoplay ? "true" : "false"}`}
         allowFullScreen={true}
         scrolling="no"
         frameBorder="0"
