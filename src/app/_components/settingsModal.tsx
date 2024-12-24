@@ -30,15 +30,16 @@ const selectorMain = (state: MainState) => ({
 const selectorPersist = (state: PersistState) => ({
   autoplay: state.autoplay,
   gridMode: state.gridMode,
+  focusHeight: state.focusHeight,
   actions: state.actions,
 });
 const selectorWrapper = (state: MainState) => state.settingsShown;
 
 interface SettingsOptionProps {
   setting: string;
-  values: string[];
+  values: (string | number)[];
   mapper?: string[];
-  current: string;
+  current: string | number;
   cb?: (value: any) => void;
 }
 
@@ -85,7 +86,8 @@ function SettingsModal() {
   const {
     autoplay,
     gridMode,
-    actions: { resetDefaults, setGridMode, setAutoplay },
+    focusHeight,
+    actions: { resetDefaults, setGridMode, setAutoplay, setFocusHeight },
   } = usePersistStore(useShallow(selectorPersist));
 
   const [seed, setSeed] = useState(-1);
@@ -117,6 +119,13 @@ function SettingsModal() {
           mapper={["Vertical", "Horizontal"]}
           current={gridMode}
           cb={setGridMode}
+        />
+        <SettingsOption
+          setting="Focused player size"
+          values={new Array(90 - 10 + 1).fill(0).map((val, i) => 10 + i)}
+          // mapper={["Vertical", "Horizontal"]}
+          current={focusHeight}
+          cb={setFocusHeight}
         />
         <div className="flex gap-2">
           <ModalButton text="Use defaults" onClick={resetDefaultsCb} />

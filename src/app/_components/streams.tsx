@@ -19,13 +19,16 @@ const selector = (state: MainState) => ({
 
 const selectorPersist = (state: PersistState) => ({
   gridMode: state.gridMode,
+  focusHeight: state.focusHeight,
 });
 
 function StreamsComponent() {
   const { streams, streamPositions, viewMode, chatShown } = useMainStore(
     useShallow(selector),
   );
-  const { gridMode } = usePersistStore(useShallow(selectorPersist));
+  const { gridMode, focusHeight } = usePersistStore(
+    useShallow(selectorPersist),
+  );
   log("[Page Streams] Re-rendered");
 
   return (
@@ -41,6 +44,7 @@ function StreamsComponent() {
               pos={streamPositions[stream.value]!}
               viewMode={viewMode}
               gridMode={gridMode}
+              focusHeight={focusHeight}
             >
               <Player type={stream.type} channel={stream.value} />
             </PlayerWrapper>

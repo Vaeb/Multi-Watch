@@ -15,11 +15,12 @@ const getDimensions = (
   total: number,
   viewMode: ViewMode,
   gridMode: GridMode,
+  focusHeight: number,
 ): Dimensions => {
   const isFocused = viewMode === "focused";
 
   if (isFocused || total <= 1) {
-    let height = "63%";
+    let height = `${focusHeight}%`;
     let width = "100%";
     let top = "0vh";
     let left = "0%";
@@ -30,8 +31,8 @@ const getDimensions = (
       top = "0vh";
       left = "0%";
     } else if (pos > 0) {
-      height = "37%";
-      top = "63vh";
+      height = `${100 - focusHeight}%`;
+      top = `${focusHeight}vh`;
       width = `${(1 / (total - 1)) * 100}%`;
       left = `${100 * (pos - 1)}%`;
     }
@@ -171,6 +172,7 @@ interface PlayerWrapperProps {
   pos: number;
   viewMode: ViewMode;
   gridMode: GridMode;
+  focusHeight: number;
 }
 
 function PlayerWrapperComponent({
@@ -181,12 +183,14 @@ function PlayerWrapperComponent({
   pos,
   viewMode,
   gridMode,
+  focusHeight,
 }: PlayerWrapperProps) {
   const { height, width, top, left } = getDimensions(
     pos,
     total,
     viewMode,
     gridMode,
+    focusHeight,
   );
 
   console.log(
