@@ -168,7 +168,8 @@ function NopixelBarComponent({
             imageUrl={stream.profileUrl}
             viewers={stream.viewers}
             char={stream.tagText
-              .replace(/^\? *| *\?$|[《》]/g, "")
+              .replace(/^\? *| *\?$|[《]/g, "")
+              .replace("》", " ")
               .replace("〈", "《")
               .replace("〉", "》")
               .replace("Peacekeeper", "Deputy")
