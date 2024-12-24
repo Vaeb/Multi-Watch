@@ -121,7 +121,7 @@ function SettingsModal() {
           cb={setGridMode}
         />
         <SettingsOption
-          setting="Focused player size"
+          setting="Focused stream size"
           values={new Array(90 - 10 + 1).fill(0).map((val, i) => 10 + i)}
           // mapper={["Vertical", "Horizontal"]}
           current={focusHeight}
