@@ -8,3 +8,5 @@ export interface Stream {
 export type ViewMode = "focused" | "grid";
 
 export type GridMode = "normal" | "horiz";
+
+export type Autoplay = "all" | "none" | "one";

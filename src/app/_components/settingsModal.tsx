@@ -4,7 +4,7 @@ import { useShallow } from "zustand/shallow";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { useState } from "react";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
-import { type GridMode } from "../stores/storeTypes";
+import { Autoplay, type GridMode } from "../stores/storeTypes";
 
 interface ModalButtonProps {
   text: string;
@@ -26,6 +26,7 @@ const selectorMain = (state: MainState) => ({
   actions: state.actions,
 });
 const selectorPersist = (state: PersistState) => ({
+  autoplay: state.autoplay,
   gridMode: state.gridMode,
   actions: state.actions,
 });
@@ -80,8 +81,9 @@ function SettingsModal() {
   } = useMainStore(useShallow(selectorMain));
 
   const {
+    autoplay,
     gridMode,
-    actions: { resetDefaults, setGridMode },
+    actions: { resetDefaults, setGridMode, setAutoplay },
   } = usePersistStore(useShallow(selectorPersist));
 
   const [seed, setSeed] = useState(-1);
@@ -97,11 +99,13 @@ function SettingsModal() {
         key={`settings-${seed}`}
         className="flex w-[320px] max-w-[80%] flex-col gap-2 rounded-sm bg-slate-200 p-2 text-black opacity-100"
       >
-        {/* <SettingsOption
+        <SettingsOption
           setting="Autoplay"
-          values={["All", "None", "One"]}
-          current="All"
-        /> */}
+          values={["all", "none", "one"] as Autoplay[]}
+          mapper={["All", "None", "One"]}
+          current={autoplay}
+          cb={setAutoplay}
+        />
         <SettingsOption
           setting="Grid mode"
           values={["normal", "horiz"] as GridMode[]}

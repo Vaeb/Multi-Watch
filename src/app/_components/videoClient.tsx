@@ -12,6 +12,7 @@ import { useStableCallback } from "../hooks/useStableCallback";
 import { useMainStore } from "../stores/mainStore";
 import { TwitchPlayer, type TwitchPlayerInstance } from "react-twitch-embed";
 import { checkShowChat } from "../utils/checkShowChat";
+import { usePersistStore } from "../stores/persistStore";
 
 type Platform = "twitch" | "kick";
 
@@ -56,8 +57,12 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
 
   // Intentionally non-reactive
   const { streamPositions } = useMainStore.getState();
+  const { autoplay } = usePersistStore.getState();
   const focus = streamPositions[channel] === 0;
   const recent = focus || checkShowChat(channel);
+
+  const streamAutoplay =
+    autoplay === "all" || (autoplay === "one" && !!recent) || seed > -1;
 
   useEffect(() => {
     console.log("[Player] Mounted:", channel);
@@ -99,7 +104,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       height="100%"
       width="100%"
       channel={channel}
-      autoplay={seed > -1 || !!recent}
+      autoplay={streamAutoplay}
       muted={false}
       onReady={handleReady}
     />
@@ -108,7 +113,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       <iframe
         ref={ref}
         className="aspect-video h-full max-h-full max-w-full border-none"
-        src={`${getSrc(type, channel, false)}&autoplay=${recent ? "true" : "false"}`}
+        src={`${getSrc(type, channel, false)}&autoplay=${streamAutoplay ? "true" : "false"}`}
         allowFullScreen={true}
         scrolling="no"
         frameBorder="0"
