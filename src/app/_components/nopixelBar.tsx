@@ -168,8 +168,11 @@ function NopixelBarComponent({
             imageUrl={stream.profileUrl}
             viewers={stream.viewers}
             char={stream.tagText
-              .replace(/^\? *| *\?$/g, "")
-              .replace("Peacekeeper", "Deputy")}
+              .replace(/^\? *| *\?$|[《》]/g, "")
+              .replace("〈", "《")
+              .replace("〉", "》")
+              .replace("Peacekeeper", "Deputy")
+              .trim()}
             color={useColorsDark?.[stream.faction] ?? "#FFF"}
             onClick={() => {
               addStream(stream.channelName);
