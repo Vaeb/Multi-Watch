@@ -5,6 +5,8 @@ import { type MainState, useMainStore } from "../stores/mainStore";
 import { useState } from "react";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
 import { Autoplay, type GridMode } from "../stores/storeTypes";
+import { useStableCallback } from "../hooks/useStableCallback";
+import { noprop } from "../utils/noprop";
 
 interface ModalButtonProps {
   text: string;
@@ -94,7 +96,10 @@ function SettingsModal() {
   };
 
   return (
-    <div className="border-1 absolute z-10 ml-[64px] mt-[10px]">
+    <div
+      className="border-1 absolute z-10 ml-[64px] mt-[10px]"
+      onClick={noprop}
+    >
       <div
         key={`settings-${seed}`}
         className="flex w-[320px] max-w-[80%] flex-col gap-2 rounded-sm bg-slate-200 p-2 text-black opacity-100"
@@ -125,5 +130,13 @@ function SettingsModal() {
 export function SettingsModalWrapper() {
   const settingsShown = useMainStore(selectorWrapper);
 
-  return settingsShown ? <SettingsModal /> : null;
+  const closeModal = useStableCallback(() => {
+    useMainStore.getState().actions.setSettingsShown(false);
+  });
+
+  return settingsShown ? (
+    <div className="absolute z-10 h-full w-full" onClick={closeModal}>
+      <SettingsModal />
+    </div>
+  ) : null;
 }

@@ -14,6 +14,8 @@ import { type Platform } from "~/types";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { streamsToPath } from "../utils/streamsToPath";
 import { orderStreams } from "../utils/orderStreams";
+import { useStableCallback } from "../hooks/useStableCallback";
+import { noprop } from "../utils/noprop";
 
 interface ModalButtonProps {
   text: string;
@@ -125,7 +127,10 @@ function UpdateModal() {
   ]);
 
   return (
-    <div className="border-1 absolute z-10 ml-[64px] mt-[10px]">
+    <div
+      className="border-1 absolute z-10 ml-[64px] mt-[10px]"
+      onClick={noprop}
+    >
       <div className="flex w-[500px] max-w-[80%] flex-col gap-2 rounded-sm bg-slate-200 p-2 text-black opacity-100">
         {inputBoxData.map((inputStream, i) => (
           <div className="flex" key={inputStream.key}>
@@ -189,5 +194,13 @@ export function UpdateModalWrapper({ isLanding }: { isLanding: boolean }) {
     hasRenderedRef.current = true;
   }, []);
 
-  return updateShown ? <UpdateModal /> : null;
+  const closeModal = useStableCallback(() => {
+    useMainStore.getState().actions.setUpdateShown(false);
+  });
+
+  return updateShown ? (
+    <div className="absolute z-10 h-full w-full" onClick={closeModal}>
+      <UpdateModal />
+    </div>
+  ) : null;
 }

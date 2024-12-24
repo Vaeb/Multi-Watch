@@ -37,6 +37,7 @@ export interface MainState {
 
     setUpdateShown: (updateShown: boolean) => void;
     toggleUpdateShown: () => void;
+    setSettingsShown: (shown: boolean) => void;
     toggleSettingsShown: () => void;
     toggleNopixel: () => void;
     setChat: (chatShown: boolean) => void;
@@ -139,6 +140,8 @@ export const useMainStore = create<MainState>()(
 
         toggleUpdateShown: () =>
           set((state) => ({ updateShown: !state.updateShown })),
+
+        setSettingsShown: (settingsShown) => set({ settingsShown }),
 
         toggleSettingsShown: () =>
           set((state) => ({ settingsShown: !state.settingsShown })),
