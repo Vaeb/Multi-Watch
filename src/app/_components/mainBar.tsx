@@ -114,7 +114,7 @@ export function MainBar() {
       />
       <LeftBarButton
         imageUrl="/np3.png"
-        message="View NoPixel streams"
+        message="Add NoPixel streams"
         onClick={toggleNopixelCb}
       />
       <LeftBarButton
