@@ -8,6 +8,7 @@ import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chatWrapper";
 import { PlayerWrapper } from "./playerWrapper";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
+import { log } from "../utils/log";
 
 const selector = (state: MainState) => ({
   streams: state.streams,
@@ -25,7 +26,7 @@ function StreamsComponent() {
     useShallow(selector),
   );
   const { gridMode } = usePersistStore(useShallow(selectorPersist));
-  console.log("[Streams] Re-rendered");
+  log("[Streams] Re-rendered");
 
   return (
     <div className="flex flex-1">
