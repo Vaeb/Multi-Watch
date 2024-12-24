@@ -21,10 +21,10 @@ export const usePersistStore = create<PersistState>()(
     persist(
       log<PersistState>((set) => ({
         gridMode: "normal",
-        autoplay: "one",
+        autoplay: "all",
 
         actions: {
-          resetDefaults: () => set({ gridMode: "normal" }),
+          resetDefaults: () => set({ gridMode: "normal", autoplay: "all" }),
 
           setGridMode: (gridMode) => set({ gridMode }),
           setAutoplay: (autoplay) => set({ autoplay }),
