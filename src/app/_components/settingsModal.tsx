@@ -64,7 +64,7 @@ const SettingsOption = ({
           }}
         >
           {values.map((value, i) => (
-            <option key={value} value={value}>
+            <option key={`${setting}-${value}`} value={value}>
               {mapper ? mapper[i] : value}
             </option>
           ))}
@@ -84,9 +84,19 @@ function SettingsModal() {
     actions: { resetDefaults, setGridMode },
   } = usePersistStore(useShallow(selectorPersist));
 
+  const [seed, setSeed] = useState(-1);
+
+  const resetDefaultsCb = () => {
+    resetDefaults();
+    setSeed(Math.random());
+  };
+
   return (
     <div className="border-1 absolute z-10 ml-[64px] mt-[10px]">
-      <div className="flex w-[320px] max-w-[80%] flex-col gap-2 rounded-sm bg-slate-200 p-2 text-black opacity-100">
+      <div
+        key={`settings-${seed}`}
+        className="flex w-[320px] max-w-[80%] flex-col gap-2 rounded-sm bg-slate-200 p-2 text-black opacity-100"
+      >
         {/* <SettingsOption
           setting="Autoplay"
           values={["All", "None", "One"]}
@@ -100,7 +110,7 @@ function SettingsModal() {
           cb={setGridMode}
         />
         <div className="flex gap-2">
-          <ModalButton text="Use defaults" onClick={resetDefaults} />
+          <ModalButton text="Use defaults" onClick={resetDefaultsCb} />
           <ModalButton text="Close" onClick={toggleSettingsShown} />
         </div>
       </div>
