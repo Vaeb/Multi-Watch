@@ -7,6 +7,7 @@ import { Chat, ChatContainer } from "./chat";
 import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chatWrapper";
 import { PlayerWrapper } from "./playerWrapper";
+import { type PersistState, usePersistStore } from "../stores/persistStore";
 
 const selector = (state: MainState) => ({
   streams: state.streams,
@@ -15,10 +16,15 @@ const selector = (state: MainState) => ({
   chatShown: state.chatShown,
 });
 
+const selectorPersist = (state: PersistState) => ({
+  gridMode: state.gridMode,
+});
+
 function StreamsComponent() {
   const { streams, streamPositions, viewMode, chatShown } = useMainStore(
     useShallow(selector),
   );
+  const { gridMode } = usePersistStore(useShallow(selectorPersist));
   console.log("[Streams] Re-rendered");
 
   return (
@@ -33,26 +39,25 @@ function StreamsComponent() {
               total={streams.length}
               pos={streamPositions[stream.value]!}
               viewMode={viewMode}
+              gridMode={gridMode}
             >
               <Player type={stream.type} channel={stream.value} />
             </PlayerWrapper>
           );
         })}
       </div>
-      {chatShown ? (
-        <ChatContainer>
-          {streams.map((stream) => {
-            return (
-              <ChatWrapper
-                key={`chat-${stream.value}-${stream.type}`}
-                channel={stream.value}
-              >
-                <Chat type={stream.type} channel={stream.value} />
-              </ChatWrapper>
-            );
-          })}
-        </ChatContainer>
-      ) : null}
+      <ChatContainer show={chatShown}>
+        {streams.map((stream) => {
+          return (
+            <ChatWrapper
+              key={`chat-${stream.value}-${stream.type}`}
+              channel={stream.value}
+            >
+              <Chat type={stream.type} channel={stream.value} />
+            </ChatWrapper>
+          );
+        })}
+      </ChatContainer>
     </div>
   );
 }

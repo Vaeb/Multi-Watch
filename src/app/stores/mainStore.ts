@@ -20,6 +20,7 @@ export interface MainState {
   viewMode: ViewMode;
 
   updateShown: boolean;
+  settingsShown: boolean;
   nopixelShown: boolean;
   chatShown: boolean;
 
@@ -36,7 +37,9 @@ export interface MainState {
 
     setUpdateShown: (updateShown: boolean) => void;
     toggleUpdateShown: () => void;
+    toggleSettingsShown: () => void;
     toggleNopixel: () => void;
+    setChat: (chatShown: boolean) => void;
     toggleChat: () => void;
   };
 }
@@ -55,6 +58,7 @@ export const useMainStore = create<MainState>()(
       viewMode: "focused",
 
       updateShown: false,
+      settingsShown: false,
       nopixelShown: false,
       chatShown: true,
 
@@ -128,12 +132,7 @@ export const useMainStore = create<MainState>()(
 
         toggleViewMode: () =>
           set(({ viewMode }) => ({
-            viewMode:
-              viewMode === "focused"
-                ? "grid"
-                : viewMode === "grid"
-                  ? "grid-h"
-                  : "focused",
+            viewMode: viewMode === "focused" ? "grid" : "focused",
           })),
 
         setUpdateShown: (updateShown) => set({ updateShown }),
@@ -141,8 +140,13 @@ export const useMainStore = create<MainState>()(
         toggleUpdateShown: () =>
           set((state) => ({ updateShown: !state.updateShown })),
 
+        toggleSettingsShown: () =>
+          set((state) => ({ settingsShown: !state.settingsShown })),
+
         toggleNopixel: () =>
           set((state) => ({ nopixelShown: !state.nopixelShown })),
+
+        setChat: (chatShown) => set({ chatShown }),
 
         toggleChat: () => set((state) => ({ chatShown: !state.chatShown })),
       },

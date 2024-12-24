@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { PlayerOverlay } from "./playerOverlay";
-import { type ViewMode } from "../stores/storeTypes";
-import { Platform } from "~/types";
+import { type GridMode, type ViewMode } from "../stores/storeTypes";
+import { type Platform } from "~/types";
 
 interface Dimensions {
   height: string;
@@ -14,6 +14,7 @@ const getDimensions = (
   pos: number,
   total: number,
   viewMode: ViewMode,
+  gridMode: GridMode,
 ): Dimensions => {
   const isFocused = viewMode === "focused";
 
@@ -89,7 +90,7 @@ const getDimensions = (
     const top = 100 * rowIndex;
     const left = 100 * colIndex;
 
-    return viewMode === "grid"
+    return gridMode === "normal"
       ? {
           top: `${top}%`,
           left: `${left}%`,
@@ -169,6 +170,7 @@ interface PlayerWrapperProps {
   total: number;
   pos: number;
   viewMode: ViewMode;
+  gridMode: GridMode;
 }
 
 function PlayerWrapperComponent({
@@ -178,8 +180,14 @@ function PlayerWrapperComponent({
   total,
   pos,
   viewMode,
+  gridMode,
 }: PlayerWrapperProps) {
-  const { height, width, top, left } = getDimensions(pos, total, viewMode);
+  const { height, width, top, left } = getDimensions(
+    pos,
+    total,
+    viewMode,
+    gridMode,
+  );
 
   console.log(
     `[PlayerWrapper] Re-rendered ${channel}:`,

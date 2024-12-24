@@ -51,6 +51,8 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
 
   const [id] = useState(getId);
   const playerRef = useRef<TwitchPlayerInstance | null>(null);
+  const ref = useRef<HTMLIFrameElement | null>(null);
+  const [seed, setSeed] = useState(-1);
 
   // Intentionally non-reactive
   const { streamPositions } = useMainStore.getState();
@@ -64,26 +66,47 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   console.log("[Player] Re-rendered:", channel, type, recent, focus);
 
   const handleReady = useStableCallback((player: TwitchPlayerInstance) => {
+    const oldSetChannel = player.setChannel;
+    player.setChannel = (newChannel) => {
+      if (newChannel !== channel) {
+        oldSetChannel.call(player, newChannel);
+      } else {
+        setSeed(Math.random());
+      }
+    };
     playerRef.current = player;
     player.setVolume(0.75);
     console.log("[Player] Creating twitch player:", channel, player);
     useMainStore.getState().actions.setStreamPlayer(channel, player);
   });
 
+  useEffect(() => {
+    if (type === "kick") {
+      useMainStore.getState().actions.setStreamPlayer(channel, {
+        setChannel(_c) {
+          if (!ref.current) return;
+          ref.current.src = `${getSrc(type, channel, false)}&autoplay=true`;
+        },
+      } as TwitchPlayerInstance);
+    }
+  }, [type, channel]);
+
   return type === "twitch" ? (
     <TwitchPlayer
+      key={`${id}_${seed}`}
       className="border-none"
       id={id}
       height="100%"
       width="100%"
       channel={channel}
-      autoplay={!!recent}
+      autoplay={seed > -1 || !!recent}
       muted={false}
       onReady={handleReady}
     />
   ) : (
     <div className="flex h-full w-full justify-center">
       <iframe
+        ref={ref}
         className="aspect-video h-full max-h-full max-w-full border-none"
         src={`${getSrc(type, channel, false)}&autoplay=${recent ? "true" : "false"}`}
         allowFullScreen={true}

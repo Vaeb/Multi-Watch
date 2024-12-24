@@ -6,6 +6,7 @@ import { UpdateModalServerWrapper } from "../_components/updateModalServerWrappe
 import { LeftBar } from "../_components/leftBar";
 import { MainBar } from "../_components/mainBar";
 import { NopixelBarWrapper } from "../_components/nopixelBarWrapper";
+import { SettingsModalWrapper } from "../_components/settingsModal";
 
 export default async function Page({ params }: PageParams) {
   // const { slug } = await params;
@@ -31,6 +32,7 @@ export default async function Page({ params }: PageParams) {
           <MainBar />
         </LeftBar>
         <UpdateModalServerWrapper params={params} />
+        <SettingsModalWrapper />
         <Streams />
       </main>
     </>

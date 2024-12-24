@@ -8,9 +8,17 @@ export interface ChatProps {
   channel: string;
 }
 
-export function ChatContainer({ children }: { children?: React.ReactNode }) {
+export function ChatContainer({
+  show,
+  children,
+}: {
+  show: boolean;
+  children?: React.ReactNode;
+}) {
   return (
-    <div className="flex h-full w-[470px] max-w-[25%] flex-col">
+    <div
+      className={`flex h-full w-[470px] max-w-[25%] flex-col ${show ? "" : "hidden"}`}
+    >
       <ChatTitle />
       <div className={`relative flex-1`}>
         {children}

@@ -31,7 +31,12 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
 
   const chatClick = useCallback(() => {
     useMainStore.getState().actions.setSelectedChat(channel);
+    useMainStore.getState().actions.setChat(true);
     useKickStore.getState().chatMethods[channel]?.scrollToBottom();
+  }, [channel]);
+
+  const reloadStream = useCallback(() => {
+    useMainStore.getState().streamPlayer[channel]?.setChannel(channel);
   }, [channel]);
 
   const closeStream = useCallback(() => {
@@ -39,14 +44,25 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   }, [channel, type]);
 
   return (
-    <div className="group absolute flex h-[110px] w-[50%] items-center justify-center">
+    <div className="group absolute mt-8 flex h-[35%] w-[50%] items-start justify-center">
       <div className="flex items-center justify-center rounded-md bg-black/0 transition duration-100 ease-out group-hover:bg-black/50">
         <div className="flex gap-4 p-4 opacity-0 group-hover:opacity-80">
           <button onClick={chatClick}>
             <WhiteChatIcon size={28} />
           </button>
-          <button onClick={audioClick}>
-            <WhiteSpeakerIcon size={28} />
+          {type === "twitch" ? (
+            <button onClick={audioClick}>
+              <WhiteSpeakerIcon size={28} />
+            </button>
+          ) : null}
+          <button onClick={reloadStream}>
+            <Image
+              src="/refresh2.svg"
+              className=""
+              width={21}
+              height={21}
+              alt="Reload"
+            />
           </button>
           <button onClick={closeStream}>
             <WhiteXIcon size={28} />

@@ -5,4 +5,6 @@ export interface Stream {
   type: Platform;
 }
 
-export type ViewMode = "focused" | "grid" | "grid-h";
+export type ViewMode = "focused" | "grid";
+
+export type GridMode = "normal" | "horiz";

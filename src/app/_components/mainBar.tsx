@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import { type MainState, useMainStore } from "../stores/mainStore";
-import { NopixelBar } from "./nopixelBar";
 import { useCallback } from "react";
-import { ViewMode } from "../stores/storeTypes";
+import { type GridMode } from "../stores/storeTypes";
+import { type PersistState, usePersistStore } from "../stores/persistStore";
 
 const selector = (state: MainState) => state.actions;
 const selector2 = (state: MainState) => state.nopixelShown;
 const selector3 = (state: MainState) => state.viewMode;
+const selectorGrid = (state: PersistState) => state.gridMode;
 const selector4 = (state: MainState) => state.chatShown;
 
 interface LeftBarButtonProps {
@@ -17,6 +18,10 @@ interface LeftBarButtonProps {
   onClick: (...args: any[]) => any;
   style?: any;
   children?: React.ReactElement;
+}
+
+interface LeftBarTextProps {
+  message: string;
 }
 
 const LeftBarButton = ({
@@ -29,16 +34,16 @@ const LeftBarButton = ({
   return (
     <div className="flex h-[60px] items-center justify-center">
       <button
-        className="group flex h-[42px] items-center gap-3 whitespace-nowrap"
+        className="group/btn flex h-[42px] items-center gap-3 whitespace-nowrap"
         onClick={onClick}
       >
-        <div className="w-[42px] opacity-50 group-hover:opacity-100">
+        <div className="w-[42px] opacity-50 group-hover/btn:opacity-100">
           {children ?? (
             <Image
               style={style}
               src={imageUrl!}
-              width={42}
-              height={42}
+              width={40}
+              height={40}
               alt={message}
             />
           )}
@@ -49,21 +54,37 @@ const LeftBarButton = ({
   );
 };
 
-const nextViewImage = {
-  focused: "/rectangle1.png",
-  grid: "/squares2.png",
-  "grid-h": "/squaresH.png",
+const LeftBarText = ({ message }: LeftBarTextProps) => {
+  return (
+    <div className="flex h-[60px] items-center justify-center">
+      <div className="ml-[6px] flex h-[42px] gap-3 text-left text-sm">
+        <p className="absolute whitespace-nowrap opacity-65 group-hover:opacity-0">
+          {message}
+        </p>
+        <p className="absolute break-keep opacity-0 group-hover:opacity-100">
+          {message}
+        </p>
+      </div>
+    </div>
+  );
 };
 
-const nextViewText: Record<ViewMode, string> = {
-  focused: "Switch to focus",
-  grid: "Switch to grid",
-  "grid-h": "Switch to horizontal grid",
+const nextLayoutImage: Record<GridMode | "_", string> = {
+  _: "/rectangle1.png",
+  normal: "/squares2.png",
+  horiz: "/squaresH.png",
+};
+
+const nextLayoutText: Record<GridMode | "_", string> = {
+  _: "Switch to focus",
+  normal: "Switch to grid",
+  horiz: "Switch to grid",
 };
 
 export function MainBar() {
   const {
     toggleUpdateShown,
+    toggleSettingsShown,
     cycleStreams,
     toggleViewMode,
     toggleNopixel,
@@ -72,6 +93,7 @@ export function MainBar() {
   } = useMainStore(selector);
   const nopixelShown = useMainStore(selector2);
   const viewMode = useMainStore(selector3);
+  const gridMode = usePersistStore(selectorGrid);
   const chatShown = useMainStore(selector4);
 
   const toggleNopixelCb = useCallback(() => {
@@ -79,12 +101,7 @@ export function MainBar() {
     setUpdateShown(false);
   }, [toggleNopixel, setUpdateShown]);
 
-  const nextViewMode: ViewMode =
-    viewMode === "focused"
-      ? "grid"
-      : viewMode === "grid"
-        ? "grid-h"
-        : "focused";
+  const nextLayoutMode: GridMode | "_" = viewMode === "grid" ? "_" : gridMode;
 
   return (
     <div
@@ -101,8 +118,8 @@ export function MainBar() {
         onClick={toggleNopixelCb}
       />
       <LeftBarButton
-        imageUrl={nextViewImage[nextViewMode]}
-        message={nextViewText[nextViewMode]}
+        imageUrl={nextLayoutImage[nextLayoutMode]}
+        message={nextLayoutText[nextLayoutMode]}
         onClick={toggleViewMode}
       />
       <LeftBarButton
@@ -114,6 +131,14 @@ export function MainBar() {
         imageUrl="/chat3.png"
         message={chatShown ? "Hide chat" : "Show chat"}
         onClick={toggleChat}
+      />
+      <LeftBarButton
+        imageUrl="/settings.svg"
+        message="Settings"
+        onClick={toggleSettingsShown}
+      />
+      <LeftBarText
+        message={"Tip: Hover at the top of a stream to switch chat."}
       />
     </div>
   );
