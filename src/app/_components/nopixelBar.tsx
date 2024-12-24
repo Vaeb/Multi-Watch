@@ -79,7 +79,7 @@ const StreamIcon = ({
   return (
     <div className="flex h-[60px] items-center justify-center">
       <button
-        className="flex h-[42px] items-center gap-2 opacity-100 hover:opacity-100"
+        className="group/stream flex h-[42px] items-center gap-2 opacity-50 group-hover:opacity-100"
         style={{ color }}
         onClick={onClick}
         aria-label={channel}
@@ -93,9 +93,14 @@ const StreamIcon = ({
           alt={channel}
         />
         <div className="flex flex-col items-start">
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <p>{channel}</p>
-            <p className="text-sm text-red-500">{viewers}</p>
+            <p className="text-xs text-red-500 opacity-70 group-hover/stream:opacity-100">
+              ⦿{" "}
+              {viewers < 1000
+                ? viewers
+                : `${parseFloat((viewers / 1e3).toFixed(1))}K`}
+            </p>
           </div>
           <p className="text-xs">{char}</p>
         </div>
