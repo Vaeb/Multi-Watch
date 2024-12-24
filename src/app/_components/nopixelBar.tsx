@@ -8,6 +8,7 @@ import WhiteXIcon from "./icons/whiteXIcon";
 import { type RemoteParsed } from "../../types";
 import { hydrateNopixelData } from "../actions/hydrateNopixelData";
 import { log } from "../utils/log";
+import { NOPIXEL_DATA_INTERVAL } from "../constants";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -78,8 +79,6 @@ const StreamIcon = ({
 
 const selector2 = (state: MainState) => state.nopixelShown;
 
-const NOPIXEL_DATA_INTERVAL = 1000 * 60 * 5;
-
 function NopixelBarComponent({
   parsedData: _parsedData,
 }: {
@@ -95,9 +94,9 @@ function NopixelBarComponent({
   useEffect(() => {
     const interval = setInterval(() => {
       hydrateNopixelData()
-        .then((data) => {
-          log("Hydrating NoPixel stream data:", data);
-          setParsedData(data);
+        .then(({ parsed }) => {
+          log("Hydrating NoPixel stream data:", parsed);
+          setParsedData(parsed);
         })
         .catch(console.error);
     }, NOPIXEL_DATA_INTERVAL);

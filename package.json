@@ -25,6 +25,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-twitch-embed": "^3.0.2",
+    "server-only": "^0.0.1",
     "tree-kill": "^1.2.2",
     "zustand": "^5.0.1"
   },

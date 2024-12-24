@@ -1,28 +1,47 @@
-import { type RemoteLive, type RemoteParsed } from "../../types";
+import "server-only";
+
+import {
+  type RemoteReceived,
+  type RemoteLive,
+  type RemoteParsed,
+} from "../../types";
+import { NOPIXEL_DATA_INTERVAL } from "../constants";
 import { log } from "./log";
 
-const env = process.env.NODE_ENV || "development";
+const isLocalhost = process.env.LOCALHOST === "1";
 
-log("Env:", env);
+log("Node env:", isLocalhost);
+
+let cachedData: RemoteParsed | undefined;
+let cachedTime = 0;
+let cacheResolve: (value: RemoteReceived | PromiseLike<RemoteReceived>) => void;
+const cachePromise = new Promise<RemoteReceived>((resolve) => {
+  cacheResolve = resolve;
+});
 
 const getData = async () => {
-  const url =
-    env === "development"
+  try {
+    const url = isLocalhost
       ? "https://vaeb.io:3030/live"
       : "http://localhost:3029/live";
 
-  log("Fetching NoPixel data from", url);
+    // console.trace();
+    log("Fetching NoPixel data from", url);
 
-  const dataRaw = await fetch(url);
-  const data = (await dataRaw.json()) as RemoteLive;
+    const dataRaw = await fetch(url);
+    const data = (await dataRaw.json()) as RemoteLive;
 
-  log("Got data!", data?.streams?.length);
+    log("Got data!", data?.streams?.length);
 
-  // console.log("[getData]", Object.keys(data));
-  return data;
+    // console.log("[getData]", Object.keys(data));
+    return data;
+  } catch (err) {
+    log("[getData] error:", err);
+    throw err;
+  }
 };
 
-export const getParsedNopixelData = async () => {
+const queryParsedNopixelData = async () => {
   const data = await getData();
 
   const { streams, useColorsDark } = data || {};
@@ -40,3 +59,39 @@ export const getParsedNopixelData = async () => {
 
   return parsed;
 };
+
+const dataQueryCallback = (callback: (parsed: RemoteParsed) => void) => {
+  queryParsedNopixelData().then(callback).catch(console.error);
+};
+
+export const init = () => {
+  if (typeof window !== "undefined") {
+    return;
+  }
+
+  dataQueryCallback((parsed) => {
+    const isFirst = cachedData === undefined;
+    cachedData = parsed;
+    cachedTime = +new Date();
+    if (isFirst) {
+      cacheResolve({ parsed: cachedData, time: cachedTime });
+    }
+  });
+
+  setInterval(() => {
+    dataQueryCallback((parsed) => {
+      cachedData = parsed;
+      cachedTime = +new Date();
+    });
+  }, NOPIXEL_DATA_INTERVAL);
+};
+
+export const getParsedNopixelData = async (): Promise<RemoteReceived> => {
+  if (cachedData !== undefined) {
+    return { parsed: cachedData, time: cachedTime };
+  }
+
+  return cachePromise;
+};
+
+init();

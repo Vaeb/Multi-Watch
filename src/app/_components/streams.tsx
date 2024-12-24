@@ -26,7 +26,7 @@ function StreamsComponent() {
     useShallow(selector),
   );
   const { gridMode } = usePersistStore(useShallow(selectorPersist));
-  log("[Streams] Re-rendered");
+  log("[Page Streams] Re-rendered");
 
   return (
     <div className="flex flex-1">

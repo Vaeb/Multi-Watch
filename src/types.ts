@@ -40,3 +40,8 @@ export interface RemoteParsed {
   streams: RemoteStream[];
   useColorsDark: Record<string, string>;
 }
+
+export interface RemoteReceived {
+  parsed: RemoteParsed;
+  time: number;
+}
