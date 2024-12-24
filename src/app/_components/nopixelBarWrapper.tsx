@@ -3,9 +3,9 @@ import { NopixelBar } from "./nopixelBar";
 import { getParsedNopixelData } from "../utils/getParsedNopixelData";
 
 async function NopixelBarWrapperComponent() {
-  const { parsed } = await getParsedNopixelData();
+  const receivedData = await getParsedNopixelData();
 
-  return <NopixelBar parsedData={parsed} />;
+  return <NopixelBar receivedData={receivedData} />;
 }
 
 export const NopixelBarWrapper = memo(NopixelBarWrapperComponent);

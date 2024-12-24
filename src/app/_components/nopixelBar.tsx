@@ -5,7 +5,7 @@ import { memo, useEffect, useState } from "react";
 import { addStream } from "../utils/addStream";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import WhiteXIcon from "./icons/whiteXIcon";
-import { type RemoteParsed } from "../../types";
+import { type RemoteReceived } from "../../types";
 import { hydrateNopixelData } from "../actions/hydrateNopixelData";
 import { log } from "../utils/log";
 import { NOPIXEL_DATA_INTERVAL } from "../constants";
@@ -13,6 +13,12 @@ import { NOPIXEL_DATA_INTERVAL } from "../constants";
 interface NopixelBarButtonProps {
   alt: string;
   onClick: (...args: any[]) => any;
+}
+
+interface NopixelBarTextProps {
+  message: string;
+  shortMessage: string;
+  shortWrap?: boolean;
 }
 
 interface StreamIconProps {
@@ -28,15 +34,36 @@ const NopixelBarButton = ({ alt, onClick }: NopixelBarButtonProps) => {
   return (
     <div className="mb-2 flex h-[42px] items-center justify-center">
       <button
-        className="group flex h-[42px] items-center gap-3"
+        className="group/np flex h-[42px] items-center gap-3"
         onClick={onClick}
         aria-label={alt}
       >
-        <div className="h-[42px] w-[42px] opacity-40 group-hover:opacity-100">
+        <div className="h-[42px] w-[42px] opacity-40 group-hover/np:opacity-100">
           <WhiteXIcon size={42} />
         </div>
         <p>Close</p>
       </button>
+    </div>
+  );
+};
+
+const NopixelBarText = ({
+  message,
+  shortMessage,
+  shortWrap,
+}: NopixelBarTextProps) => {
+  return (
+    <div className="flex items-center justify-center">
+      <div className="ml-[6px] flex text-left text-sm">
+        <p
+          className={`${shortWrap ? "break-word" : "whitespace-nowrap"} absolute opacity-65 group-hover:opacity-0`}
+        >
+          {shortMessage}
+        </p>
+        <p className="break-keep opacity-0 group-hover:opacity-100">
+          {message}
+        </p>
+      </div>
     </div>
   );
 };
@@ -58,7 +85,7 @@ const StreamIcon = ({
         aria-label={channel}
       >
         <Image
-          className="rounded-full"
+          className="h-[42px] rounded-full"
           src={imageUrl}
           width={42}
           height={42}
@@ -80,23 +107,35 @@ const StreamIcon = ({
 const selector2 = (state: MainState) => state.nopixelShown;
 
 function NopixelBarComponent({
-  parsedData: _parsedData,
+  receivedData: _receivedData,
 }: {
-  parsedData: RemoteParsed;
+  receivedData: RemoteReceived;
 }) {
   const nopixelShown = useMainStore(selector2);
-
-  const [parsedData, setParsedData] = useState(_parsedData);
-
-  const { streams, useColorsDark } = parsedData;
   const { toggleNopixel } = useMainStore.getState().actions;
+
+  const [receivedData, setReceivedData] = useState(_receivedData);
+
+  const { parsed, time } = receivedData;
+  const { streams, useColorsDark } = parsed;
+
+  const timeFormatted = new Date(time).toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
       hydrateNopixelData()
-        .then(({ parsed }) => {
-          log("Hydrating NoPixel stream data:", parsed);
-          setParsedData(parsed);
+        .then((received) => {
+          log(
+            "Hydrating NoPixel stream data:",
+            received.parsed.streams.length,
+            "from",
+            new Date(received.time),
+          );
+          setReceivedData(received);
         })
         .catch(console.error);
     }, NOPIXEL_DATA_INTERVAL);
@@ -112,6 +151,16 @@ function NopixelBarComponent({
     >
       <NopixelBarButton alt="Update streams" onClick={toggleNopixel} />
       <div className="no-scrollbar flex flex-col items-start gap-3 overflow-y-auto pt-3">
+        <NopixelBarText
+          message={`${streams?.length ?? 0} streams live`}
+          shortMessage={`⦿ ${streams?.length ?? 0}`}
+          shortWrap={false}
+        />
+        <NopixelBarText
+          message={`Last refreshed streams at ${timeFormatted}`}
+          shortMessage={`${timeFormatted}`}
+          shortWrap={true}
+        />
         {streams?.map((stream) => (
           <StreamIcon
             key={stream.channelName}
