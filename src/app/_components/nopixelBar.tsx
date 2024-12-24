@@ -1,35 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { addStream } from "../utils/addStream";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import WhiteXIcon from "./icons/whiteXIcon";
-
-export interface RemoteStream {
-  channelName: string;
-  title: string;
-  viewers: number;
-  profileUrl: string;
-  rpServer: string;
-  characterName: string;
-  nicknameLookup: string;
-  faction: string;
-  tagFaction: string;
-  tagText: string;
-  factions: string[];
-  factionsMap: Record<string, boolean>;
-  noOthersInclude: boolean;
-  noPublicInclude: boolean;
-  noInternationalInclude: boolean;
-  wlOverride: boolean;
-  facebook: boolean;
-}
-
-export interface RemoteParsed {
-  streams: RemoteStream[];
-  useColorsDark: Record<string, string>;
-}
+import { type RemoteParsed } from "../../types";
+import { hydrateNopixelData } from "../actions/hydrateNopixelData";
+import { log } from "../utils/log";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -100,11 +78,32 @@ const StreamIcon = ({
 
 const selector2 = (state: MainState) => state.nopixelShown;
 
-function NopixelBarComponent({ parsedData }: { parsedData: RemoteParsed }) {
+const NOPIXEL_DATA_INTERVAL = 1000 * 60 * 5;
+
+function NopixelBarComponent({
+  parsedData: _parsedData,
+}: {
+  parsedData: RemoteParsed;
+}) {
   const nopixelShown = useMainStore(selector2);
+
+  const [parsedData, setParsedData] = useState(_parsedData);
 
   const { streams, useColorsDark } = parsedData;
   const { toggleNopixel } = useMainStore.getState().actions;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      hydrateNopixelData()
+        .then((data) => {
+          log("Hydrating NoPixel stream data:", data);
+          setParsedData(data);
+        })
+        .catch(console.error);
+    }, NOPIXEL_DATA_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // 18+(42+12)*15-12
   // 816px
