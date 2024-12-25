@@ -1,7 +1,6 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { log } from "./log";
-import UserAgentOverride from "puppeteer-extra-plugin-stealth/evasions/user-agent-override";
 
 export const ghostFetch = async <T>(
   urls: string[],
@@ -9,30 +8,13 @@ export const ghostFetch = async <T>(
   mapper?: (result: any) => any,
 ) => {
   log(urls);
-  urls = [urls[0]!];
   if (verbose) log("\n\nGhost fetching", urls);
   try {
     const puppeteerExtra = puppeteer.use(StealthPlugin());
 
-    const uaWin = UserAgentOverride({
-      userAgent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36",
-      locale: "en-US,en",
-      platform: "Win32",
-    });
-    log(uaWin);
-    puppeteerExtra.use(uaWin);
-
     const browser = await puppeteerExtra.launch({
       headless: true,
-      args: [
-        "--proxy-server=socks://172.236.22.184:31111",
-        "--no-sandbox",
-        "--window-size=1380,800",
-        "--disable-gpu",
-        "--disable-features=IsolateOrigins,site-per-process",
-        "--blink-settings=imagesEnabled=true",
-      ],
+      args: ["--proxy-server=socks://172.236.22.184:31111", "--no-sandbox"],
     });
 
     const results = await Promise.all(
@@ -49,7 +31,7 @@ export const ghostFetch = async <T>(
                 "[ghostFetch] Channel body has no textContent (fetch failed)",
               );
             }
-            console.log(bodyElement.textContent);
+            // console.log(bodyElement.textContent);
             return JSON.parse(bodyElement.textContent) as T;
           });
           // log(kickResponse);
