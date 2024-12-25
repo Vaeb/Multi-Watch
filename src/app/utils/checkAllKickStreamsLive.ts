@@ -13,6 +13,7 @@ let cachedKickStreams: RemoteKickLivestreamData[] = [];
 
 const checkStreamsLive = async (channels: string[]) => {
   try {
+    // https://kick.com/api/v1/channels/4head
     const urls = channels.map(
       (channel) => `https://kick.com/api/v2/channels/${channel}/livestream`,
     );

@@ -49,7 +49,7 @@ export const ghostFetch = async (urls: string[], verbose = true) => {
     return results;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_err) {
-    if (verbose) log("[ghostFetch] Error using puppeteer");
+    if (verbose) log("[ghostFetch] Error using puppeteer", _err);
     return "error";
   }
 };
