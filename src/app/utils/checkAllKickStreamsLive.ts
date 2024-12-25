@@ -18,7 +18,7 @@ const checkStreamsLive = async (channels: string[]) => {
       (channel) => `https://kick.com/api/v2/channels/${channel}/livestream`,
     );
 
-    console.log(await ghostFetch(["https://httpbin.org/headers"]));
+    // console.log(await ghostFetch(["https://httpbin.org/headers"]));
 
     const _results = await ghostFetch<RemoteKickLivestreamData>(
       urls,
