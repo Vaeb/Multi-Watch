@@ -1,9 +1,12 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import { type RemoteKickLivestreamData } from "../../types";
 import { log } from "./log";
 
-export const ghostFetch = async (urls: string[], verbose = true) => {
+export const ghostFetch = async <T>(
+  urls: string[],
+  verbose = true,
+  mapper?: (result: any) => any,
+) => {
   if (verbose) log("\n\nGhost fetching", urls);
   try {
     const puppeteerExtra = puppeteer.use(StealthPlugin());
@@ -27,12 +30,10 @@ export const ghostFetch = async (urls: string[], verbose = true) => {
               );
             }
             // log(bodyElement.textContent);
-            return JSON.parse(bodyElement.textContent) as {
-              data: RemoteKickLivestreamData;
-            };
+            return JSON.parse(bodyElement.textContent) as T;
           });
           // log(kickResponse);
-          return kickResponse.data;
+          return mapper ? mapper(kickResponse) : kickResponse;
         } catch (err) {
           if (verbose) log("[ghostFetch] Error browsing channel page:", err);
           return "error";

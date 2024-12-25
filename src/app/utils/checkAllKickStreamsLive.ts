@@ -18,10 +18,13 @@ const checkStreamsLive = async (channels: string[]) => {
       (channel) => `https://kick.com/api/v2/channels/${channel}/livestream`,
     );
 
-    // console.trace();
-    // log("[checkStreamLive] Checking stream at", urls);
+    console.log(await ghostFetch(["https://httpbin.org/headers"]));
 
-    const _results = await ghostFetch(urls);
+    const _results = await ghostFetch<RemoteKickLivestreamData>(
+      urls,
+      true,
+      (result) => result.data,
+    );
 
     if (_results === "error" || _results?.length === 0) {
       return cachedKickStreams;
