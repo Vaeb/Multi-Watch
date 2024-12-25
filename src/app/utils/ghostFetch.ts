@@ -3,43 +3,12 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { log } from "./log";
 import UserAgentOverride from "puppeteer-extra-plugin-stealth/evasions/user-agent-override";
 
-async function waitForNetworkIdle(page, timeout, maxInflightRequests = 0) {
-  console.log("waitForNetworkIdle called");
-  page.on("request", onRequestStarted);
-  page.on("requestfinished", onRequestFinished);
-  page.on("requestfailed", onRequestFinished);
-
-  let inflight = 0;
-  let fulfill;
-  let promise = new Promise((x) => (fulfill = x));
-  let timeoutId = setTimeout(onTimeoutDone, timeout);
-  return promise;
-
-  function onTimeoutDone() {
-    page.removeListener("request", onRequestStarted);
-    page.removeListener("requestfinished", onRequestFinished);
-    page.removeListener("requestfailed", onRequestFinished);
-    fulfill();
-  }
-
-  function onRequestStarted() {
-    ++inflight;
-    if (inflight > maxInflightRequests) clearTimeout(timeoutId);
-  }
-
-  function onRequestFinished() {
-    if (inflight === 0) return;
-    --inflight;
-    if (inflight === maxInflightRequests)
-      timeoutId = setTimeout(onTimeoutDone, timeout);
-  }
-}
-
 export const ghostFetch = async <T>(
   urls: string[],
   verbose = true,
   mapper?: (result: any) => any,
 ) => {
+  log(urls);
   urls = [urls[0]!];
   if (verbose) log("\n\nGhost fetching", urls);
   try {
@@ -73,7 +42,6 @@ export const ghostFetch = async <T>(
         try {
           const page = await browser.newPage();
           await page.goto(url);
-          await waitForNetworkIdle(page, 3000, 0);
           await page.waitForSelector("body");
 
           const kickResponse = await page.evaluate(() => {
@@ -83,7 +51,7 @@ export const ghostFetch = async <T>(
                 "[ghostFetch] Channel body has no textContent (fetch failed)",
               );
             }
-            log(bodyElement.textContent);
+            console.log(bodyElement.textContent);
             return JSON.parse(bodyElement.textContent) as T;
           });
           // log(kickResponse);
