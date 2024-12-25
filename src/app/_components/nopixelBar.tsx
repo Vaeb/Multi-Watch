@@ -140,6 +140,7 @@ function NopixelBarComponent({
             "from",
             new Date(received.time),
           );
+          // setReceivedData({ parsed: received.parsed, time: +new Date() });
           setReceivedData(received);
         })
         .catch(console.error);
