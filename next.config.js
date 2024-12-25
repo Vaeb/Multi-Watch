@@ -23,6 +23,18 @@ const config = {
       },
     ],
   },
+  serverExternalPackages: [
+    "puppeteer-extra",
+    "puppeteer-extra-plugin-stealth",
+    "puppeteer-extra-plugin-recaptcha",
+  ],
+  experimental: {
+    serverComponentsExternalPackages: [
+      "puppeteer-extra",
+      "puppeteer-extra-plugin-stealth",
+      "puppeteer-extra-plugin-recaptcha",
+    ],
+  },
 };
 
 export default config;

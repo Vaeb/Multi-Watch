@@ -1,3 +1,8 @@
+export interface ChatroomsJson {
+  id: number;
+  np?: boolean;
+}
+
 export interface PageParams {
   params: Promise<{
     slug: string[] | undefined;
@@ -45,3 +50,26 @@ export interface RemoteReceived {
   parsed: RemoteParsed;
   time: number;
 }
+
+interface RemoteKickSubCategory {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface RemoteKickThumbnail {
+  src: string;
+  srcset: string;
+}
+
+export interface RemoteKickLivestream {
+  id: number;
+  channelName: string;
+  session_title: string;
+  created_at: string;
+  viewers: number;
+  category: RemoteKickSubCategory;
+  thumbnail: RemoteKickThumbnail;
+}
+
+export type RemoteKickLivestreamData = RemoteKickLivestream | null;

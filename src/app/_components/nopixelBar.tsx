@@ -182,7 +182,10 @@ function NopixelBarComponent({
               .trim()}
             color={useColorsDark?.[stream.faction] ?? "#FFF"}
             onClick={() => {
-              addStream(stream.channelName);
+              addStream(
+                stream.channelName,
+                stream.faction === "Kick" ? "kick" : "twitch",
+              );
             }}
           />
         ))}

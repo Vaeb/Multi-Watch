@@ -1,11 +1,11 @@
 {
-  "4head": 2579856,
-  "ming": 121898,
-  "caramel": 1194676,
-  "acezproduction": 1669680,
-  "sayeed": 125993,
-  "buddha": 32806,
-  "roshtein": 4598,
-  "zombiebarricades": 56479,
-  "b0aty": 27670567
+  "4HEAD": { "id": 2579856, "np": true },
+  "Ming": { "id": 121898, "np": true },
+  "Caramel": { "id": 1194676, "np": true },
+  "AcezProduction": { "id": 1669680, "np": true },
+  "Sayeed": { "id": 125993, "np": true },
+  "Buddha": { "id": 32806, "np": true },
+  "roshtein": { "id": 4598 },
+  "ZombieBarricades": { "id": 56479, "np": true },
+  "b0aty": { "id": 27670567 }
 }
