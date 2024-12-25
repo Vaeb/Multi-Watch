@@ -24,6 +24,7 @@ export const ghostFetch = async <T>(
     const browser = await puppeteerExtra.launch({
       headless: true,
       args: ["--no-sandbox"],
+      executablePath: "/usr/bin/chromium-browser",
     });
 
     const results = await Promise.all(
