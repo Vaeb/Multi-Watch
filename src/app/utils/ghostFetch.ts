@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { log } from "./log";
+import UserAgentOverride from "puppeteer-extra-plugin-stealth/evasions/user-agent-override";
 
 export const ghostFetch = async <T>(
   urls: string[],
@@ -10,6 +11,16 @@ export const ghostFetch = async <T>(
   if (verbose) log("\n\nGhost fetching", urls);
   try {
     const puppeteerExtra = puppeteer.use(StealthPlugin());
+
+    const uaWin = UserAgentOverride({
+      userAgent:
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36",
+      locale: "en-US,en",
+      platform: "Win32",
+    });
+    log(uaWin);
+    puppeteerExtra.use(uaWin);
+
     const browser = await puppeteerExtra.launch({
       headless: true,
       args: ["--no-sandbox"],
