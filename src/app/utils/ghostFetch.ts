@@ -7,7 +7,10 @@ export const ghostFetch = async (urls: string[], verbose = true) => {
   if (verbose) log("\n\nGhost fetching", urls);
   try {
     const puppeteerExtra = puppeteer.use(StealthPlugin());
-    const browser = await puppeteerExtra.launch({ headless: true });
+    const browser = await puppeteerExtra.launch({
+      headless: true,
+      args: ["--no-sandbox"],
+    });
 
     const results = await Promise.all(
       urls.map(async (url) => {
