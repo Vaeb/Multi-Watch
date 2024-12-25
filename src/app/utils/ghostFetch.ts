@@ -26,15 +26,13 @@ export const ghostFetch = async <T>(
     const browser = await puppeteerExtra.launch({
       headless: true,
       args: [
+        "--proxy-server=socks://172.236.22.184:31111",
         "--no-sandbox",
         "--window-size=1380,800",
-        "--remote-debugging-port=9222",
-        "--remote-debugging-address=0.0.0.0",
         "--disable-gpu",
         "--disable-features=IsolateOrigins,site-per-process",
         "--blink-settings=imagesEnabled=true",
       ],
-      slowMo: 0,
     });
 
     const results = await Promise.all(
