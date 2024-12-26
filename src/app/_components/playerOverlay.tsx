@@ -9,16 +9,17 @@ import { removeStream } from "../utils/removeStream";
 import WhiteXIcon from "./icons/whiteXIcon";
 import WhiteSpeakerIcon from "./icons/whiteSpeakerIcon";
 import WhiteChatIcon from "./icons/whiteChatIcon";
+import { log } from "../utils/log";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
 function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   const audioClick = useCallback(() => {
     const { streams, streamPlayer, actions } = useMainStore.getState();
-    console.log(11, streamPlayer);
+    log(11, streamPlayer);
     for (const stream of streams) {
       const player = streamPlayer[stream.value];
-      console.log(22, stream.value);
+      log(22, stream.value);
       const mute = stream.value !== channel;
       player?.setMuted(mute);
       actions.setManuallyMuted(

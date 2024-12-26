@@ -13,6 +13,7 @@ import { useMainStore } from "../stores/mainStore";
 import { TwitchPlayer, type TwitchPlayerInstance } from "react-twitch-embed";
 import { checkShowChat } from "../utils/checkShowChat";
 import { usePersistStore } from "../stores/persistStore";
+import { log } from "../utils/log";
 
 type Platform = "twitch" | "kick";
 
@@ -67,10 +68,10 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   const streamMuted = autoplay === "all" ? !recent : false;
 
   useEffect(() => {
-    console.log("[Player] Mounted:", channel);
+    log("[Player] Mounted:", channel);
   }, []);
 
-  console.log(
+  log(
     "[Player] Re-rendered:",
     channel,
     type,
@@ -91,7 +92,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
     };
     playerRef.current = player;
     player.setVolume(0.75);
-    console.log("[Player] Creating twitch player:", channel, player);
+    log("[Player] Creating twitch player:", channel, player);
     useMainStore.getState().actions.setStreamPlayer(channel, player);
   });
 

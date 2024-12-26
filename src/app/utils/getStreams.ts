@@ -7,25 +7,30 @@ import {
   type RemoteStream,
   type RemoteKickLivestream,
 } from "../../types";
-import { NOPIXEL_DATA_INTERVAL } from "../constants";
+import { IS_LOCALHOST, NOPIXEL_DATA_INTERVAL } from "../constants";
 import { log } from "./log";
-import { checkAllKickStreamsLive } from "./checkAllKickStreamsLive";
 
-const isLocalhost = process.env.LOCALHOST === "1";
+interface CachedStreams {
+  cachedTwitch: RemoteParsed;
+  cachedTwitchTime: number;
+}
 
-const globalData = global as typeof global & {
-  cachedData: RemoteParsed | undefined;
-  cachedTime: number;
-};
+type GlobalData = typeof global &
+  Partial<CachedStreams> & {
+    cachedKickStreams: RemoteKickLivestream[];
+    cachedKickTime: number;
+  };
 
-let cacheResolve: (value: RemoteReceived | PromiseLike<RemoteReceived>) => void;
-const cachePromise = new Promise<RemoteReceived>((resolve) => {
+const globalData = global as GlobalData;
+
+let cacheResolve: (value: CachedStreams | PromiseLike<CachedStreams>) => void;
+const cachePromise = new Promise<CachedStreams>((resolve) => {
   cacheResolve = resolve;
 });
 
 const getData = async () => {
   try {
-    const url = isLocalhost
+    const url = IS_LOCALHOST
       ? "https://vaeb.io:3030/live"
       : "http://localhost:3029/live";
 
@@ -36,7 +41,7 @@ const getData = async () => {
     const data = (await dataRaw.json()) as RemoteLive;
     data.useColorsDark.Kick = "#00e701";
 
-    // console.log("[getData]", Object.keys(data));
+    // log("[getData]", Object.keys(data));
     return data;
   } catch (err) {
     log("[getData] error:", err);
@@ -89,12 +94,11 @@ const mergeKickIntoParsed = (
 };
 
 const queryParsedNopixelData = async () => {
-  const kickPromise = checkAllKickStreamsLive();
   const data = await getData();
 
   const { streams, useColorsDark } = data || {};
 
-  let parsed: RemoteParsed = {
+  const parsed: RemoteParsed = {
     streams: streams.filter(
       (stream) =>
         (stream.noOthersInclude &&
@@ -104,8 +108,6 @@ const queryParsedNopixelData = async () => {
     ),
     useColorsDark,
   };
-
-  parsed = mergeKickIntoParsed(parsed, await kickPromise);
 
   log("Got data!", parsed.streams?.length);
 
@@ -124,46 +126,69 @@ export const init = async () => {
   }
 
   log(
-    `[Init] Localhost: ${isLocalhost} | Node env: ${process.env.NODE_ENV} | Next.js runtime: ${process.env.NEXT_RUNTIME}`,
+    `[Init] Localhost: ${IS_LOCALHOST} | Node env: ${process.env.NODE_ENV} | Next.js runtime: ${process.env.NEXT_RUNTIME}`,
   );
 
-  /* const testResults = await ghostFetch(
-    ["https://kick.com/api/v2/channels/ming/livestream"],
-    false,
-  );
-  log("Init result:", testResults);
-  if (testResults === "error") {
-    return;
-  }
-
-  log("Initialising data parser!");
-
-  log("[INIT] Env", process.env.NEXT_RUNTIME); */
+  if (!globalData.cachedKickStreams) globalData.cachedKickStreams = [];
+  if (!globalData.cachedKickTime) globalData.cachedKickTime = 0;
 
   dataQueryCallback(async (parsed) => {
-    const isFirst = globalData.cachedData === undefined;
-    globalData.cachedData = parsed;
-    globalData.cachedTime = +new Date();
+    const isFirst = globalData.cachedTwitch === undefined;
+    globalData.cachedTwitch = parsed;
+    globalData.cachedTwitchTime = +new Date();
     if (isFirst) {
       cacheResolve({
-        parsed: globalData.cachedData,
-        time: globalData.cachedTime,
+        cachedTwitch: globalData.cachedTwitch,
+        cachedTwitchTime: globalData.cachedTwitchTime,
       });
     }
   });
 
   setInterval(() => {
     dataQueryCallback((parsed) => {
-      globalData.cachedData = parsed;
-      globalData.cachedTime = +new Date();
+      globalData.cachedTwitch = parsed;
+      globalData.cachedTwitchTime = +new Date();
     });
   }, NOPIXEL_DATA_INTERVAL);
 };
 
-export const getParsedNopixelData = async (): Promise<RemoteReceived> => {
-  if (globalData.cachedData !== undefined) {
-    return { parsed: globalData.cachedData, time: globalData.cachedTime };
-  }
+export const getStreams = async (): Promise<RemoteReceived> => {
+  const needsKickLiveStreams =
+    +new Date() - globalData.cachedKickTime > NOPIXEL_DATA_INTERVAL - 1000 * 10;
 
-  return cachePromise;
+  log(
+    "[getParsedNopixelData] needsKickLiveStreams:",
+    needsKickLiveStreams,
+    +new Date() - globalData.cachedKickTime,
+    globalData.cachedKickTime,
+    globalData.cachedKickStreams.length,
+  );
+
+  const { cachedTwitch, cachedTwitchTime } =
+    globalData.cachedTwitch !== undefined
+      ? (globalData as GlobalData & CachedStreams)
+      : await cachePromise;
+
+  const mergedStreams = mergeKickIntoParsed(
+    cachedTwitch,
+    globalData.cachedKickStreams,
+  );
+
+  console.log(
+    mergedStreams.streams.length,
+    cachedTwitch.streams.length,
+    globalData.cachedKickStreams.length,
+  );
+
+  return {
+    parsed: mergedStreams,
+    time: cachedTwitchTime,
+    needsKickLiveStreams,
+  };
+};
+
+export const setKickStreams = (kickStreams: RemoteKickLivestream[]) => {
+  globalData.cachedKickStreams = kickStreams;
+  globalData.cachedKickTime = +new Date();
+  log("[setKickStreams] Set kick streams:", kickStreams.length);
 };

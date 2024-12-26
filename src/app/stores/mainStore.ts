@@ -4,11 +4,13 @@ import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { streamsToPath } from "../utils/streamsToPath";
 import { orderStreams } from "../utils/orderStreams";
-import { log } from "./storeUtils";
+import { stateApplyLog } from "./storeUtils";
 import { type Stream, type ViewMode } from "./storeTypes";
 import { useKickStore } from "./kickStore";
 
 export interface MainState {
+  initialised: boolean;
+
   streams: Stream[];
   streamsMap: Record<string, Stream>;
   streamPositions: Record<string, number>;
@@ -25,6 +27,8 @@ export interface MainState {
   chatShown: boolean;
 
   actions: {
+    markInitialised: () => void;
+
     setStreams: (streams: Stream[]) => void;
     cycleStreams: () => void;
     setStreamPlayer: (channel: string, player: any) => void;
@@ -47,7 +51,9 @@ export interface MainState {
 
 export const useMainStore = create<MainState>()(
   subscribeWithSelector(
-    log<MainState>((set) => ({
+    stateApplyLog<MainState>((set) => ({
+      initialised: false,
+
       streams: [],
       streamsMap: {},
       streamPositions: {},
@@ -64,6 +70,8 @@ export const useMainStore = create<MainState>()(
       chatShown: true,
 
       actions: {
+        markInitialised: () => set({ initialised: true }),
+
         setStreams: (streams) => {
           const channels = streams.map((stream) => stream.value);
 

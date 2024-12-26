@@ -7,6 +7,7 @@ import { type PersistState, usePersistStore } from "../stores/persistStore";
 import { Autoplay, type GridMode } from "../stores/storeTypes";
 import { useStableCallback } from "../hooks/useStableCallback";
 import { noprop } from "../utils/noprop";
+import { log } from "../utils/log";
 
 interface ModalButtonProps {
   text: string;
@@ -62,7 +63,7 @@ const SettingsOption = ({
           value={value}
           onChange={(e) => {
             const val = e.target.value;
-            console.log("newval", val, cb);
+            log("newval", val, cb);
             setValue(val);
             cb?.(val);
           }}

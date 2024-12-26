@@ -1,13 +1,14 @@
 import { type StateCreator } from "zustand";
+import { log } from "../utils/log";
 
-export const log =
+export const stateApplyLog =
   <T>(config: StateCreator<T, [], []>): any =>
   (set: any, get: any, api: any) =>
     config(
       (...args) => {
-        console.log("[Store] Applying:", ...args);
+        log("[Store] Applying:", ...args);
         set(...args);
-        console.log("[Store] New state:", get());
+        log("[Store] New state:", get());
       },
       get,
       api,

@@ -2,6 +2,7 @@ import { memo } from "react";
 import { type Platform } from "~/types";
 import { ChatTitle } from "./chatTitle";
 import { KickChat } from "./kickChat";
+import { log } from "../utils/log";
 
 export interface ChatProps {
   type?: Platform;
@@ -40,7 +41,7 @@ const getSrc = (type: Platform, channel: string) => {
 };
 
 function ChatComponent({ type = "twitch", channel }: ChatProps) {
-  console.log("[Chat] Re-rendered", channel);
+  log("[Chat] Re-rendered", channel);
 
   if (type === "twitch") {
     return (

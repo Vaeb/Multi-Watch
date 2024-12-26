@@ -9,6 +9,7 @@ import {
   type VirtuosoMessageListProps,
 } from "@virtuoso.dev/message-list";
 import { type ChatMethods, useKickStore } from "../stores/kickStore";
+import { log } from "../utils/log";
 
 export interface ChatProps {
   channel: string;
@@ -45,7 +46,7 @@ function KickChatComponent({ channel }: ChatProps) {
     useKickStore.getState().actions.setChatMethods(channel, chatMethods);
   }, [channel]);
 
-  console.log(`[KickChat] Re-rendered ${channel}`);
+  log(`[KickChat] Re-rendered ${channel}`);
 
   return (
     <div className="absolute h-full w-full pb-4 pt-[76px]">

@@ -15,7 +15,7 @@ interface ManagerProps {
 }
 
 export function Manager({ chatrooms }: ManagerProps) {
-  const { setStreams } = useMainStore(selector);
+  const { setStreams, markInitialised } = useMainStore(selector);
   const { setChatrooms } = useKickStore(kickSelector);
   const hasSetInitialStreams = useRef(false);
 
@@ -35,6 +35,10 @@ export function Manager({ chatrooms }: ManagerProps) {
   useLayoutEffect(() => {
     setChatrooms(chatrooms);
   }, [setChatrooms, chatrooms]);
+
+  useLayoutEffect(() => {
+    markInitialised();
+  }, [markInitialised]);
 
   return null;
 }

@@ -1,6 +1,8 @@
 "use server";
 
+import { log } from "../utils/log";
+
 export const requestChatroom = async (channel: string) => {
-  console.log("[requestChatroom] Requesting", channel);
+  log("[requestChatroom] Requesting", channel);
   return 111;
 };

@@ -2,7 +2,8 @@
 
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { log } from "./storeUtils";
+import { stateApplyLog } from "./storeUtils";
+import { type ChatroomsInfo } from "../../types";
 
 export interface ChatMethods {
   scrollToBottom: () => void;
@@ -15,7 +16,7 @@ const filterObjFrom = (obj: Record<string, any>, base: string[]) =>
   >;
 
 export interface KickState {
-  chatrooms: Record<string, number>;
+  chatrooms: Record<string, ChatroomsInfo>;
   chatMethods: Record<string, ChatMethods>;
 
   actions: {
@@ -27,7 +28,7 @@ export interface KickState {
 
 export const useKickStore = create<KickState>()(
   subscribeWithSelector(
-    log<KickState>((set) => ({
+    stateApplyLog<KickState>((set) => ({
       chatrooms: {},
       chatMethods: {},
 

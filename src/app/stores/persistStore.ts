@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist, subscribeWithSelector } from "zustand/middleware";
-import { log } from "./storeUtils";
+import { stateApplyLog } from "./storeUtils";
 import { type Autoplay, type GridMode } from "./storeTypes";
 
 export interface PersistState {
@@ -21,7 +21,7 @@ export interface PersistState {
 export const usePersistStore = create<PersistState>()(
   subscribeWithSelector(
     persist(
-      log<PersistState>((set) => ({
+      stateApplyLog<PersistState>((set) => ({
         gridMode: "normal",
         autoplay: "all",
         focusHeight: 63,

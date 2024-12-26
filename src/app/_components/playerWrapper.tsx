@@ -2,6 +2,7 @@ import { memo } from "react";
 import { PlayerOverlay } from "./playerOverlay";
 import { type GridMode, type ViewMode } from "../stores/storeTypes";
 import { type Platform } from "~/types";
+import { log } from "../utils/log";
 
 interface Dimensions {
   height: string;
@@ -193,13 +194,7 @@ function PlayerWrapperComponent({
     focusHeight,
   );
 
-  console.log(
-    `[PlayerWrapper] Re-rendered ${channel}:`,
-    height,
-    width,
-    top,
-    left,
-  );
+  log(`[PlayerWrapper] Re-rendered ${channel}:`, height, width, top, left);
 
   return (
     <div

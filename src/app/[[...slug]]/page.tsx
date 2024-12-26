@@ -1,7 +1,7 @@
 import { Manager } from "../_components/manager";
 import { Streams } from "../_components/streams";
 import { promises as fs } from "fs";
-import { type ChatroomsJson, type PageParams } from "~/types";
+import { type ChatroomsInfo, type PageParams } from "~/types";
 import { UpdateModalServerWrapper } from "../_components/updateModalServerWrapper";
 import { LeftBar } from "../_components/leftBar";
 import { MainBar } from "../_components/mainBar";
@@ -20,11 +20,11 @@ export default async function Page({ params }: PageParams) {
     process.cwd() + "/src/app/data/chatroomsJson.json",
     "utf8",
   );
-  const chatrooms = JSON.parse(chatroomsJson) as Record<string, ChatroomsJson>;
-  const chatroomIds: Record<string, number> = Object.fromEntries(
+  const chatrooms = JSON.parse(chatroomsJson) as Record<string, ChatroomsInfo>;
+  const chatroomsLower = Object.fromEntries(
     Object.entries(chatrooms).map(([channel, data]) => [
       channel.toLowerCase(),
-      data.id,
+      data,
     ]),
   );
 
@@ -36,10 +36,10 @@ export default async function Page({ params }: PageParams) {
 
   return (
     <>
-      <Manager chatrooms={chatroomIds} />
+      <Manager chatrooms={chatroomsLower} />
       <main className="flex min-h-screen bg-black text-white">
         <LeftBar>
-          <NopixelBarWrapper />
+          <NopixelBarWrapper chatrooms={chatrooms} />
           <MainBar />
         </LeftBar>
         <UpdateModalServerWrapper params={params} />

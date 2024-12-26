@@ -1,4 +1,5 @@
 import { memo, type DetailedHTMLProps, type IframeHTMLAttributes } from "react";
+import { log } from "../utils/log";
 
 type Platform = "twitch" | "kick";
 
@@ -28,7 +29,7 @@ const getSrc = (type: Platform, channel: string, muted = false) => {
 };
 
 function PlayerComponent({ type = "twitch", channel, first }: PlayerProps) {
-  console.log("[Player] Re-rendered:", channel, type, first);
+  log("[Player] Re-rendered:", channel, type, first);
 
   return (
     <iframe

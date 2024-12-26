@@ -16,6 +16,7 @@ import { streamsToPath } from "../utils/streamsToPath";
 import { orderStreams } from "../utils/orderStreams";
 import { useStableCallback } from "../hooks/useStableCallback";
 import { noprop } from "../utils/noprop";
+import { log } from "../utils/log";
 
 interface ModalButtonProps {
   text: string;
@@ -84,7 +85,7 @@ function UpdateModal() {
     isFirstRenderRef.current = false;
   }, []);
 
-  console.log("pathname", pathname, initialStreams(), channels);
+  log("pathname", pathname, initialStreams(), channels);
 
   const cancelClick = useCallback(() => {
     setUpdateShown(false);

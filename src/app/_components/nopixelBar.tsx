@@ -1,14 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { addStream } from "../utils/addStream";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import WhiteXIcon from "./icons/whiteXIcon";
-import { type RemoteReceived } from "../../types";
-import { hydrateNopixelData } from "../actions/hydrateNopixelData";
-import { log } from "../utils/log";
+import { type Platform, type RemoteReceived } from "../../types";
+import { hydrateStreams } from "../actions/hydrateStreams";
+import { getDateString, log } from "../utils/log";
 import { NOPIXEL_DATA_INTERVAL } from "../constants";
+import { shiftableInterval } from "../utils/shiftableInterval";
+import { randomInt } from "../utils/randomInt";
+import { type KickState } from "../stores/kickStore";
+import { fetchKickLive } from "../utils/fetchKickLive";
+import { updateServerKickLive } from "../actions/updateServerKickLive";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -22,6 +27,7 @@ interface NopixelBarTextProps {
 }
 
 interface StreamIconProps {
+  platform: Platform;
   channel: string;
   imageUrl: string;
   viewers: number;
@@ -69,6 +75,7 @@ const NopixelBarText = ({
 };
 
 const StreamIcon = ({
+  platform,
   channel,
   imageUrl,
   viewers,
@@ -95,7 +102,9 @@ const StreamIcon = ({
         <div className="flex flex-col items-start">
           <div className="flex items-center gap-2">
             <p>{channel}</p>
-            <p className="text-xs text-red-500 opacity-70 group-hover/stream:opacity-100">
+            <p
+              className={`text-xs ${platform === "twitch" ? "text-red-500" : "text-green-500"} opacity-70 group-hover/stream:opacity-100`}
+            >
               ⦿{" "}
               {viewers < 1000
                 ? viewers
@@ -113,8 +122,10 @@ const selector2 = (state: MainState) => state.nopixelShown;
 
 function NopixelBarComponent({
   receivedData: _receivedData,
+  chatrooms,
 }: {
   receivedData: RemoteReceived;
+  chatrooms: KickState["chatrooms"];
 }) {
   const nopixelShown = useMainStore(selector2);
   const { toggleNopixel } = useMainStore.getState().actions;
@@ -124,30 +135,67 @@ function NopixelBarComponent({
   const { parsed, time } = receivedData;
   const { streams, useColorsDark } = parsed;
 
-  const timeFormatted = new Date(time).toLocaleString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  });
+  const timeFormatted = new Date(time)
+    .toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    })
+    .replace(" ", "\n");
+
+  const hydrateStreamsHandler = useCallback(async () => {
+    const received = await hydrateStreams();
+    log(
+      "[NopixelBar] Hydrating streams from server:",
+      received.parsed.streams.length,
+      "from",
+      getDateString(new Date(received.time)),
+    );
+    setReceivedData(received);
+    return received;
+  }, []);
+
+  const updateLiveKickStreams = useCallback(async () => {
+    log("[NopixelBar] Needs kick live streams...");
+    const kickStreams = await fetchKickLive(chatrooms);
+    await updateServerKickLive(kickStreams);
+    log(
+      "[NopixelBar] Updated server kick streams",
+      kickStreams.map((stream) => `${stream.channelName} ${stream.viewers}`),
+    );
+    hydrateStreamsHandler().catch(console.error);
+  }, [hydrateStreamsHandler, chatrooms]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      hydrateNopixelData()
+    // resolves also 'needs kick live data', aka has it been >5 minutes since server received live data
+    // if so, lookup data & send in server action to server
+    // then shift interval by random amount from NOPIXEL_DATA_INTERVAL*0.25 to NOPIXEL_DATA_INTERVAL*0.75
+    const { clear, shiftOnce } = shiftableInterval(() => {
+      hydrateStreamsHandler()
         .then((received) => {
-          log(
-            "Hydrating NoPixel stream data:",
-            received.parsed.streams.length,
-            "from",
-            new Date(received.time),
-          );
-          // setReceivedData({ parsed: received.parsed, time: +new Date() });
-          setReceivedData(received);
+          if (received.needsKickLiveStreams) {
+            shiftOnce(
+              randomInt(
+                NOPIXEL_DATA_INTERVAL * 0.25,
+                NOPIXEL_DATA_INTERVAL * 0.75,
+              ),
+            );
+            updateLiveKickStreams().catch(console.error);
+          }
         })
         .catch(console.error);
     }, NOPIXEL_DATA_INTERVAL);
 
-    return () => clearInterval(interval);
-  }, []);
+    if (_receivedData.needsKickLiveStreams) {
+      updateLiveKickStreams().catch(console.error);
+    }
+
+    return () => clear();
+  }, [
+    hydrateStreamsHandler,
+    updateLiveKickStreams,
+    _receivedData.needsKickLiveStreams,
+  ]);
 
   // 18+(42+12)*15-12
   // 816px
@@ -170,6 +218,7 @@ function NopixelBarComponent({
         {streams?.map((stream) => (
           <StreamIcon
             key={stream.channelName}
+            platform={stream.faction === "Kick" ? "kick" : "twitch"}
             channel={stream.channelName}
             imageUrl={stream.profileUrl}
             viewers={stream.viewers}

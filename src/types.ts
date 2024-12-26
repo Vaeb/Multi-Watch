@@ -1,4 +1,4 @@
-export interface ChatroomsJson {
+export interface ChatroomsInfo {
   id: number;
   np?: boolean;
 }
@@ -46,9 +46,13 @@ export interface RemoteParsed {
   useColorsDark: Record<string, string>;
 }
 
-export interface RemoteReceived {
+export interface RemoteReceivedTwitch {
   parsed: RemoteParsed;
   time: number;
+}
+
+export interface RemoteReceived extends RemoteReceivedTwitch {
+  needsKickLiveStreams: boolean;
 }
 
 interface RemoteKickSubCategory {

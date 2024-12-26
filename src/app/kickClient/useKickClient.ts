@@ -3,6 +3,7 @@
 import { type RefObject, useCallback, useEffect, useState } from "react";
 import { type VirtuosoMessageListMethods } from "@virtuoso.dev/message-list";
 import { useKickStore } from "../stores/kickStore";
+import { log } from "../utils/log";
 
 // [Client] If channel name not in list of chatrooms, send message to server
 // [Server] Lookup chatroom id for channel (first re-check cache), save it in json, respond to client
@@ -28,7 +29,7 @@ const createWebSocket = (channel: string, chatroomId: number) => {
 
     socket.send(connect);
 
-    console.log(
+    log(
       `[createWebSocket] Connected to Kick pusher socket. Subscribing to channel '${channel}': ${chatroomString}`,
     );
   };
@@ -85,7 +86,7 @@ export const useKickClient = (
   channel: string,
   messageListRef: RefObject<VirtuosoMessageListMethods<Message, any>>,
 ) => {
-  console.log(`[useKickClient] Re-rendered kick chat client for ${channel}`);
+  log(`[useKickClient] Re-rendered kick chat client for ${channel}`);
 
   const [messages, setMessages] = useState<Message[]>([
     // {
@@ -106,13 +107,13 @@ export const useKickClient = (
 
   const channelLower = channel.toLowerCase();
   const chatroomId = useKickStore(
-    useCallback((state) => state.chatrooms[channelLower], [channelLower]),
+    useCallback((state) => state.chatrooms[channelLower]?.id, [channelLower]),
   );
 
   useEffect(() => {
     if (!chatroomId) return;
 
-    console.log(
+    log(
       `[useKickClient] Initialising kick chat client for ${channel}`,
       chatroomId,
     );
@@ -121,7 +122,7 @@ export const useKickClient = (
 
     socket.onmessage = ({ data }) => {
       const { type, message } = parseMessage(data.toString()) || {};
-      // console.log(`[useKickClient] onMessage`, type, message);
+      // log(`[useKickClient] onMessage`, type, message);
       if (type === "ChatMessage" && message) {
         messageListRef.current?.data.append(
           [message],
@@ -137,13 +138,11 @@ export const useKickClient = (
     };
 
     socket.onclose = () => {
-      console.log(
-        `[useKickClient] Disconnected from ${channel} Kick pusher socket`,
-      );
+      log(`[useKickClient] Disconnected from ${channel} Kick pusher socket`);
     };
 
     return () => {
-      console.log(`[useKickClient] Unmounting ${channel} kick client`);
+      log(`[useKickClient] Unmounting ${channel} kick client`);
       socket.close();
     };
   }, [messageListRef, channel, chatroomId]);
