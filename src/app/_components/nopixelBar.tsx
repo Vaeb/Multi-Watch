@@ -24,6 +24,7 @@ interface NopixelBarTextProps {
   message: string;
   shortMessage: string;
   shortWrap?: boolean;
+  maxLines?: number;
 }
 
 interface StreamIconProps {
@@ -57,17 +58,21 @@ const NopixelBarText = ({
   message,
   shortMessage,
   shortWrap,
+  maxLines = 1,
 }: NopixelBarTextProps) => {
   return (
-    <div className="flex items-center justify-center">
-      <div className="ml-[6px] flex text-left text-sm">
+    <div className="relative flex w-full flex-col items-center justify-center">
+      <div className="ml-[6px] flex w-full text-left text-sm">
         <p
-          className={`${shortWrap ? "break-word" : "whitespace-nowrap"} absolute opacity-65 group-hover:opacity-0`}
+          className={`${shortWrap ? "break-word whitespace-pre-line" : "whitespace-nowrap"} absolute opacity-65 group-hover:opacity-0`}
         >
           {shortMessage}
         </p>
-        <p className="break-keep opacity-0 group-hover:opacity-100">
+        <p className="absolute whitespace-pre-line break-keep opacity-0 group-hover:opacity-100">
           {message}
+        </p>
+        <p className="whitespace-pre-line break-keep opacity-0">
+          {"\n".repeat(maxLines)}
         </p>
       </div>
     </div>
@@ -131,11 +136,12 @@ function NopixelBarComponent({
   const { toggleNopixel } = useMainStore.getState().actions;
 
   const [receivedData, setReceivedData] = useState(_receivedData);
+  const [hydrateTime, setHydrateTime] = useState(+new Date());
 
-  const { parsed, time } = receivedData;
+  const { parsed } = receivedData;
   const { streams, useColorsDark } = parsed;
 
-  const timeFormatted = new Date(time)
+  const timeFormatted = new Date(hydrateTime)
     .toLocaleString("en-US", {
       hour: "numeric",
       minute: "numeric",
@@ -144,6 +150,7 @@ function NopixelBarComponent({
     .replace(" ", "\n");
 
   const hydrateStreamsHandler = useCallback(async () => {
+    const hydrateTime = +new Date();
     const received = await hydrateStreams();
     log(
       "[NopixelBar] Hydrating streams from server:",
@@ -152,6 +159,7 @@ function NopixelBarComponent({
       getDateString(new Date(received.time)),
     );
     setReceivedData(received);
+    setHydrateTime(hydrateTime);
     return received;
   }, []);
 
@@ -201,44 +209,42 @@ function NopixelBarComponent({
   // 816px
   return (
     <div
-      className={`${nopixelShown ? "" : "invisible absolute"} flex h-[100vh] w-full flex-col items-start gap-0 py-[9px]`}
+      className={`${nopixelShown ? "" : "invisible absolute"} flex h-[100vh] w-full flex-col items-start gap-3`}
     >
-      <NopixelBarButton alt="Update streams" onClick={toggleNopixel} />
-      <div className="no-scrollbar flex flex-col items-start gap-3 overflow-y-auto pt-3">
-        <NopixelBarText
-          message={`⦿ ${streams?.length ?? 0} streams live`}
-          shortMessage={`⦿ ${streams?.length ?? 0}`}
-          shortWrap={false}
+      <NopixelBarText
+        message={`⦿ ${streams?.length ?? 0} streams live`}
+        shortMessage={`⦿ ${streams?.length ?? 0}`}
+        shortWrap={false}
+      />
+      <NopixelBarText
+        maxLines={2}
+        message={`Last refreshed streams at ${timeFormatted}`}
+        shortMessage={`${timeFormatted}`}
+        shortWrap={true}
+      />
+      {streams?.map((stream) => (
+        <StreamIcon
+          key={stream.channelName}
+          platform={stream.faction === "Kick" ? "kick" : "twitch"}
+          channel={stream.channelName}
+          imageUrl={stream.profileUrl}
+          viewers={stream.viewers}
+          char={stream.tagText
+            .replace(/^\? *| *\?$|[《]/g, "")
+            .replace("》", " ")
+            .replace("〈", "《")
+            .replace("〉", "》")
+            .replace("Peacekeeper", "Deputy")
+            .trim()}
+          color={useColorsDark?.[stream.faction] ?? "#FFF"}
+          onClick={() => {
+            addStream(
+              stream.channelName,
+              stream.faction === "Kick" ? "kick" : "twitch",
+            );
+          }}
         />
-        <NopixelBarText
-          message={`Last refreshed streams at ${timeFormatted}`}
-          shortMessage={`${timeFormatted}`}
-          shortWrap={true}
-        />
-        {streams?.map((stream) => (
-          <StreamIcon
-            key={stream.channelName}
-            platform={stream.faction === "Kick" ? "kick" : "twitch"}
-            channel={stream.channelName}
-            imageUrl={stream.profileUrl}
-            viewers={stream.viewers}
-            char={stream.tagText
-              .replace(/^\? *| *\?$|[《]/g, "")
-              .replace("》", " ")
-              .replace("〈", "《")
-              .replace("〉", "》")
-              .replace("Peacekeeper", "Deputy")
-              .trim()}
-            color={useColorsDark?.[stream.faction] ?? "#FFF"}
-            onClick={() => {
-              addStream(
-                stream.channelName,
-                stream.faction === "Kick" ? "kick" : "twitch",
-              );
-            }}
-          />
-        ))}
-      </div>
+      ))}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { Streams } from "../_components/streams";
 import { promises as fs } from "fs";
 import { type ChatroomsInfo, type PageParams } from "~/types";
 import { UpdateModalServerWrapper } from "../_components/updateModalServerWrapper";
-import { LeftBar } from "../_components/leftBar";
+import { RootBar } from "../_components/rootBar";
 import { MainBar } from "../_components/mainBar";
 import { NopixelBarWrapper } from "../_components/nopixelBarWrapper";
 import { SettingsModalWrapper } from "../_components/settingsModal";
@@ -38,10 +38,9 @@ export default async function Page({ params }: PageParams) {
     <>
       <Manager chatrooms={chatroomsLower} />
       <main className="flex min-h-screen bg-black text-white">
-        <LeftBar>
+        <RootBar>
           <NopixelBarWrapper chatrooms={chatrooms} />
-          <MainBar />
-        </LeftBar>
+        </RootBar>
         <UpdateModalServerWrapper params={params} />
         <SettingsModalWrapper />
         <Streams />

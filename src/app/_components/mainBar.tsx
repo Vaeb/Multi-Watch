@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { type MainState, useMainStore } from "../stores/mainStore";
-import { useCallback } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import { type GridMode } from "../stores/storeTypes";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
 
@@ -56,14 +56,15 @@ const LeftBarButton = ({
 
 const LeftBarText = ({ message }: LeftBarTextProps) => {
   return (
-    <div className="flex h-[60px] items-center justify-center">
-      <div className="ml-[6px] flex h-[42px] gap-3 text-left text-sm">
+    <div className="relative flex h-[60px] w-full flex-col items-center justify-center">
+      <div className="ml-[6px] flex h-[42px] w-full gap-3 text-left text-sm">
         <p className="absolute whitespace-nowrap opacity-65 group-hover:opacity-0">
           {message}
         </p>
-        <p className="absolute break-keep opacity-0 group-hover:opacity-100">
+        <p className="absolute whitespace-pre-line break-keep opacity-0 group-hover:opacity-100">
           {message}
         </p>
+        <p className="whitespace-pre-line break-keep opacity-0">{"\n\n"}</p>
       </div>
     </div>
   );
@@ -81,7 +82,7 @@ const nextLayoutText: Record<GridMode | "_", string> = {
   horiz: "Switch to grid",
 };
 
-export function MainBar() {
+export function MainBar({ children }: PropsWithChildren) {
   const {
     toggleUpdateShown,
     toggleSettingsShown,
@@ -105,41 +106,46 @@ export function MainBar() {
 
   return (
     <div
-      className={`flex w-full flex-col items-start gap-[6px] ${nopixelShown ? "invisible absolute" : ""}`}
+      className={`flex w-full flex-col items-start ${nopixelShown ? "" : ""}`}
     >
-      <LeftBarButton
-        imageUrl="/Edit_Profile.svg"
-        message="Update streams"
-        onClick={toggleUpdateShown}
-      />
-      <LeftBarButton
-        imageUrl="/np3.png"
-        message="Add NoPixel streams"
-        onClick={toggleNopixelCb}
-      />
-      <LeftBarButton
-        imageUrl={nextLayoutImage[nextLayoutMode]}
-        message={nextLayoutText[nextLayoutMode]}
-        onClick={toggleViewMode}
-      />
-      <LeftBarButton
-        imageUrl="/cycle2.svg"
-        message="Rotate streams"
-        onClick={cycleStreams}
-      />
-      <LeftBarButton
-        imageUrl="/chat3.png"
-        message={chatShown ? "Hide chat" : "Show chat"}
-        onClick={toggleChat}
-      />
-      <LeftBarButton
-        imageUrl="/settings.svg"
-        message="Settings"
-        onClick={toggleSettingsShown}
-      />
-      <LeftBarText
-        message={"Tip: Hover at the top of a stream to switch chat."}
-      />
+      <div className="no-scrollbar flex flex-col items-start gap-[6px] overflow-y-auto">
+        <LeftBarButton
+          imageUrl="/Edit_Profile.svg"
+          message="Update streams"
+          onClick={toggleUpdateShown}
+        />
+        <LeftBarButton
+          imageUrl="/np3.png"
+          message="Add NoPixel streams"
+          onClick={toggleNopixelCb}
+        />
+        <LeftBarButton
+          imageUrl={nextLayoutImage[nextLayoutMode]}
+          message={nextLayoutText[nextLayoutMode]}
+          onClick={toggleViewMode}
+        />
+        <LeftBarButton
+          imageUrl="/cycle2.svg"
+          message="Rotate streams"
+          onClick={cycleStreams}
+        />
+        <LeftBarButton
+          imageUrl="/chat3.png"
+          message={chatShown ? "Hide chat" : "Show chat"}
+          onClick={toggleChat}
+        />
+        <LeftBarButton
+          imageUrl="/settings.svg"
+          message="Settings"
+          onClick={toggleSettingsShown}
+        />
+        {nopixelShown ? null : (
+          <LeftBarText
+            message={"Tip: Hover at the top of a stream to switch chat."}
+          />
+        )}
+        {children}
+      </div>
     </div>
   );
 }
