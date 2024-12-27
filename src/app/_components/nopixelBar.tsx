@@ -131,11 +131,12 @@ function NopixelBarComponent({
   const { toggleNopixel } = useMainStore.getState().actions;
 
   const [receivedData, setReceivedData] = useState(_receivedData);
+  const [hydrateTime, setHydrateTime] = useState(+new Date());
 
-  const { parsed, time } = receivedData;
+  const { parsed } = receivedData;
   const { streams, useColorsDark } = parsed;
 
-  const timeFormatted = new Date(time)
+  const timeFormatted = new Date(hydrateTime)
     .toLocaleString("en-US", {
       hour: "numeric",
       minute: "numeric",
@@ -144,6 +145,7 @@ function NopixelBarComponent({
     .replace(" ", "\n");
 
   const hydrateStreamsHandler = useCallback(async () => {
+    const hydrateTime = +new Date();
     const received = await hydrateStreams();
     log(
       "[NopixelBar] Hydrating streams from server:",
@@ -152,6 +154,7 @@ function NopixelBarComponent({
       getDateString(new Date(received.time)),
     );
     setReceivedData(received);
+    setHydrateTime(hydrateTime);
     return received;
   }, []);
 
