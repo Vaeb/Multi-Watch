@@ -6,21 +6,24 @@ import { useMainStore } from "../stores/mainStore";
 import { useShallow } from "zustand/shallow";
 
 export function RootBar({ children }: PropsWithChildren) {
-  const [viewMode, nopixelShown] = useMainStore(
-    useShallow((state) => [state.viewMode, state.nopixelShown]),
+  const [nopixelShownWithStream, multiFocus] = useMainStore(
+    useShallow((state) => [
+      state.nopixelShown && state.streams.length > 0,
+      state.viewMode === "focused" && state.streams.length > 1,
+    ]),
   );
   const focusHeight = usePersistStore((state) => state.focusHeight);
 
   return (
     <div
       style={
-        nopixelShown
+        nopixelShownWithStream
           ? {
               clipPath: `polygon(
           /* top-left */            0%   0%,
           /* top-right */           100% 0%,
           ${
-            viewMode === "focused"
+            multiFocus
               ? `
           /* down to where first hole starts */  
                                     100% calc(${focusHeight}% - 10px - 30px),
