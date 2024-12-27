@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { type MainState, useMainStore } from "../stores/mainStore";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { type GridMode } from "../stores/storeTypes";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
 
@@ -81,7 +81,7 @@ const nextLayoutText: Record<GridMode | "_", string> = {
   horiz: "Switch to grid",
 };
 
-export function MainBar() {
+const MainBarComponent = () => {
   const {
     toggleUpdateShown,
     toggleSettingsShown,
@@ -142,4 +142,6 @@ export function MainBar() {
       />
     </div>
   );
-}
+};
+
+export const MainBar = memo(MainBarComponent);
