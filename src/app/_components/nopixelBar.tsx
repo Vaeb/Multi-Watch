@@ -213,7 +213,9 @@ function NopixelBarComponent({
             .trim(),
           platform: (stream.faction === "Kick" ? "kick" : "twitch") as Platform,
           channelTop:
-            stream.noOthersInclude === false || stream.faction === "Kick",
+            stream.noOthersInclude === false ||
+            stream.faction === "Kick" ||
+            stream.characterName === null,
         };
       }),
     [streams],
