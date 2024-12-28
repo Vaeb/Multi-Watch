@@ -101,9 +101,9 @@ const StreamIcon = ({
         />
         <div className="flex flex-col items-start">
           <div className="flex items-center gap-2">
-            <p>{channel}</p>
+            <p className="flex-1 overflow-hidden truncate">{channel}</p>
             <p
-              className={`text-xs ${platform === "twitch" ? "text-red-500" : "text-green-500"} opacity-70 group-hover/stream:opacity-100`}
+              className={`flex-shrink-0 text-xs ${platform === "twitch" ? "text-red-500" : "text-green-500"} opacity-70 group-hover/stream:opacity-100`}
             >
               ⦿{" "}
               {viewers < 1000
@@ -111,7 +111,7 @@ const StreamIcon = ({
                 : `${parseFloat((viewers / 1e3).toFixed(1))}K`}
             </p>
           </div>
-          <p className="text-xs">{char}</p>
+          <p className="whitespace-nowrap text-xs">{char}</p>
         </div>
       </button>
     </div>
@@ -228,7 +228,7 @@ function NopixelBarComponent({
       className={`${nopixelShown ? "" : "invisible absolute"} flex h-[100vh] w-full flex-col items-start gap-0 py-[9px]`}
     >
       <NopixelBarButton alt="Update streams" onClick={toggleNopixel} />
-      <div className="no-scrollbar flex flex-col items-start gap-3 overflow-y-auto pt-3">
+      <div className="no-scrollbar flex flex-col items-start gap-3 overflow-y-auto overflow-x-hidden pt-3">
         <NopixelBarText
           message={`⦿ ${streams?.length ?? 0} streams live`}
           shortMessage={`⦿ ${streams?.length ?? 0}`}
