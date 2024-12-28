@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { addStream } from "../utils/addStream";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import WhiteXIcon from "./icons/whiteXIcon";
@@ -200,6 +200,25 @@ function NopixelBarComponent({
     _receivedData.needsKickLiveStreams,
   ]);
 
+  const streamsAdditional = useMemo(
+    () =>
+      streams.map((stream) => {
+        return {
+          tagText: stream.tagText
+            .replace(/^\? *| *\?$|[《]/g, "")
+            .replace("》", " ")
+            .replace("〈", "《")
+            .replace("〉", "》")
+            .replace("Peacekeeper", "Deputy")
+            .trim(),
+          platform: (stream.faction === "Kick" ? "kick" : "twitch") as Platform,
+          channelTop:
+            stream.noOthersInclude === false || stream.faction === "Kick",
+        };
+      }),
+    [streams],
+  );
+
   // 18+(42+12)*15-12
   // 816px
   return (
@@ -218,26 +237,25 @@ function NopixelBarComponent({
           shortMessage={`${timeFormatted}`}
           shortWrap={true}
         />
-        {streams?.map((stream) => (
+        {streams?.map((stream, i) => (
           <StreamIcon
             key={stream.channelName}
-            platform={stream.faction === "Kick" ? "kick" : "twitch"}
-            channel={stream.channelName}
+            platform={streamsAdditional[i]!.platform}
+            channel={
+              streamsAdditional[i]!.channelTop
+                ? stream.channelName
+                : streamsAdditional[i]!.tagText
+            }
             imageUrl={stream.profileUrl}
             viewers={stream.viewers}
-            char={stream.tagText
-              .replace(/^\? *| *\?$|[《]/g, "")
-              .replace("》", " ")
-              .replace("〈", "《")
-              .replace("〉", "》")
-              .replace("Peacekeeper", "Deputy")
-              .trim()}
+            char={
+              streamsAdditional[i]!.channelTop
+                ? streamsAdditional[i]!.tagText
+                : stream.channelName
+            }
             color={useColorsDark?.[stream.faction] ?? "#FFF"}
             onClick={() => {
-              addStream(
-                stream.channelName,
-                stream.faction === "Kick" ? "kick" : "twitch",
-              );
+              addStream(stream.channelName, streamsAdditional[i]!.platform);
             }}
           />
         ))}

@@ -28,7 +28,7 @@ const cachePromise = new Promise<CachedStreams>((resolve) => {
   cacheResolve = resolve;
 });
 
-const getData = async () => {
+const getTwitchData = async () => {
   try {
     const url = IS_LOCALHOST
       ? "https://vaeb.io:3030/live"
@@ -93,8 +93,8 @@ const mergeKickIntoParsed = (
   return parsed;
 };
 
-const queryParsedNopixelData = async () => {
-  const data = await getData();
+const getParsedTwitchData = async () => {
+  const data = await getTwitchData();
 
   const { streams, useColorsDark } = data || {};
 
@@ -109,15 +109,15 @@ const queryParsedNopixelData = async () => {
     useColorsDark,
   };
 
-  log("Got data!", parsed.streams?.length);
+  log("[getStreams] Got twitch data!", parsed.streams?.length);
 
   return parsed;
 };
 
-const dataQueryCallback = (
+const getParsedTwitchDataCb = (
   callback: (parsed: RemoteParsed) => void | Promise<void>,
 ) => {
-  queryParsedNopixelData().then(callback).catch(console.error);
+  getParsedTwitchData().then(callback).catch(console.error);
 };
 
 export const init = async () => {
@@ -132,7 +132,7 @@ export const init = async () => {
   if (!globalData.cachedKickStreams) globalData.cachedKickStreams = [];
   if (!globalData.cachedKickTime) globalData.cachedKickTime = 0;
 
-  dataQueryCallback(async (parsed) => {
+  getParsedTwitchDataCb(async (parsed) => {
     const isFirst = globalData.cachedTwitch === undefined;
     globalData.cachedTwitch = parsed;
     globalData.cachedTwitchTime = +new Date();
@@ -145,7 +145,7 @@ export const init = async () => {
   });
 
   setInterval(() => {
-    dataQueryCallback((parsed) => {
+    getParsedTwitchDataCb((parsed) => {
       globalData.cachedTwitch = parsed;
       globalData.cachedTwitchTime = +new Date();
     });
@@ -155,14 +155,6 @@ export const init = async () => {
 export const getStreams = async (): Promise<RemoteReceived> => {
   const needsKickLiveStreams =
     +new Date() - globalData.cachedKickTime > NOPIXEL_DATA_INTERVAL - 1000 * 10;
-
-  log(
-    "[getParsedNopixelData] needsKickLiveStreams:",
-    needsKickLiveStreams,
-    +new Date() - globalData.cachedKickTime,
-    globalData.cachedKickTime,
-    globalData.cachedKickStreams.length,
-  );
 
   const { cachedTwitch, cachedTwitchTime } =
     globalData.cachedTwitch !== undefined
@@ -174,10 +166,12 @@ export const getStreams = async (): Promise<RemoteReceived> => {
     globalData.cachedKickStreams,
   );
 
-  console.log(
+  log(
+    "[getParsedNopixelData] Server responding with cached streams:",
     mergedStreams.streams.length,
     cachedTwitch.streams.length,
     globalData.cachedKickStreams.length,
+    needsKickLiveStreams,
   );
 
   return {
