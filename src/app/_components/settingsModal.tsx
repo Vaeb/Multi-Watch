@@ -139,7 +139,7 @@ function SettingsModal() {
         <SettingsOption
           setting="Chat width"
           values={makeNumsInterval(120, 870, 50)}
-          mapper={(val) => (val as number) - 20}
+          mapper={(val) => ((val as number) - 20) / 50 - 1}
           current={chatWidth}
           cb={setChatWidth}
         />
