@@ -3,7 +3,8 @@
 import { memo } from "react";
 import { Player } from "./videoClient";
 import { type MainState, useMainStore } from "../stores/mainStore";
-import { Chat, ChatContainer } from "./chat";
+import { Chat } from "./chat";
+import { ChatContainer } from "./chatContainer";
 import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chatWrapper";
 import { PlayerWrapper } from "./playerWrapper";

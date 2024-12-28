@@ -4,10 +4,11 @@ import { useShallow } from "zustand/shallow";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { useState } from "react";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
-import { Autoplay, type GridMode } from "../stores/storeTypes";
+import { type Autoplay, type GridMode } from "../stores/storeTypes";
 import { useStableCallback } from "../hooks/useStableCallback";
 import { noprop } from "../utils/noprop";
 import { log } from "../utils/log";
+import { makeNumsInterval } from "../utils/makeNumsInterval";
 
 interface ModalButtonProps {
   text: string;
@@ -28,18 +29,12 @@ function ModalButton({ text, onClick }: ModalButtonProps) {
 const selectorMain = (state: MainState) => ({
   actions: state.actions,
 });
-const selectorPersist = (state: PersistState) => ({
-  autoplay: state.autoplay,
-  gridMode: state.gridMode,
-  focusHeight: state.focusHeight,
-  actions: state.actions,
-});
 const selectorWrapper = (state: MainState) => state.settingsShown;
 
 interface SettingsOptionProps {
   setting: string;
   values: (string | number)[];
-  mapper?: string[];
+  mapper?: string[] | ((value: string | number) => string | number);
   current: string | number;
   cb?: (value: any) => void;
 }
@@ -70,7 +65,11 @@ const SettingsOption = ({
         >
           {values.map((value, i) => (
             <option key={`${setting}-${value}`} value={value}>
-              {mapper ? mapper[i] : value}
+              {mapper
+                ? typeof mapper === "function"
+                  ? mapper(value)
+                  : mapper[i]
+                : value}
             </option>
           ))}
         </select>
@@ -84,12 +83,21 @@ function SettingsModal() {
     actions: { toggleSettingsShown },
   } = useMainStore(useShallow(selectorMain));
 
-  const {
+  const [
+    { resetDefaults, setGridMode, setAutoplay, setFocusHeight, setChatWidth },
     autoplay,
     gridMode,
     focusHeight,
-    actions: { resetDefaults, setGridMode, setAutoplay, setFocusHeight },
-  } = usePersistStore(useShallow(selectorPersist));
+    chatWidth,
+  ] = usePersistStore(
+    useShallow((state) => [
+      state.actions,
+      state.autoplay,
+      state.gridMode,
+      state.focusHeight,
+      state.chatWidth,
+    ]),
+  );
 
   const [seed, setSeed] = useState(-1);
 
@@ -122,11 +130,18 @@ function SettingsModal() {
           cb={setGridMode}
         />
         <SettingsOption
-          setting="Focused stream size"
-          values={new Array(90 - 10 + 1).fill(0).map((val, i) => 10 + i)}
-          // mapper={["Vertical", "Horizontal"]}
+          setting="Focused stream height"
+          values={makeNumsInterval(10, 90, 1)}
+          mapper={(val) => (val as number) - 9}
           current={focusHeight}
           cb={setFocusHeight}
+        />
+        <SettingsOption
+          setting="Chat width"
+          values={makeNumsInterval(120, 870, 50)}
+          mapper={(val) => (val as number) - 20}
+          current={chatWidth}
+          cb={setChatWidth}
         />
         <div className="flex gap-2">
           <ModalButton text="Use defaults" onClick={resetDefaultsCb} />
