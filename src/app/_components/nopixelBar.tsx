@@ -1,11 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { addStream } from "../utils/addStream";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import WhiteXIcon from "./icons/whiteXIcon";
-import { type Platform, type RemoteReceived } from "../../types";
+import {
+  type RemoteParsed,
+  type Platform,
+  type RemoteReceived,
+  type RemoteStream,
+} from "../../types";
 import { hydrateStreams } from "../actions/hydrateStreams";
 import { getDateString, log } from "../utils/log";
 import { NOPIXEL_DATA_INTERVAL } from "../constants";
@@ -14,24 +19,20 @@ import { randomInt } from "../utils/randomInt";
 import { type KickState } from "../stores/kickStore";
 import { fetchKickLive } from "../utils/fetchKickLive";
 import { updateServerKickLive } from "../actions/updateServerKickLive";
+import { BarText } from "./BarText";
 
 interface NopixelBarButtonProps {
   alt: string;
   onClick: (...args: any[]) => any;
 }
 
-interface NopixelBarTextProps {
-  message: string;
-  shortMessage: string;
-  shortWrap?: boolean;
-}
-
 interface StreamIconProps {
   platform: Platform;
   channel: string;
+  topText: string;
   imageUrl: string;
   viewers: number;
-  char: string;
+  bottomText: string;
   color: string;
   onClick?: (...args: any[]) => any;
 }
@@ -53,55 +54,34 @@ const NopixelBarButton = ({ alt, onClick }: NopixelBarButtonProps) => {
   );
 };
 
-const NopixelBarText = ({
-  message,
-  shortMessage,
-  shortWrap,
-}: NopixelBarTextProps) => {
-  return (
-    <div className="flex items-center justify-center">
-      <div className="ml-[6px] flex text-left text-sm">
-        <p
-          className={`${shortWrap ? "break-word" : "whitespace-nowrap"} absolute opacity-65 group-hover:opacity-0`}
-        >
-          {shortMessage}
-        </p>
-        <p className="break-keep opacity-0 group-hover:opacity-100">
-          {message}
-        </p>
-      </div>
-    </div>
-  );
-};
-
 const StreamIcon = ({
   platform,
-  channel,
+  topText,
   imageUrl,
   viewers,
-  char,
+  bottomText,
   color,
   onClick,
 }: StreamIconProps) => {
   return (
-    <div className="flex h-[60px] items-center justify-center">
+    <div className="flex h-[42px] items-center justify-center">
       <button
         className="group/stream flex h-[42px] items-center gap-2 opacity-50 group-hover:opacity-100"
         style={{ color }}
         onClick={onClick}
-        aria-label={channel}
+        aria-label={topText}
       >
         <Image
-          className="h-[42px] rounded-full"
+          className="h-[42px] w-[42px] rounded-full"
           src={imageUrl}
           width={42}
           height={42}
-          aria-label={channel}
-          alt={channel}
+          aria-label={topText}
+          alt={topText}
         />
         <div className="flex flex-col items-start">
           <div className="flex items-center gap-2">
-            <p className="flex-1 overflow-hidden truncate">{channel}</p>
+            <p className="flex-1 truncate">{topText}</p>
             <p
               className={`flex-shrink-0 text-xs ${platform === "twitch" ? "text-red-500" : "text-green-500"} opacity-70 group-hover/stream:opacity-100`}
             >
@@ -111,14 +91,119 @@ const StreamIcon = ({
                 : `${parseFloat((viewers / 1e3).toFixed(1))}K`}
             </p>
           </div>
-          <p className="whitespace-nowrap text-xs">{char}</p>
+          <p className="whitespace-nowrap text-xs">{bottomText}</p>
         </div>
       </button>
     </div>
   );
 };
 
-const selector2 = (state: MainState) => state.nopixelShown;
+const isStreamAllowed = (factionFilter: string, stream: RemoteStream) => {
+  if (stream.faction === "Kick") return false;
+
+  let allowStream = false;
+
+  if (factionFilter === "publicnp") {
+    allowStream = stream.tagFactionSecondary === "publicnp";
+  } else if (factionFilter === "international") {
+    allowStream = stream.tagFactionSecondary === "international";
+  } else {
+    if (stream.factionsMap[factionFilter]) {
+      allowStream = true;
+    } else if (factionFilter === "independent" && stream.factionsMap.othernp) {
+      allowStream = true;
+    }
+  }
+
+  return allowStream;
+};
+
+const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
+  factions,
+  useColorsDark,
+  setFactionFilter,
+}: {
+  factions: RemoteParsed["filterFactions"];
+  useColorsDark: RemoteParsed["useColorsDark"];
+  setFactionFilter: (slug: string) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [showFactions, setShowFactions] = useState(false);
+  const [factionValue, setFactionValue] = useState<
+    RemoteParsed["filterFactions"][0]
+  >(factions[0]!);
+  const [filterText, setFilterText] = useState("");
+
+  const watchClickOutside = useCallback((e: MouseEvent) => {
+    const didClickOutside = !containerRef?.current?.contains(e.target as Node);
+    if (didClickOutside) {
+      setShowFactions(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("click", watchClickOutside);
+    return () => document.removeEventListener("click", watchClickOutside);
+  }, [watchClickOutside]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative ml-[6px] flex w-full select-none flex-col"
+    >
+      <div
+        className="relative flex h-[30px] w-fit cursor-pointer items-center gap-2 whitespace-nowrap border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.2)] bg-clip-padding py-[0.5rem] pl-[10px] pr-[24px] text-sm font-semibold leading-[100%] focus:outline-none"
+        style={{
+          color: useColorsDark[factionValue[0]] || useColorsDark.independent,
+          transition: `box-shadow 0.1s ease-in, border 0.1s ease-in, background-color 0.1s ease-in`,
+        }}
+        onClick={() => setShowFactions((val) => !val)}
+      >
+        <span>{factionValue[1]}</span>
+        <span className="text-xl leading-[100%]">▾</span>
+      </div>
+
+      {showFactions ? (
+        <div
+          className="absolute top-[30px] z-10 box-border block max-h-[377px] w-[calc(100%-12px)] overflow-auto border-[1px] border-t-0 border-[rgb(134,91,215)] bg-black py-2"
+          style={{
+            boxShadow: `rgba(0,0,0,0.4) 0px 4px 8px, rgba(0,0,0,0.4) 0px 0px 4px`,
+          }}
+        >
+          <input
+            className="select-option relative overflow-clip bg-transparent text-[rgba(255,255,255,0.8)] focus:outline-none"
+            placeholder="Search..."
+            value={filterText}
+            autoFocus
+            onChange={(e) => setFilterText(e.target.value)}
+          ></input>
+          {(filterText.length
+            ? factions.filter(([_, name]) =>
+                name.toLowerCase().includes(filterText),
+              )
+            : factions
+          ).map((faction) => (
+            <div // [slug, name, live, _id]
+              key={`faction-${faction[0]}`}
+              className="select-option relative cursor-pointer whitespace-nowrap hover:bg-[rgb(134,91,215)]"
+              style={{
+                color: useColorsDark[faction[0]] || useColorsDark.independent,
+              }}
+              onClick={() => {
+                setFactionValue(faction);
+                setFactionFilter(faction[0]);
+                setShowFactions(false);
+              }}
+            >
+              {faction[1]}
+              {faction[2] ? "" : " (Not Live)"}
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+});
 
 function NopixelBarComponent({
   receivedData: _receivedData,
@@ -127,14 +212,16 @@ function NopixelBarComponent({
   receivedData: RemoteReceived;
   chatrooms: KickState["chatrooms"];
 }) {
-  const nopixelShown = useMainStore(selector2);
+  const nopixelShown = useMainStore((state: MainState) => state.nopixelShown);
   const { toggleNopixel } = useMainStore.getState().actions;
 
   const [receivedData, setReceivedData] = useState(_receivedData);
   const [hydrateTime, setHydrateTime] = useState(+new Date());
 
   const { parsed } = receivedData;
-  const { streams, useColorsDark } = parsed;
+  const { streams, filterFactions, useColorsDark } = parsed;
+
+  const [factionFilter, setFactionFilter] = useState(filterFactions[0]![0]);
 
   const timeFormatted = new Date(hydrateTime)
     .toLocaleString("en-US", {
@@ -200,9 +287,17 @@ function NopixelBarComponent({
     _receivedData.needsKickLiveStreams,
   ]);
 
-  const streamsAdditional = useMemo(
+  const filteredStreams = useMemo(
     () =>
-      streams.map((stream) => {
+      factionFilter === "allnopixel"
+        ? streams
+        : streams.filter(isStreamAllowed.bind(null, factionFilter)),
+    [streams, factionFilter],
+  );
+
+  const filteredStreamsAdditional = useMemo(
+    () =>
+      filteredStreams.map((stream) => {
         return {
           tagText: stream.tagText
             .replace(/^\? *| *\?$|[《]/g, "")
@@ -218,7 +313,7 @@ function NopixelBarComponent({
             stream.characterName === null,
         };
       }),
-    [streams],
+    [filteredStreams],
   );
 
   // 18+(42+12)*15-12
@@ -228,36 +323,48 @@ function NopixelBarComponent({
       className={`${nopixelShown ? "" : "invisible absolute"} flex h-[100vh] w-full flex-col items-start gap-0 py-[9px]`}
     >
       <NopixelBarButton alt="Update streams" onClick={toggleNopixel} />
-      <div className="no-scrollbar flex flex-col items-start gap-3 overflow-y-auto overflow-x-hidden pt-3">
-        <NopixelBarText
+      <div // min-h-[32 + 377]
+        className={`no-scrollbar flex min-h-[507px] w-full flex-col items-start gap-3 overflow-y-auto overflow-x-hidden pt-3`}
+      >
+        <BarText
           message={`⦿ ${streams?.length ?? 0} streams live`}
           shortMessage={`⦿ ${streams?.length ?? 0}`}
           shortWrap={false}
         />
-        <NopixelBarText
+        <BarText
           message={`Last refreshed streams at ${timeFormatted}`}
           shortMessage={`${timeFormatted}`}
           shortWrap={true}
+          maxLines={2}
         />
-        {streams?.map((stream, i) => (
+        <NopixelFactionFilter
+          factions={filterFactions}
+          useColorsDark={useColorsDark}
+          setFactionFilter={setFactionFilter}
+        />
+        {filteredStreams.map((stream, i) => (
           <StreamIcon
             key={stream.channelName}
-            platform={streamsAdditional[i]!.platform}
-            channel={
-              streamsAdditional[i]!.channelTop
+            platform={filteredStreamsAdditional[i]!.platform}
+            channel={stream.channelName}
+            topText={
+              filteredStreamsAdditional[i]!.channelTop
                 ? stream.channelName
-                : streamsAdditional[i]!.tagText
+                : filteredStreamsAdditional[i]!.tagText
             }
             imageUrl={stream.profileUrl}
             viewers={stream.viewers}
-            char={
-              streamsAdditional[i]!.channelTop
-                ? streamsAdditional[i]!.tagText
+            bottomText={
+              filteredStreamsAdditional[i]!.channelTop
+                ? filteredStreamsAdditional[i]!.tagText
                 : stream.channelName
             }
             color={useColorsDark?.[stream.faction] ?? "#FFF"}
             onClick={() => {
-              addStream(stream.channelName, streamsAdditional[i]!.platform);
+              addStream(
+                stream.channelName,
+                filteredStreamsAdditional[i]!.platform,
+              );
             }}
           />
         ))}

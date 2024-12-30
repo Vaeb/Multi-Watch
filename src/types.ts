@@ -31,6 +31,7 @@ export interface RemoteStream {
   nicknameLookup: string;
   faction: string;
   tagFaction: string;
+  tagFactionSecondary?: string;
   tagText: string;
   factions: string[];
   factionsMap: Record<string, boolean>;
@@ -43,6 +44,7 @@ export interface RemoteStream {
 
 export interface RemoteParsed {
   streams: RemoteStream[];
+  filterFactions: RemoteLive["filterFactions"];
   useColorsDark: Record<string, string>;
 }
 

@@ -5,6 +5,7 @@ import { type MainState, useMainStore } from "../stores/mainStore";
 import { memo, useCallback } from "react";
 import { type GridMode } from "../stores/storeTypes";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
+import { BarText } from "./BarText";
 
 const selector = (state: MainState) => state.actions;
 const selector2 = (state: MainState) => state.nopixelShown;
@@ -18,10 +19,6 @@ interface LeftBarButtonProps {
   onClick: (...args: any[]) => any;
   style?: any;
   children?: React.ReactElement;
-}
-
-interface LeftBarTextProps {
-  message: string;
 }
 
 const LeftBarButton = ({
@@ -50,21 +47,6 @@ const LeftBarButton = ({
         </div>
         <p>{message}</p>
       </button>
-    </div>
-  );
-};
-
-const LeftBarText = ({ message }: LeftBarTextProps) => {
-  return (
-    <div className="flex h-[60px] items-center justify-center">
-      <div className="ml-[6px] flex h-[42px] gap-3 text-left text-sm">
-        <p className="absolute whitespace-nowrap opacity-65 group-hover:opacity-0">
-          {message}
-        </p>
-        <p className="absolute break-keep opacity-0 group-hover:opacity-100">
-          {message}
-        </p>
-      </div>
     </div>
   );
 };
@@ -137,8 +119,9 @@ const MainBarComponent = () => {
         message="Settings"
         onClick={toggleSettingsShown}
       />
-      <LeftBarText
+      <BarText
         message={"Tip: Hover at the top of a stream to switch chat."}
+        maxLines={2}
       />
     </div>
   );
