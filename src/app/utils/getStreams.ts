@@ -19,6 +19,7 @@ type GlobalData = typeof global &
   Partial<CachedStreams> & {
     cachedKickStreams: RemoteKickLivestream[];
     cachedKickTime: number;
+    connected: number;
   };
 
 const globalData = global as GlobalData;
@@ -34,14 +35,12 @@ const getTwitchData = async () => {
       ? "https://vaeb.io:3030/live"
       : "http://localhost:3029/live";
 
-    // console.trace();
-    log("Fetching NoPixel data from", url);
+    // log("Fetching NoPixel data from", url);
 
     const dataRaw = await fetch(url);
     const data = (await dataRaw.json()) as RemoteLive;
     data.useColorsDark.Kick = "#00e701";
 
-    // log("[getData]", Object.keys(data));
     return data;
   } catch (err) {
     log("[getData] error:", err);
@@ -114,7 +113,9 @@ const getParsedTwitchData = async () => {
     useColorsDark,
   };
 
-  log("[getStreams] Got twitch data!", parsed.streams?.length);
+  if (!parsed.streams?.length) {
+    log("[getStreams] No parsed twitch data!", parsed.streams?.length);
+  }
 
   return parsed;
 };
@@ -136,6 +137,7 @@ export const init = async () => {
 
   if (!globalData.cachedKickStreams) globalData.cachedKickStreams = [];
   if (!globalData.cachedKickTime) globalData.cachedKickTime = 0;
+  if (!globalData.connected) globalData.connected = 0;
 
   getParsedTwitchDataCb(async (parsed) => {
     const isFirst = globalData.cachedTwitch === undefined;
@@ -154,10 +156,12 @@ export const init = async () => {
       globalData.cachedTwitch = parsed;
       globalData.cachedTwitchTime = +new Date();
     });
+    log(`[getStreams] Clients:`, globalData.connected);
+    globalData.connected = 0;
   }, NOPIXEL_DATA_INTERVAL);
 };
 
-export const getStreams = async (): Promise<RemoteReceived> => {
+const _getStreams = async (): Promise<RemoteReceived> => {
   const needsKickLiveStreams =
     +new Date() - globalData.cachedKickTime > NOPIXEL_DATA_INTERVAL - 1000 * 10;
 
@@ -171,14 +175,6 @@ export const getStreams = async (): Promise<RemoteReceived> => {
     globalData.cachedKickStreams,
   );
 
-  log(
-    "[getParsedNopixelData] Server responding with cached streams:",
-    mergedStreams.streams.length,
-    cachedTwitch.streams.length,
-    globalData.cachedKickStreams.length,
-    needsKickLiveStreams,
-  );
-
   return {
     parsed: mergedStreams,
     time: cachedTwitchTime,
@@ -186,8 +182,39 @@ export const getStreams = async (): Promise<RemoteReceived> => {
   };
 };
 
-export const setKickStreams = (kickStreams: RemoteKickLivestream[]) => {
+export const getStreams = async (): Promise<RemoteReceived> => {
+  globalData.connected++;
+
+  // log(
+  //   "[getParsedNopixelData] Server responding with cached streams:",
+  //   mergedStreams.streams.length,
+  //   cachedTwitch.streams.length,
+  //   globalData.cachedKickStreams.length,
+  //   needsKickLiveStreams,
+  // );
+
+  return _getStreams();
+};
+
+export async function setKickStreams(
+  kickStreams: RemoteKickLivestream[],
+  hydrateReceived: true,
+): Promise<RemoteReceived>;
+export async function setKickStreams(
+  kickStreams: RemoteKickLivestream[],
+  hydrateReceived: false,
+): Promise<undefined>;
+export async function setKickStreams(
+  kickStreams: RemoteKickLivestream[],
+  hydrateReceived: true | false,
+) {
   globalData.cachedKickStreams = kickStreams;
   globalData.cachedKickTime = +new Date();
-  log("[setKickStreams] Set kick streams:", kickStreams.length);
-};
+  // log("[setKickStreams] Set kick streams:", kickStreams.length);
+
+  if (hydrateReceived === true) {
+    return _getStreams();
+  }
+
+  return undefined;
+}

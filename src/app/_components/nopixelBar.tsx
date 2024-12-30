@@ -231,29 +231,32 @@ function NopixelBarComponent({
     })
     .replace(" ", "\n");
 
-  const hydrateStreamsHandler = useCallback(async () => {
-    const hydrateTime = +new Date();
-    const received = await hydrateStreams();
-    log(
-      "[NopixelBar] Hydrating streams from server:",
-      received.parsed.streams.length,
-      "from",
-      getDateString(new Date(received.time)),
-    );
-    setReceivedData(received);
-    setHydrateTime(hydrateTime);
-    return received;
-  }, []);
+  const hydrateStreamsHandler = useCallback(
+    async (_received?: RemoteReceived) => {
+      const hydrateTime = +new Date();
+      const received = _received ?? (await hydrateStreams());
+      log(
+        "[NopixelBar] Hydrating streams from server:",
+        received.parsed.streams.length,
+        "from",
+        getDateString(new Date(received.time)),
+      );
+      setReceivedData(received);
+      setHydrateTime(hydrateTime);
+      return received;
+    },
+    [],
+  );
 
   const updateLiveKickStreams = useCallback(async () => {
     log("[NopixelBar] Needs kick live streams...");
     const kickStreams = await fetchKickLive(chatrooms);
-    await updateServerKickLive(kickStreams);
+    const received = await updateServerKickLive(kickStreams);
     log(
       "[NopixelBar] Updated server kick streams",
       kickStreams.map((stream) => `${stream.channelName} ${stream.viewers}`),
     );
-    hydrateStreamsHandler().catch(console.error);
+    hydrateStreamsHandler(received).catch(console.error);
   }, [hydrateStreamsHandler, chatrooms]);
 
   useEffect(() => {

@@ -6,5 +6,7 @@ import { setKickStreams } from "../utils/getStreams";
 export const updateServerKickLive = async (
   kickStreams: RemoteKickLivestream[],
 ) => {
-  setKickStreams(kickStreams);
+  const received = await setKickStreams(kickStreams, true);
+
+  return received;
 };
