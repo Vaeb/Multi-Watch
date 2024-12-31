@@ -7,6 +7,18 @@ import { orderStreams } from "../utils/orderStreams";
 import { stateApplyLog } from "./storeUtils";
 import { type Stream, type ViewMode } from "./storeTypes";
 import { useKickStore } from "./kickStore";
+import { log } from "../utils/log";
+
+const fromNewChannels = <T extends Record<string, any>>(
+  channels: string[],
+  base: T,
+) =>
+  Object.assign(
+    {},
+    ...channels.map((channel) => ({
+      [channel]: base[channel],
+    })),
+  ) as T;
 
 export interface MainState {
   initialised: boolean;
@@ -29,7 +41,10 @@ export interface MainState {
   actions: {
     markInitialised: () => void;
 
-    setStreams: (streams: Stream[]) => void;
+    setStreams: (
+      streams: Stream[],
+      streamPositions?: MainState["streamPositions"],
+    ) => void;
     cycleStreams: () => void;
     setStreamPlayer: (channel: string, player: any) => void;
     setManuallyMuted: (channel: string, muted: boolean) => void;
@@ -72,7 +87,7 @@ export const useMainStore = create<MainState>()(
       actions: {
         markInitialised: () => set({ initialised: true }),
 
-        setStreams: (streams) => {
+        setStreams: (streams, streamPositions) => {
           const channels = streams.map((stream) => stream.value);
 
           set((state) => {
@@ -81,15 +96,21 @@ export const useMainStore = create<MainState>()(
               ...streams.map((stream) => ({ [stream.value]: stream })),
             ) as Record<string, Stream>;
 
+            log("setStreams", streams, streamPositions);
+
             return {
               streams,
               streamsMap,
-              streamPositions: Object.assign(
-                {},
-                ...channels.map((channel, i) => ({ [channel]: i })),
-              ) as Record<string, number>,
-              streamPlayer: {},
-              manuallyMuted: {},
+              streamPositions:
+                streamPositions ??
+                (Object.assign(
+                  {},
+                  ...orderStreams(streams).map(({ value }, i) => ({
+                    [value]: i,
+                  })),
+                ) as Record<string, number>),
+              streamPlayer: fromNewChannels(channels, state.streamPlayer),
+              manuallyMuted: fromNewChannels(channels, state.manuallyMuted),
               newestStream: streamsMap[state.newestStream]
                 ? state.newestStream
                 : "",
@@ -116,7 +137,7 @@ export const useMainStore = create<MainState>()(
             window.history.pushState(
               {},
               "",
-              streamsToPath(orderStreams(streams, streamPositions)),
+              streamsToPath(streams, streamPositions),
             );
 
             return { streamPositions };
@@ -124,7 +145,6 @@ export const useMainStore = create<MainState>()(
 
         setStreamPlayer: (channel, player) =>
           set((state) => ({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             streamPlayer: { ...state.streamPlayer, [channel]: player },
           })),
 

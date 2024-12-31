@@ -96,9 +96,30 @@ function UpdateModal() {
   }, []);
 
   const submitClick = useCallback(() => {
+    // Identify original (unordered) `streams` indexes
+    const streamsBaseOrder = Object.assign(
+      {},
+      ..._streams.map(({ value }, i) => ({ [value]: i })),
+    ) as Record<string, number>;
+
     const finalChannels = channels.filter(({ value }) => value);
 
-    const newPathname = streamsToPath(finalChannels);
+    // Pass custom updated streamPositions
+    const streamPositions = Object.assign(
+      {},
+      ...finalChannels.map(({ value }, i) => ({
+        [value]: i,
+      })),
+    ) as Record<string, number>;
+
+    // Retain original `streams` indexes to prevent re-rendering issues(?) - AFTER streamPositions calc
+    finalChannels.sort(
+      (a, b) =>
+        (streamsBaseOrder[a.value] ?? 9999) -
+        (streamsBaseOrder[b.value] ?? 9999),
+    );
+
+    const newPathname = streamsToPath(finalChannels, streamPositions);
 
     const firstNewStream =
       finalChannels.find(
@@ -113,6 +134,7 @@ function UpdateModal() {
 
     setStreams(
       finalChannels.map(({ value, type }) => ({ value: value, type })),
+      streamPositions,
     );
     setNewestStream(firstNewStream);
     setSelectedChat(firstNewStream);
@@ -120,6 +142,7 @@ function UpdateModal() {
     setUpdateShown(false);
   }, [
     channels,
+    _streams,
     streams,
     setStreams,
     setNewestStream,

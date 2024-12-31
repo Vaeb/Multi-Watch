@@ -51,7 +51,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   //   useCallback((state) => !!state.manuallyMuted[channel], [channel]),
   // );
 
-  const [id] = useState(getId);
+  const [id] = useState(`${type}-${channel}`);
   const playerRef = useRef<TwitchPlayerInstance | null>(null);
   const ref = useRef<HTMLIFrameElement | null>(null);
   const [seed, setSeed] = useState(-1);

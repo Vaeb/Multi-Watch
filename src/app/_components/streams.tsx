@@ -9,7 +9,7 @@ import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chatWrapper";
 import { PlayerWrapper } from "./playerWrapper";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
-import { log } from "../utils/log";
+// import { log } from "../utils/log";
 
 const selector = (state: MainState) => ({
   streams: state.streams,
@@ -30,12 +30,12 @@ function StreamsComponent() {
   const { gridMode, focusHeight } = usePersistStore(
     useShallow(selectorPersist),
   );
-  log("[Page Streams] Re-rendered");
+  // log("[Page Streams] Re-rendered");
 
   return (
     <div className="flex flex-1">
       <div className="relative h-full flex-1">
-        {streams.map((stream, i) => {
+        {streams.map((stream) => {
           return (
             <PlayerWrapper
               key={`video-${stream.value}-${stream.type}`}

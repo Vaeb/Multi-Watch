@@ -6,6 +6,5 @@ export const orderStreams = (
 ) =>
   [...streams].sort(
     (a, b) =>
-      (streamPositions[a.value] ?? Infinity) -
-      (streamPositions[b.value] ?? Infinity),
+      (streamPositions[a.value] ?? 9999) - (streamPositions[b.value] ?? 9999),
   );
