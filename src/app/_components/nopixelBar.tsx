@@ -392,7 +392,7 @@ function NopixelBarComponent({
         className={`no-scrollbar flex min-h-[507px] w-full flex-col items-start gap-3 overflow-y-auto overflow-x-hidden pt-3`}
       >
         <BarText
-          message={`⦿ ${streams?.length ?? 0} streams live`}
+          message={`⦿ ${filteredStreams?.length ?? 0} streams live`}
           shortMessage={`⦿ ${streams?.length ?? 0}`}
           shortWrap={false}
         />
