@@ -1,6 +1,7 @@
 export interface ChatroomsInfo {
   id: number;
   np?: boolean;
+  assumeFaction?: string;
 }
 
 export interface PageParams {

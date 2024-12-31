@@ -10,13 +10,14 @@ import {
   type Platform,
   type RemoteReceived,
   type RemoteStream,
+  ChatroomsInfo,
 } from "../../types";
 import { hydrateStreams } from "../actions/hydrateStreams";
 import { getDateString, log } from "../utils/log";
 import { NOPIXEL_DATA_INTERVAL } from "../constants";
 import { shiftableInterval } from "../utils/shiftableInterval";
 import { randomInt } from "../utils/randomInt";
-import { type KickState } from "../stores/kickStore";
+import { useKickStore, type KickState } from "../stores/kickStore";
 import { fetchKickLive } from "../utils/fetchKickLive";
 import { updateServerKickLive } from "../actions/updateServerKickLive";
 import { BarText } from "./BarText";
@@ -98,20 +99,34 @@ const StreamIcon = ({
   );
 };
 
-const isStreamAllowed = (factionFilter: string, stream: RemoteStream) => {
-  if (stream.faction === "Kick") return false;
-
+const isStreamAllowed = (
+  factionFilter: string,
+  chatroomsLower: Record<string, ChatroomsInfo>,
+  stream: RemoteStream,
+) => {
   let allowStream = false;
 
-  if (factionFilter === "publicnp") {
-    allowStream = stream.tagFactionSecondary === "publicnp";
-  } else if (factionFilter === "international") {
-    allowStream = stream.tagFactionSecondary === "international";
+  if (stream.faction === "Kick") {
+    const assumeFaction =
+      chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction;
+    allowStream =
+      factionFilter !== "independent"
+        ? assumeFaction === factionFilter
+        : !assumeFaction;
   } else {
-    if (stream.factionsMap[factionFilter]) {
-      allowStream = true;
-    } else if (factionFilter === "independent" && stream.factionsMap.othernp) {
-      allowStream = true;
+    if (factionFilter === "publicnp") {
+      allowStream = stream.tagFactionSecondary === "publicnp";
+    } else if (factionFilter === "international") {
+      allowStream = stream.tagFactionSecondary === "international";
+    } else {
+      if (stream.factionsMap[factionFilter]) {
+        allowStream = true;
+      } else if (
+        factionFilter === "independent" &&
+        stream.factionsMap.othernp
+      ) {
+        allowStream = true;
+      }
     }
   }
 
@@ -218,7 +233,8 @@ function NopixelBarComponent({
   receivedData: RemoteReceived;
   chatrooms: KickState["chatrooms"];
 }) {
-  const nopixelShown = useMainStore((state: MainState) => state.nopixelShown);
+  const nopixelShown = useMainStore((state) => state.nopixelShown);
+  const chatroomsLower = useKickStore((state) => state.chatrooms);
   const { toggleNopixel } = useMainStore.getState().actions;
 
   const [receivedData, setReceivedData] = useState(_receivedData);
@@ -315,11 +331,13 @@ function NopixelBarComponent({
       _filteredStreams =
         factionFilter === "allnopixel"
           ? _filteredStreams
-          : _filteredStreams.filter(isStreamAllowed.bind(null, factionFilter));
+          : _filteredStreams.filter(
+              isStreamAllowed.bind(null, factionFilter, chatroomsLower),
+            );
     }
 
     return _filteredStreams;
-  }, [streams, searchFilter, factionFilter]);
+  }, [streams, searchFilter, factionFilter, chatroomsLower]);
 
   const filteredStreamsAdditional = useMemo(
     () =>

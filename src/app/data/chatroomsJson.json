@@ -1,16 +1,64 @@
 {
-  "xQc": { "id": 668, "np": false },
-  "Trainwreckstv": { "id": 715, "np": false },
-  "AdinRoss": { "id": 875062, "np": false },
-  "Simo": { "id": 133200, "np": true },
-  "4HEAD": { "id": 2579856, "np": true },
-  "Ming": { "id": 121898, "np": true },
-  "Caramel": { "id": 1194676, "np": true },
-  "AcezProduction": { "id": 1669680, "np": true },
-  "Sayeed": { "id": 125993, "np": true },
-  "Buddha": { "id": 32806, "np": true },
-  "AnthonyZ": { "id": 1822781, "np": true },
-  "roshtein": { "id": 4598 },
-  "ZombieBarricades": { "id": 56479, "np": true },
-  "b0aty": { "id": 27670567 }
+  "xQc": {
+    "id": 668,
+    "np": false
+  },
+  "Trainwreckstv": {
+    "id": 715,
+    "np": false
+  },
+  "AdinRoss": {
+    "id": 875062,
+    "np": false
+  },
+  "Simo": {
+    "id": 133200,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "4HEAD": {
+    "id": 2579856,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Ming": {
+    "id": 121898,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Caramel": {
+    "id": 1194676,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "AcezProduction": {
+    "id": 1669680,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "Sayeed": {
+    "id": 125993,
+    "np": true,
+    "assumeFaction": "southcypress"
+  },
+  "Buddha": {
+    "id": 32806,
+    "np": true,
+    "assumeFaction": "northcypress"
+  },
+  "AnthonyZ": {
+    "id": 1822781,
+    "np": true,
+    "assumeFaction": "northcypress"
+  },
+  "roshtein": {
+    "id": 4598
+  },
+  "ZombieBarricades": {
+    "id": 56479,
+    "np": true
+  },
+  "b0aty": {
+    "id": 27670567
+  }
 }
