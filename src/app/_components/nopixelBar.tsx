@@ -106,26 +106,30 @@ const isStreamAllowed = (
 ) => {
   let allowStream = false;
 
-  if (stream.faction === "Kick") {
-    const assumeFaction =
-      chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction;
-    allowStream =
-      factionFilter !== "independent"
-        ? assumeFaction === factionFilter
-        : !assumeFaction;
+  if (factionFilter === "nponly") {
+    allowStream = !stream.rpServer || stream.rpServer === "NP";
   } else {
-    if (factionFilter === "publicnp") {
-      allowStream = stream.tagFactionSecondary === "publicnp";
-    } else if (factionFilter === "international") {
-      allowStream = stream.tagFactionSecondary === "international";
+    if (stream.faction === "Kick") {
+      const assumeFaction =
+        chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction;
+      allowStream =
+        factionFilter !== "independent"
+          ? assumeFaction === factionFilter
+          : !assumeFaction;
     } else {
-      if (stream.factionsMap[factionFilter]) {
-        allowStream = true;
-      } else if (
-        factionFilter === "independent" &&
-        stream.factionsMap.othernp
-      ) {
-        allowStream = true;
+      if (factionFilter === "publicnp") {
+        allowStream = stream.tagFactionSecondary === "publicnp";
+      } else if (factionFilter === "international") {
+        allowStream = stream.tagFactionSecondary === "international";
+      } else {
+        if (stream.factionsMap[factionFilter]) {
+          allowStream = true;
+        } else if (
+          factionFilter === "independent" &&
+          stream.factionsMap.othernp
+        ) {
+          allowStream = true;
+        }
       }
     }
   }
@@ -241,10 +245,27 @@ function NopixelBarComponent({
   const [hydrateTime, setHydrateTime] = useState(+new Date());
 
   const { parsed } = receivedData;
-  const { streams, filterFactions, useColorsDark } = parsed;
+  const {
+    streams,
+    filterFactions: _filterFactions,
+    useColorsDark: _useColorsDark,
+  } = parsed;
 
   const [searchFilter, setSearchFilter] = useState("");
-  const [factionFilter, setFactionFilter] = useState(filterFactions[0]![0]);
+  const [factionFilter, setFactionFilter] = useState(_filterFactions[0]![0]);
+
+  const [filterFactions, useColorsDark] = useMemo(() => {
+    const factionFilterEdited = [..._filterFactions];
+    factionFilterEdited.splice(1, 0, [
+      "nponly",
+      "Now on NoPixel",
+      _filterFactions[0]![2],
+      1000,
+    ]);
+
+    const useColorsDarkEdited = { ..._useColorsDark, nponly: "#FFF" };
+    return [factionFilterEdited, useColorsDarkEdited];
+  }, [_filterFactions, _useColorsDark]);
 
   const timeFormatted = new Date(hydrateTime)
     .toLocaleString("en-US", {
