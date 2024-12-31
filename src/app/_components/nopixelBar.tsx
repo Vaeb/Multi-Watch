@@ -409,7 +409,15 @@ function NopixelBarComponent({
                 ? filteredStreamsAdditional[i]!.tagText
                 : stream.channelName
             }
-            color={useColorsDark?.[stream.faction] ?? "#FFF"}
+            color={
+              useColorsDark?.[
+                stream.faction === "Kick"
+                  ? // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+                    chatroomsLower[stream.channelName.toLowerCase()]
+                      ?.assumeFaction!
+                  : stream.faction
+              ] ?? "#FFF"
+            }
             onClick={() => {
               addStream(
                 stream.channelName,
