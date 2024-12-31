@@ -8,6 +8,7 @@ import { stateApplyLog } from "./storeUtils";
 import { type Stream, type ViewMode } from "./storeTypes";
 import { useKickStore } from "./kickStore";
 import { log } from "../utils/log";
+import { type TwitchPlayerInstance } from "react-twitch-embed";
 
 const fromNewChannels = <T extends Record<string, any>>(
   channels: string[],
@@ -20,13 +21,19 @@ const fromNewChannels = <T extends Record<string, any>>(
     })),
   ) as T;
 
+interface KickPlayer {
+  setChannel: (c: string) => void;
+}
+
+type AnyPlayer = TwitchPlayerInstance | KickPlayer;
+
 export interface MainState {
   initialised: boolean;
 
   streams: Stream[];
   streamsMap: Record<string, Stream>;
   streamPositions: Record<string, number>;
-  streamPlayer: Record<string, any>;
+  streamPlayer: Record<string, AnyPlayer>;
   manuallyMuted: Record<string, boolean>;
   newestStream: string;
   selectedChat: string;
@@ -46,7 +53,7 @@ export interface MainState {
       streamPositions?: MainState["streamPositions"],
     ) => void;
     cycleStreams: () => void;
-    setStreamPlayer: (channel: string, player: any) => void;
+    setStreamPlayer: (channel: string, player: AnyPlayer) => void;
     setManuallyMuted: (channel: string, muted: boolean) => void;
     setNewestStream: (newestStream: string) => void;
     setSelectedChat: (selectedChat: string) => void;
