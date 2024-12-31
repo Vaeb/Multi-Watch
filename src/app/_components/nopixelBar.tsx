@@ -152,7 +152,7 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
       className="relative ml-[6px] flex w-full select-none flex-col"
     >
       <div
-        className="relative flex h-[30px] w-fit cursor-pointer items-center gap-2 whitespace-nowrap border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.2)] bg-clip-padding py-[0.5rem] pl-[10px] pr-[24px] text-sm font-semibold leading-[100%] focus:outline-none"
+        className="relative flex h-[30px] w-fit cursor-pointer items-center gap-2 whitespace-nowrap rounded-md border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.2)] bg-clip-padding py-[0.5rem] pl-[10px] pr-[24px] text-sm font-semibold leading-[100%] focus:outline-none"
         style={{
           color: useColorsDark[factionValue[0]] || useColorsDark.independent,
           transition: `box-shadow 0.1s ease-in, border 0.1s ease-in, background-color 0.1s ease-in`,
@@ -205,6 +205,12 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
   );
 });
 
+const parseLookup = (text: string, retainCase = false) => {
+  text = text.replace(/^\W+|\W+$|[^\w\s]+/g, " ").replace(/\s+/g, " ");
+  if (!retainCase) text = text.toLowerCase();
+  return text.trim();
+};
+
 function NopixelBarComponent({
   receivedData: _receivedData,
   chatrooms,
@@ -221,6 +227,7 @@ function NopixelBarComponent({
   const { parsed } = receivedData;
   const { streams, filterFactions, useColorsDark } = parsed;
 
+  const [searchFilter, setSearchFilter] = useState("");
   const [factionFilter, setFactionFilter] = useState(filterFactions[0]![0]);
 
   const timeFormatted = new Date(hydrateTime)
@@ -290,13 +297,29 @@ function NopixelBarComponent({
     _receivedData.needsKickLiveStreams,
   ]);
 
-  const filteredStreams = useMemo(
-    () =>
-      factionFilter === "allnopixel"
-        ? streams
-        : streams.filter(isStreamAllowed.bind(null, factionFilter)),
-    [streams, factionFilter],
-  );
+  const filteredStreams = useMemo(() => {
+    let _filteredStreams = streams;
+    const searchFilterTrimmed = searchFilter.trim().toLowerCase();
+
+    if (searchFilterTrimmed !== "") {
+      const searchFilterTrimmedLookup = parseLookup(searchFilterTrimmed);
+      _filteredStreams = _filteredStreams.filter(
+        (stream) =>
+          stream.tagText.toLowerCase().includes(searchFilterTrimmed) ||
+          stream.characterName?.toLowerCase().includes(searchFilterTrimmed) ||
+          stream.nicknameLookup?.includes(searchFilterTrimmedLookup) ||
+          stream.channelName.toLowerCase().includes(searchFilterTrimmed) ||
+          stream.title.toLowerCase().includes(searchFilterTrimmed),
+      );
+    } else {
+      _filteredStreams =
+        factionFilter === "allnopixel"
+          ? _filteredStreams
+          : _filteredStreams.filter(isStreamAllowed.bind(null, factionFilter));
+    }
+
+    return _filteredStreams;
+  }, [streams, searchFilter, factionFilter]);
 
   const filteredStreamsAdditional = useMemo(
     () =>
@@ -340,6 +363,12 @@ function NopixelBarComponent({
           shortWrap={true}
           maxLines={2}
         />
+        <input
+          className="relative ml-[6px] overflow-clip truncate rounded-md bg-[rgba(255,255,255,0.2)] p-[0.4rem] pl-[0.525rem] text-sm text-[rgba(255,255,255,0.8)] focus:outline-none"
+          placeholder="Search character / stream / nickname ..."
+          value={searchFilter}
+          onChange={(e) => setSearchFilter(e.target.value)}
+        ></input>
         <NopixelFactionFilter
           factions={filterFactions}
           useColorsDark={useColorsDark}
@@ -347,7 +376,7 @@ function NopixelBarComponent({
         />
         {filteredStreams.map((stream, i) => (
           <StreamIcon
-            key={stream.channelName}
+            key={`${filteredStreamsAdditional[i]!.platform}-${stream.channelName}`}
             platform={filteredStreamsAdditional[i]!.platform}
             channel={stream.channelName}
             topText={
