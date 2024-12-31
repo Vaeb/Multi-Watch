@@ -9,7 +9,7 @@ import { removeStream } from "../utils/removeStream";
 import WhiteXIcon from "./icons/whiteXIcon";
 import WhiteSpeakerIcon from "./icons/whiteSpeakerIcon";
 import WhiteChatIcon from "./icons/whiteChatIcon";
-import { log } from "console";
+import { log } from "../utils/log";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
