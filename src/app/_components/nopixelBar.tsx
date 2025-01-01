@@ -184,7 +184,7 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
 
       {showFactions ? (
         <div
-          className="absolute top-[30px] z-10 box-border block max-h-[377px] w-[calc(100%-12px)] overflow-auto border-[1px] border-t-0 border-[rgb(134,91,215)] bg-black py-2"
+          className="absolute top-[30px] z-10 box-border block max-h-[377px] w-[calc(100%-12px)] overflow-y-auto overflow-x-hidden border-[1px] border-t-0 border-[rgb(134,91,215)] bg-black py-2"
           style={{
             boxShadow: `rgba(0,0,0,0.4) 0px 4px 8px, rgba(0,0,0,0.4) 0px 0px 4px`,
           }}
@@ -263,7 +263,10 @@ function NopixelBarComponent({
       1000,
     ]);
 
-    const useColorsDarkEdited = { ..._useColorsDark, nponly: "#FFF" };
+    const useColorsDarkEdited: typeof _useColorsDark = {
+      ..._useColorsDark,
+      nponly: "#FFF",
+    };
     return [factionFilterEdited, useColorsDarkEdited];
   }, [_filterFactions, _useColorsDark]);
 
