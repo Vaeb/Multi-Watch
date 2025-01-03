@@ -6,24 +6,28 @@ import { useMainStore } from "../stores/mainStore";
 import { useShallow } from "zustand/shallow";
 
 export function RootBar({ children }: PropsWithChildren) {
-  const [nopixelShownWithStream, multiFocus] = useMainStore(
+  const [oneStreamWithNpBar, showTopHole] = useMainStore(
     useShallow((state) => [
       state.nopixelShown && state.streams.length > 0,
-      state.viewMode === "focused" && state.streams.length > 1,
+      state.viewMode === "focused" &&
+        state.streams.length > 1 &&
+        state.streamsOrdered[0]?.type === "twitch",
     ]),
   );
   const focusHeight = usePersistStore((state) => state.focusHeight);
 
+  const showBottomHole = oneStreamWithNpBar;
+
   return (
     <div
       style={
-        nopixelShownWithStream
+        oneStreamWithNpBar
           ? {
               clipPath: `polygon(
           /* top-left */            0%   0%,
           /* top-right */           100% 0%,
           ${
-            multiFocus
+            showTopHole
               ? `
           /* down to where first hole starts */  
                                     100% calc(${focusHeight}% - 10px - 30px),
@@ -34,12 +38,18 @@ export function RootBar({ children }: PropsWithChildren) {
           `
               : ""
           }
+          ${
+            showBottomHole
+              ? `
           /* down to where second hole starts */  
                                     100% calc(100% - 10px - 30px),
                                     0%   calc(100% - 10px - 30px),
           /* skip the second ~~30px~~ 40px hole */  
                                     0%   calc(100% - 0px),
                                     100% calc(100% - 0px),
+          `
+              : ""
+          }
           /* bottom-right */        100% 100%,
           /* bottom-left */         0%   100%
         )`,

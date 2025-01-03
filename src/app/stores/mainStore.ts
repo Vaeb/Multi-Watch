@@ -31,6 +31,7 @@ export interface MainState {
   initialised: boolean;
 
   streams: Stream[];
+  streamsOrdered: Stream[];
   streamsMap: Record<string, Stream>;
   streamPositions: Record<string, number>;
   streamPlayer: Record<string, AnyPlayer>;
@@ -77,6 +78,7 @@ export const useMainStore = create<MainState>()(
       initialised: false,
 
       streams: [],
+      streamsOrdered: [],
       streamsMap: {},
       streamPositions: {},
       streamPlayer: {},
@@ -103,16 +105,19 @@ export const useMainStore = create<MainState>()(
               ...streams.map((stream) => ({ [stream.value]: stream })),
             ) as Record<string, Stream>;
 
-            log("setStreams", streams, streamPositions);
+            const streamsOrdered = orderStreams(streams, streamPositions);
+
+            log("setStreams", streams, streamsOrdered, streamPositions);
 
             return {
               streams,
+              streamsOrdered,
               streamsMap,
               streamPositions:
                 streamPositions ??
                 (Object.assign(
                   {},
-                  ...orderStreams(streams).map(({ value }, i) => ({
+                  ...streamsOrdered.map(({ value }, i) => ({
                     [value]: i,
                   })),
                 ) as Record<string, number>),
@@ -141,13 +146,15 @@ export const useMainStore = create<MainState>()(
               })),
             );
 
+            const streamsOrdered = orderStreams(streams, streamPositions);
+
             window.history.pushState(
               {},
               "",
               streamsToPath(streams, streamPositions),
             );
 
-            return { streamPositions };
+            return { streamsOrdered, streamPositions };
           }),
 
         setStreamPlayer: (channel, player) =>
