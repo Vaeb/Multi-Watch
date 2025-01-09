@@ -42,9 +42,14 @@ const getSrc = (type: Platform, channel: string, muted = false) => {
     return `https://player.kick.com/${channel}?muted=${muted}`;
 };
 
-let totalPlayers = 0;
+const THRESHOLD_RECENT_PLAYER_ADDED_DELTA = 1000 * 90;
 
-const getId = () => `tframe-${++totalPlayers}`;
+// let totalPlayers = 0;
+let hasAddedPlayers = false;
+
+// const getId = () => `tframe-${++totalPlayers}`; // playerNum
+
+let lastPlayerAddedTick = 0;
 
 function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   // const selfMute = useMainStore(
@@ -59,23 +64,34 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   // Intentionally non-reactive
   const { streamPositions } = useMainStore.getState();
   const { autoplay } = usePersistStore.getState();
+
+  const tick = +new Date();
+  const playerAddedDelta = tick - lastPlayerAddedTick;
+  if (hasAddedPlayers) {
+    lastPlayerAddedTick = tick;
+  }
+
   const focus = streamPositions[channel] === 0;
-  const recent = focus || checkShowChat(channel);
+  const recentPriority =
+    focus ||
+    (checkShowChat(channel) &&
+      playerAddedDelta > THRESHOLD_RECENT_PLAYER_ADDED_DELTA);
 
   const streamAutoplay =
-    autoplay === "all" || (autoplay === "one" && !!recent) || seed > -1;
+    autoplay === "all" || (autoplay === "one" && !!recentPriority) || seed > -1;
 
-  const streamMuted = autoplay === "all" ? !recent : false;
+  const streamMuted = autoplay === "all" ? !recentPriority : false;
 
   useEffect(() => {
     log("[Player] Mounted:", channel);
+    hasAddedPlayers = true;
   }, []);
 
   log(
     "[Player] Re-rendered:",
     channel,
     type,
-    recent,
+    recentPriority,
     focus,
     streamAutoplay,
     streamMuted,

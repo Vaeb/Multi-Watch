@@ -9,12 +9,28 @@ import { NopixelBarWrapper } from "../_components/nopixelBarWrapper";
 import { SettingsModalWrapper } from "../_components/settingsModal";
 import { log } from "../utils/log";
 
-export default async function Page({ params }: PageParams) {
-  // const { slug } = await params;
+/*
+  Room slug:
+  [Page]
+  - Render all as normal
+  - <If rooms suffix>
+    - Background (sync) get streams from room (sqlite)
+    - Then re-render Manager with prop roomStreams={...}
+  [Manager]
+  - <If rooms suffix>
+    - Don't add streams yet...
+    - Set state 'room' (room name), 'loadingRoom'(?)
+  - <If {roomStreams}>
+    - Add streams
+    - Add roomStreams (separate so that client can locally modify streams while being in room, for tracking which are modified locally)
+*/
 
-  // if (slug.length === 0 || !/^[\w-]+$/.test(slug[0]!)) {
-  //   return null;
-  // }
+export default async function Page({ params }: PageParams) {
+  const { slug } = await params;
+
+  if (slug && !/^[\w-]+$/.test(slug[0]!)) {
+    return null;
+  }
 
   const chatroomsJson = await fs.readFile(
     process.cwd() + "/src/app/data/chatroomsJson.json",
