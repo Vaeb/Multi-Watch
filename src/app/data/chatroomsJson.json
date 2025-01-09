@@ -36,6 +36,51 @@
     "np": true,
     "assumeFaction": "hades"
   },
+  "bibo": {
+    "id": 126472,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "KielbasaOP": {
+    "id": 108928,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "Lysium": {
+    "id": 64021,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "kongfue": {
+    "id": 1984882,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "Reina": {
+    "id": 74043,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "Arro2k": {
+    "id": 10258331,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "zandr400": {
+    "id": 50013656,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "qift": {
+    "id": 48105250,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "Boss_Zulu": {
+    "id": 2021342,
+    "np": true,
+    "assumeFaction": "hades"
+  },
   "Sayeed": {
     "id": 125993,
     "np": true,
