@@ -11,6 +11,11 @@
     "id": 875062,
     "np": false
   },
+  "Ramee": {
+    "id": 129914,
+    "np": true,
+    "assumeFaction": "changgang"
+  },
   "Simo": {
     "id": 133200,
     "np": true,
@@ -28,6 +33,11 @@
   },
   "Caramel": {
     "id": 1194676,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Chelb": {
+    "id": 1415812,
     "np": true,
     "assumeFaction": "besties"
   },
