@@ -91,6 +91,11 @@
     "np": true,
     "assumeFaction": "hades"
   },
+  "Silent": {
+    "id": 2738597,
+    "np": true,
+    "assumeFaction": "hydra"
+  },
   "Sayeed": {
     "id": 125993,
     "np": true,
