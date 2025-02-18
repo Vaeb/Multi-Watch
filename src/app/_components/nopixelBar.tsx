@@ -21,6 +21,7 @@ import { useKickStore, type KickState } from "../stores/kickStore";
 import { fetchKickLive } from "../utils/fetchKickLive";
 import { updateServerKickLive } from "../actions/updateServerKickLive";
 import { BarText } from "./BarText";
+import { LARGE_FACTIONS } from "../constants";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -141,10 +142,14 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
   factions,
   useColorsDark,
   setFactionFilter,
+  filteredStreams,
+  filteredStreamsAdditional,
 }: {
   factions: RemoteParsed["filterFactions"];
   useColorsDark: RemoteParsed["useColorsDark"];
   setFactionFilter: (slug: string) => void;
+  filteredStreams: RemoteStream[];
+  filteredStreamsAdditional: { platform: Platform }[];
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [showFactions, setShowFactions] = useState(false);
@@ -165,60 +170,78 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
     return () => document.removeEventListener("click", watchClickOutside);
   }, [watchClickOutside]);
 
+  const handleAddAllStreams = useCallback(() => {
+    filteredStreams.forEach((stream, i) => {
+      addStream(stream.channelName, filteredStreamsAdditional[i]!.platform);
+    });
+  }, [filteredStreams, filteredStreamsAdditional]);
+
   return (
     <div
       ref={containerRef}
-      className="relative ml-[6px] flex w-full select-none flex-col"
+      className="relative ml-[6px] flex w-full select-none flex-row items-center gap-2"
     >
-      <div
-        className="relative flex h-[30px] w-fit cursor-pointer items-center gap-2 whitespace-nowrap rounded-md border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.2)] bg-clip-padding py-[0.5rem] pl-[10px] pr-[24px] text-sm font-semibold leading-[100%] focus:outline-none"
-        style={{
-          color: useColorsDark[factionValue[0]] || useColorsDark.independent,
-          transition: `box-shadow 0.1s ease-in, border 0.1s ease-in, background-color 0.1s ease-in`,
-        }}
-        onClick={() => setShowFactions((val) => !val)}
-      >
-        <span>{factionValue[1]}</span>
-        <span className="text-xl leading-[100%]">▾</span>
-      </div>
-
-      {showFactions ? (
+      <div className="flex flex-col">
         <div
-          className="absolute top-[30px] z-10 box-border block max-h-[377px] w-[calc(100%-12px)] overflow-y-auto overflow-x-hidden border-[1px] border-t-0 border-[rgb(134,91,215)] bg-black py-2"
+          className="relative flex h-[30px] w-fit cursor-pointer items-center gap-2 whitespace-nowrap rounded-md border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.2)] bg-clip-padding py-[0.5rem] pl-[10px] pr-[24px] text-sm font-semibold leading-[100%] focus:outline-none"
           style={{
-            boxShadow: `rgba(0,0,0,0.4) 0px 4px 8px, rgba(0,0,0,0.4) 0px 0px 4px`,
+            color: useColorsDark[factionValue[0]] || useColorsDark.independent,
+            transition: `box-shadow 0.1s ease-in, border 0.1s ease-in, background-color 0.1s ease-in`,
           }}
+          id="dropdown-div"
+          onClick={() => setShowFactions((val) => !val)}
         >
-          <input
-            className="select-option relative overflow-clip bg-transparent text-[rgba(255,255,255,0.8)] focus:outline-none"
-            placeholder="Search..."
-            value={filterText}
-            autoFocus
-            onChange={(e) => setFilterText(e.target.value)}
-          ></input>
-          {(filterText.length
-            ? factions.filter(([_, name]) =>
-                name.toLowerCase().includes(filterText),
-              )
-            : factions
-          ).map((faction) => (
-            <div // [slug, name, live, _id]
-              key={`faction-${faction[0]}`}
-              className="select-option relative cursor-pointer whitespace-nowrap hover:bg-[rgb(134,91,215)]"
-              style={{
-                color: useColorsDark[faction[0]] || useColorsDark.independent,
-              }}
-              onClick={() => {
-                setFactionValue(faction);
-                setFactionFilter(faction[0]);
-                setShowFactions(false);
-              }}
-            >
-              {faction[1]}
-              {faction[2] ? "" : " (Not Live)"}
-            </div>
-          ))}
+          <span>{factionValue[1]}</span>
+          <span className="text-xl leading-[100%]">▾</span>
         </div>
+
+        {showFactions ? (
+          <div
+            className="absolute top-[30px] z-10 box-border block max-h-[377px] w-[calc(100%-12px)] overflow-y-auto overflow-x-hidden border-[1px] border-t-0 border-[rgb(134,91,215)] bg-black py-2"
+            style={{
+              boxShadow: `rgba(0,0,0,0.4) 0px 4px 8px, rgba(0,0,0,0.4) 0px 0px 4px`,
+            }}
+          >
+            <input
+              className="select-option relative overflow-clip bg-transparent text-[rgba(255,255,255,0.8)] focus:outline-none"
+              placeholder="Search..."
+              value={filterText}
+              autoFocus
+              onChange={(e) => setFilterText(e.target.value)}
+            ></input>
+            {(filterText.length
+              ? factions.filter(([_, name]) =>
+                  name.toLowerCase().includes(filterText),
+                )
+              : factions
+            ).map((faction) => (
+              <div // [slug, name, live, _id]
+                key={`faction-${faction[0]}`}
+                className="select-option relative cursor-pointer whitespace-nowrap hover:bg-[rgb(134,91,215)]"
+                style={{
+                  color: useColorsDark[faction[0]] || useColorsDark.independent,
+                }}
+                onClick={() => {
+                  setFactionValue(faction);
+                  setFactionFilter(faction[0]);
+                  setShowFactions(false);
+                }}
+              >
+                {faction[1]}
+                {faction[2] ? "" : " (Not Live)"}
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      {!LARGE_FACTIONS[factionValue[0]] ? (
+        <button
+          onClick={handleAddAllStreams}
+          className="flex h-[30px] w-[30px] items-center justify-center rounded-md border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.2)] text-xl text-white opacity-50 transition-opacity hover:opacity-100"
+          aria-label="Add all streams from faction"
+        >
+          +
+        </button>
       ) : null}
     </div>
   );
@@ -415,6 +438,8 @@ function NopixelBarComponent({
           factions={filterFactions}
           useColorsDark={useColorsDark}
           setFactionFilter={setFactionFilter}
+          filteredStreams={filteredStreams}
+          filteredStreamsAdditional={filteredStreamsAdditional}
         />
         {filteredStreams.map((stream, i) => (
           <StreamIcon

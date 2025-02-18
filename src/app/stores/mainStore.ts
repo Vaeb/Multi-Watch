@@ -102,7 +102,9 @@ export const useMainStore = create<MainState>()(
           set((state) => {
             const streamsMap = Object.assign(
               {},
-              ...streams.map((stream) => ({ [stream.value]: stream })),
+              ...streams.map((stream) => ({
+                [stream.value.toLowerCase()]: stream,
+              })),
             ) as Record<string, Stream>;
 
             const streamsOrdered = orderStreams(streams, streamPositions);
@@ -123,10 +125,10 @@ export const useMainStore = create<MainState>()(
                 ) as Record<string, number>),
               streamPlayer: fromNewChannels(channels, state.streamPlayer),
               manuallyMuted: fromNewChannels(channels, state.manuallyMuted),
-              newestStream: streamsMap[state.newestStream]
+              newestStream: streamsMap[state.newestStream?.toLowerCase() ?? ""]
                 ? state.newestStream
                 : "",
-              selectedChat: streamsMap[state.selectedChat]
+              selectedChat: streamsMap[state.selectedChat?.toLowerCase() ?? ""]
                 ? state.selectedChat
                 : "",
             };
