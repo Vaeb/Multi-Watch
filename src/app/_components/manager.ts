@@ -14,6 +14,9 @@ interface ManagerProps {
   chatrooms: KickState["chatrooms"];
 }
 
+/**
+ * Renders once on page load, and then never again.
+ */
 export function Manager({ chatrooms }: ManagerProps) {
   const { setStreams, markInitialised } = useMainStore(selector);
   const { setChatrooms } = useKickStore(kickSelector);

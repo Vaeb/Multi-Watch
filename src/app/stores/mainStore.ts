@@ -40,6 +40,7 @@ export interface MainState {
   selectedChat: string;
 
   viewMode: ViewMode;
+  hasManuallyToggledView: boolean;
 
   updateShown: boolean;
   settingsShown: boolean;
@@ -87,6 +88,7 @@ export const useMainStore = create<MainState>()(
       selectedChat: "",
 
       viewMode: "focused",
+      hasManuallyToggledView: false,
 
       updateShown: false,
       settingsShown: false,
@@ -131,6 +133,11 @@ export const useMainStore = create<MainState>()(
               selectedChat: streamsMap[state.selectedChat?.toLowerCase() ?? ""]
                 ? state.selectedChat
                 : "",
+              viewMode: state.hasManuallyToggledView
+                ? state.viewMode
+                : streams.length >= 5
+                  ? "grid"
+                  : "focused",
             };
           });
 
@@ -178,6 +185,7 @@ export const useMainStore = create<MainState>()(
         toggleViewMode: () =>
           set(({ viewMode }) => ({
             viewMode: viewMode === "focused" ? "grid" : "focused",
+            hasManuallyToggledView: true,
           })),
 
         setUpdateShown: (updateShown) => set({ updateShown }),
