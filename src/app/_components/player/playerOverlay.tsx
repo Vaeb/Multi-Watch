@@ -1,15 +1,15 @@
 "use client";
 
 import { memo, useCallback } from "react";
-import { type PlayerProps } from "./video";
-import { useMainStore } from "../stores/mainStore";
+import { type PlayerProps } from "./videoClient";
+import { useMainStore } from "../../stores/mainStore";
 import Image from "next/image";
-import { useKickStore } from "../stores/kickStore";
-import { removeStream } from "../utils/removeStream";
-import WhiteXIcon from "./icons/whiteXIcon";
-import WhiteSpeakerIcon from "./icons/whiteSpeakerIcon";
-import WhiteChatIcon from "./icons/whiteChatIcon";
-import { log } from "../utils/log";
+import { useKickStore } from "../../stores/kickStore";
+import { removeStream } from "../../utils/removeStream";
+import WhiteXIcon from "../icons/whiteXIcon";
+import WhiteSpeakerIcon from "../icons/whiteSpeakerIcon";
+import WhiteChatIcon from "../icons/whiteChatIcon";
+import { log } from "../../utils/log";
 
 interface PlayerOverlayProps extends PlayerProps {}
 

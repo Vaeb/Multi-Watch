@@ -23,6 +23,11 @@ const config = {
       },
     ],
   },
+  webpack: (config) => {
+    config.externals.push('bun:sqlite');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return config;
+  },
 };
 
 export default config;

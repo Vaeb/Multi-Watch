@@ -2,26 +2,26 @@
 
 import Image from "next/image";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { addStream } from "../utils/addStream";
-import { type MainState, useMainStore } from "../stores/mainStore";
-import WhiteXIcon from "./icons/whiteXIcon";
+import { addStream } from "../../utils/addStream";
+import { useMainStore } from "../../stores/mainStore";
+import WhiteXIcon from "../icons/whiteXIcon";
 import {
   type RemoteParsed,
   type Platform,
   type RemoteReceived,
   type RemoteStream,
-  ChatroomsInfo,
-} from "../../types";
-import { hydrateStreams } from "../actions/hydrateStreams";
-import { getDateString, log } from "../utils/log";
-import { NOPIXEL_DATA_INTERVAL } from "../constants";
-import { shiftableInterval } from "../utils/shiftableInterval";
-import { randomInt } from "../utils/randomInt";
-import { useKickStore, type KickState } from "../stores/kickStore";
-import { fetchKickLive } from "../utils/fetchKickLive";
-import { updateServerKickLive } from "../actions/updateServerKickLive";
+  type ChatroomsInfo,
+} from "../../../types";
+import { hydrateStreams } from "../../actions/hydrateStreams";
+import { getDateString, log } from "../../utils/log";
+import { NOPIXEL_DATA_INTERVAL } from "../../constants";
+import { shiftableInterval } from "../../utils/shiftableInterval";
+import { randomInt } from "../../utils/randomInt";
+import { useKickStore, type KickState } from "../../stores/kickStore";
+import { fetchKickLive } from "../../utils/fetchKickLive";
+import { updateServerKickLive } from "../../actions/updateServerKickLive";
 import { BarText } from "./BarText";
-import { LARGE_FACTIONS } from "../constants";
+import { LARGE_FACTIONS } from "../../constants";
 
 interface NopixelBarButtonProps {
   alt: string;

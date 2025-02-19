@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { NopixelBar } from "./nopixelBar";
-import { getStreams } from "../utils/getStreams";
-import { type KickState } from "../stores/kickStore";
+import { getStreams } from "../../utils/getStreams";
+import { type KickState } from "../../stores/kickStore";
 
 async function NopixelBarWrapperComponent({
   chatrooms,

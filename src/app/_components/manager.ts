@@ -15,7 +15,7 @@ interface ManagerProps {
 }
 
 /**
- * Renders once on page load, and then never again.
+ * Manager: Mounted to root page view on page load.
  */
 export function Manager({ chatrooms }: ManagerProps) {
   const { setStreams, markInitialised } = useMainStore(selector);
@@ -23,6 +23,8 @@ export function Manager({ chatrooms }: ManagerProps) {
   const hasSetInitialStreams = useRef(false);
 
   const pathname = usePathname();
+
+  const slugs = pathname.split("/").filter(Boolean);
 
   useLayoutEffect(() => {
     if (

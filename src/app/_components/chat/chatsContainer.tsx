@@ -1,9 +1,9 @@
 "use client";
 
-import { persistDefaults, usePersistStore } from "../stores/persistStore";
+import { persistDefaults, usePersistStore } from "../../stores/persistStore";
 import { ChatTitle } from "./chatTitle";
 
-export function ChatContainer({
+export function ChatsContainer({
   show,
   children,
 }: {

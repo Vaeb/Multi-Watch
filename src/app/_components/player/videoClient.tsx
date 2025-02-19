@@ -8,12 +8,12 @@ import {
   type DetailedHTMLProps,
   type IframeHTMLAttributes,
 } from "react";
-import { useStableCallback } from "../hooks/useStableCallback";
-import { useMainStore } from "../stores/mainStore";
+import { useStableCallback } from "../../hooks/useStableCallback";
+import { useMainStore } from "../../stores/mainStore";
 import { TwitchPlayer, type TwitchPlayerInstance } from "react-twitch-embed";
-import { checkShowChat } from "../utils/checkShowChat";
-import { usePersistStore } from "../stores/persistStore";
-import { log } from "../utils/log";
+import { checkShowChat } from "../../utils/checkShowChat";
+import { usePersistStore } from "../../stores/persistStore";
+import { log } from "../../utils/log";
 
 type Platform = "twitch" | "kick";
 

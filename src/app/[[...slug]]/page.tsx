@@ -2,28 +2,12 @@ import { Manager } from "../_components/manager";
 import { Streams } from "../_components/streams";
 import { promises as fs } from "fs";
 import { type ChatroomsInfo, type PageParams } from "~/types";
-import { UpdateModalServerWrapper } from "../_components/updateModalServerWrapper";
-import { RootBar } from "../_components/rootBar";
-import { MainBar } from "../_components/mainBar";
-import { NopixelBarWrapper } from "../_components/nopixelBarWrapper";
-import { SettingsModalWrapper } from "../_components/settingsModal";
+import { UpdateModalServerWrapper } from "../_components/modals/updateModalServerWrapper";
+import { RootBar } from "../_components/leftBar/rootBar";
+import { MainBar } from "../_components/leftBar/mainBar";
+import { NopixelBarWrapper } from "../_components/leftBar/nopixelBarWrapper";
+import { SettingsModalWrapper } from "../_components/modals/settingsModal";
 import { log } from "../utils/log";
-
-/*
-  Room slug:
-  [Page]
-  - Render all as normal
-  - <If rooms suffix>
-    - Background (sync) get streams from room (sqlite)
-    - Then re-render Manager with prop roomStreams={...}
-  [Manager]
-  - <If rooms suffix>
-    - Don't add streams yet...
-    - Set state 'room' (room name), 'loadingRoom'(?)
-  - <If {roomStreams}>
-    - Add streams
-    - Add roomStreams (separate so that client can locally modify streams while being in room, for tracking which are modified locally)
-*/
 
 export default async function Page({ params }: PageParams) {
   const { slug } = await params;

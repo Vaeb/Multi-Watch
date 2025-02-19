@@ -1,15 +1,15 @@
 "use client";
 
 import { memo, useEffect, useRef } from "react";
-import { type Message, useKickClient } from "../kickClient/useKickClient";
+import { type Message, useKickClient } from "../../kickClient/useKickClient";
 import {
   VirtuosoMessageList,
   VirtuosoMessageListLicense,
   type VirtuosoMessageListMethods,
   type VirtuosoMessageListProps,
 } from "@virtuoso.dev/message-list";
-import { type ChatMethods, useKickStore } from "../stores/kickStore";
-import { log } from "../utils/log";
+import { type ChatMethods, useKickStore } from "../../stores/kickStore";
+import { log } from "../../utils/log";
 
 export interface ChatProps {
   channel: string;

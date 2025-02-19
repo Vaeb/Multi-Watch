@@ -1,8 +1,8 @@
 "use client";
 
 import { type PropsWithChildren } from "react";
-import { usePersistStore } from "../stores/persistStore";
-import { useMainStore } from "../stores/mainStore";
+import { usePersistStore } from "../../stores/persistStore";
+import { useMainStore } from "../../stores/mainStore";
 import { useShallow } from "zustand/shallow";
 
 export function RootBar({ children }: PropsWithChildren) {

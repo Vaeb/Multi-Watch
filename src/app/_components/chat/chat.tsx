@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { type Platform } from "~/types";
 import { KickChat } from "./kickChat";
-import { log } from "../utils/log";
+import { log } from "../../utils/log";
 
 export interface ChatProps {
   type?: Platform;

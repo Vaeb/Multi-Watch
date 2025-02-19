@@ -1,7 +1,7 @@
 "use client";
 
-import { type MainState, useMainStore } from "../stores/mainStore";
-import { getShowChat } from "../utils/getShowChat";
+import { type MainState, useMainStore } from "../../stores/mainStore";
+import { getShowChat } from "../../utils/getShowChat";
 
 const selector = (state: MainState) => getShowChat(state);
 

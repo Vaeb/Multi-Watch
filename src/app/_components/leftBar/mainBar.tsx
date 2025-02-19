@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { type MainState, useMainStore } from "../stores/mainStore";
+import { type MainState, useMainStore } from "../../stores/mainStore";
 import { memo, useCallback } from "react";
-import { type GridMode } from "../stores/storeTypes";
-import { type PersistState, usePersistStore } from "../stores/persistStore";
+import { type GridMode } from "../../stores/storeTypes";
+import { type PersistState, usePersistStore } from "../../stores/persistStore";
 import { BarText } from "./BarText";
 
 const selector = (state: MainState) => state.actions;

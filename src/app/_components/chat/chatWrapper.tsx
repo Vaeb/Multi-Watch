@@ -2,9 +2,9 @@
 
 import { memo } from "react";
 import { type ChatProps } from "./chat";
-import { useMainStore } from "../stores/mainStore";
-import { getShowChat } from "../utils/getShowChat";
-import { log } from "../utils/log";
+import { useMainStore } from "../../stores/mainStore";
+import { getShowChat } from "../../utils/getShowChat";
+import { log } from "../../utils/log";
 
 interface ChatWrapperProps extends ChatProps {
   children: React.ReactNode;

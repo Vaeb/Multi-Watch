@@ -1,9 +1,13 @@
+/**
+ * THIS FILE IS UNUSED. DO NOT USE OR MODIFY.
+ */
+
 import { memo, type DetailedHTMLProps, type IframeHTMLAttributes } from "react";
-import { log } from "../utils/log";
+import { log } from "../../utils/log";
 
 type Platform = "twitch" | "kick";
 
-export interface PlayerProps {
+interface PlayerProps {
   type?: Platform;
   channel: string;
   first?: boolean;

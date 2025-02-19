@@ -1,14 +1,14 @@
 "use client";
 
 import { useShallow } from "zustand/shallow";
-import { type MainState, useMainStore } from "../stores/mainStore";
+import { type MainState, useMainStore } from "../../stores/mainStore";
 import { useState } from "react";
-import { type PersistState, usePersistStore } from "../stores/persistStore";
-import { type Autoplay, type GridMode } from "../stores/storeTypes";
-import { useStableCallback } from "../hooks/useStableCallback";
-import { noprop } from "../utils/noprop";
-import { log } from "../utils/log";
-import { makeNumsInterval } from "../utils/makeNumsInterval";
+import { usePersistStore } from "../../stores/persistStore";
+import { type Autoplay, type GridMode } from "../../stores/storeTypes";
+import { useStableCallback } from "../../hooks/useStableCallback";
+import { noprop } from "../../utils/noprop";
+import { log } from "../../utils/log";
+import { makeNumsInterval } from "../../utils/makeNumsInterval";
 
 interface ModalButtonProps {
   text: string;

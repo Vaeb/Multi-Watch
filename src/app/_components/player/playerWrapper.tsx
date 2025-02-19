@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { PlayerOverlay } from "./playerOverlay";
-import { type GridMode, type ViewMode } from "../stores/storeTypes";
+import { type GridMode, type ViewMode } from "../../stores/storeTypes";
 import { type Platform } from "~/types";
-import { log } from "../utils/log";
+import { log } from "../../utils/log";
 
 interface Dimensions {
   height: string;

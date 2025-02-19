@@ -1,13 +1,13 @@
 "use client";
 
 import { memo } from "react";
-import { Player } from "./videoClient";
+import { Player } from "./player/videoClient";
 import { type MainState, useMainStore } from "../stores/mainStore";
-import { Chat } from "./chat";
-import { ChatContainer } from "./chatContainer";
+import { Chat } from "./chat/chat";
+import { ChatsContainer } from "./chat/chatsContainer";
 import { useShallow } from "zustand/shallow";
-import { ChatWrapper } from "./chatWrapper";
-import { PlayerWrapper } from "./playerWrapper";
+import { ChatWrapper } from "./chat/chatWrapper";
+import { PlayerWrapper } from "./player/playerWrapper";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
 // import { log } from "../utils/log";
 
@@ -52,7 +52,7 @@ function StreamsComponent() {
           );
         })}
       </div>
-      <ChatContainer show={chatShown}>
+      <ChatsContainer show={chatShown}>
         {streams.map((stream) => {
           return (
             <ChatWrapper
@@ -63,7 +63,7 @@ function StreamsComponent() {
             </ChatWrapper>
           );
         })}
-      </ChatContainer>
+      </ChatsContainer>
     </div>
   );
 }

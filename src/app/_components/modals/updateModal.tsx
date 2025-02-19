@@ -5,18 +5,17 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { useShallow } from "zustand/shallow";
 import { type Platform } from "~/types";
-import { type MainState, useMainStore } from "../stores/mainStore";
-import { streamsToPath } from "../utils/streamsToPath";
-import { orderStreams } from "../utils/orderStreams";
-import { useStableCallback } from "../hooks/useStableCallback";
-import { noprop } from "../utils/noprop";
-import { log } from "../utils/log";
+import { type MainState, useMainStore } from "../../stores/mainStore";
+import { streamsToPath } from "../../utils/streamsToPath";
+import { orderStreams } from "../../utils/orderStreams";
+import { useStableCallback } from "../../hooks/useStableCallback";
+import { noprop } from "../../utils/noprop";
+import { log } from "../../utils/log";
 
 interface ModalButtonProps {
   text: string;
