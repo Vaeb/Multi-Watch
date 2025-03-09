@@ -91,8 +91,33 @@
     "np": true,
     "assumeFaction": "hades"
   },
+  "Kayn-xo": {
+    "id": 50662744,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "slimeoz": {
+    "id": 52830647,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "NismoDOMA": {
+    "id": 52088287,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "dasMEHDI": {
+    "id": 2381527,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "Silent": {
     "id": 2738597,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "kioShiMa": {
+    "id": 1411791,
     "np": true,
     "assumeFaction": "hydragang"
   },
