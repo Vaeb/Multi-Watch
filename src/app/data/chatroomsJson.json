@@ -21,6 +21,10 @@
     "np": true,
     "assumeFaction": "hades"
   },
+  "omie": {
+    "id": 89446,
+    "np": true
+  },
   "4HEAD": {
     "id": 2579856,
     "np": true,
