@@ -45,6 +45,41 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
     removeStream(channel, type ?? "twitch");
   }, [channel, type]);
 
+  const focusClick = useCallback(() => {
+    const { streams, streamPositions, actions } = useMainStore.getState();
+
+    // If already focused or only one stream, do nothing
+    if (streamPositions[channel] === 0 || streams.length <= 1) {
+      return;
+    }
+
+    // Create new positions map
+    const newStreamPositions: Record<string, number> = {};
+    newStreamPositions[channel] = 0; // Make the clicked channel focused
+
+    // Get other channels sorted by their current position
+    const otherChannels = streams
+      .map((s) => s.value)
+      .filter((c) => c !== channel)
+      .sort((a, b) => (streamPositions[a] ?? 0) - (streamPositions[b] ?? 0));
+
+    // Assign positions 1, 2, ... to the other channels
+    otherChannels.forEach((otherChannel, index) => {
+      newStreamPositions[otherChannel] = index + 1;
+    });
+
+    // Update the store (this also updates URL via streamsToPath inside setStreams)
+    actions.setStreams(streams, newStreamPositions);
+  }, [channel]);
+
+  // Check if the current stream is focused or the only stream
+  const isFocused = useMainStore(
+    (state) =>
+      state.streams.length <= 1 || state.streamPositions[channel] === 0,
+  );
+  // Check the current view mode
+  const viewMode = useMainStore((state) => state.viewMode);
+
   return (
     <div className="group absolute mt-8 flex h-[35%] w-[50%] items-start justify-center">
       <div className="flex items-center justify-center rounded-md bg-black/0 transition duration-100 ease-out group-hover:bg-black/50">
@@ -55,6 +90,17 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
           {type === "twitch" ? (
             <button onClick={audioClick}>
               <WhiteSpeakerIcon size={28} />
+            </button>
+          ) : null}
+          {viewMode === "focused" && !isFocused ? (
+            <button onClick={focusClick} className="">
+              <Image
+                src="/up1.svg"
+                className="rotate-180"
+                width={21}
+                height={21}
+                alt="Focus Stream"
+              />
             </button>
           ) : null}
           <button onClick={reloadStream}>
