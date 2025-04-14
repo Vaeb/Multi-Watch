@@ -10,6 +10,7 @@ import WhiteXIcon from "../icons/whiteXIcon";
 import WhiteSpeakerIcon from "../icons/whiteSpeakerIcon";
 import WhiteChatIcon from "../icons/whiteChatIcon";
 import { log } from "../../utils/log";
+import { useShallow } from "zustand/shallow";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
@@ -72,13 +73,66 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
     actions.setStreams(streams, newStreamPositions);
   }, [channel]);
 
-  // Check if the current stream is focused or the only stream
-  const isFocused = useMainStore(
-    (state) =>
-      state.streams.length <= 1 || state.streamPositions[channel] === 0,
+  const moveStream = useCallback(
+    (direction: -1 | 1) => {
+      const { streams, streamPositions, viewMode, actions } =
+        useMainStore.getState();
+      const currentPosition = streamPositions[channel];
+      const streamCount = streams.length;
+
+      // Ensure currentPosition is valid and move is possible
+      if (typeof currentPosition !== "number" || streamCount <= 1) {
+        return;
+      }
+
+      if (viewMode === "focused" && currentPosition === 0)
+        direction = -direction as 1 | -1;
+      let targetPosition = (currentPosition + direction) % streamCount;
+      if (targetPosition < 0) targetPosition = streamCount + targetPosition;
+      const channelToSwapWith = Object.entries(streamPositions).find(
+        ([, pos]) => pos === targetPosition,
+      )?.[0];
+
+      if (!channelToSwapWith) return; // Should not happen if logic is correct
+
+      const newStreamPositions = { ...streamPositions };
+      newStreamPositions[channel] = targetPosition;
+      newStreamPositions[channelToSwapWith] = currentPosition;
+
+      actions.setStreams(streams, newStreamPositions);
+    },
+    [channel],
   );
-  // Check the current view mode
-  const viewMode = useMainStore((state) => state.viewMode);
+
+  // Memoized versions for onClick handlers
+  const moveLeft = useCallback(() => moveStream(-1), [moveStream]);
+  const moveRight = useCallback(() => moveStream(1), [moveStream]);
+
+  // Get stream count and position for move button logic
+  const { streamCount, currentPosition, viewFocused, streamFocused } =
+    useMainStore(
+      useShallow((state) => ({
+        streamCount: state.streams.length,
+        currentPosition: state.streamPositions[channel], // Keep potential undefined here
+        viewFocused: state.viewMode === "focused", // Check the current view mode is focused
+        streamFocused:
+          state.streams.length <= 1 || state.streamPositions[channel] === 0, // Check if the current stream is focused or the only stream
+      })),
+    );
+
+  // Check if position is defined and valid for moving
+  const canMoveLeft =
+    typeof currentPosition === "number" &&
+    streamCount > 1 &&
+    (!viewFocused ||
+      (currentPosition !== 0 && // personal pref: should have arrows on focused or not?
+        (currentPosition > 1 || currentPosition === 0)));
+  const canMoveRight =
+    typeof currentPosition === "number" &&
+    streamCount > 1 &&
+    (!viewFocused ||
+      (currentPosition !== 0 && // personal pref: should have arrows on focused or not?
+        (currentPosition < streamCount - 1 || currentPosition === 0)));
 
   return (
     <div className="group absolute mt-8 flex h-[35%] w-[50%] items-start justify-center">
@@ -92,8 +146,19 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
               <WhiteSpeakerIcon size={28} />
             </button>
           ) : null}
-          {viewMode === "focused" && !isFocused ? (
-            <button onClick={focusClick} className="">
+          {canMoveLeft ? (
+            <button onClick={moveLeft} title="Move Left">
+              <Image
+                src="/up1.svg"
+                className="rotate-90" // Rotate arrow left
+                width={21}
+                height={21}
+                alt="Move Left"
+              />
+            </button>
+          ) : null}
+          {viewFocused && !streamFocused ? (
+            <button onClick={focusClick} className="" title="Focus Stream">
               <Image
                 src="/up1.svg"
                 className="rotate-180"
@@ -103,9 +168,20 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
               />
             </button>
           ) : null}
+          {canMoveRight ? (
+            <button onClick={moveRight} title="Move Right">
+              <Image
+                src="/up1.svg"
+                className="-rotate-90" // Rotate arrow right
+                width={21}
+                height={21}
+                alt="Move Right"
+              />
+            </button>
+          ) : null}
           <button onClick={reloadStream}>
             <Image
-              src="/refresh2.svg"
+              src="/refresh3.svg"
               className=""
               width={21}
               height={21}
