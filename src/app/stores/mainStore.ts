@@ -54,6 +54,7 @@ export interface MainState {
       streams: Stream[],
       streamPositions?: MainState["streamPositions"],
     ) => void;
+    setStreamPositions: (streamPositions: MainState["streamPositions"]) => void;
     cycleStreams: () => void;
     setStreamPlayer: (channel: string, player: AnyPlayer) => void;
     setManuallyMuted: (channel: string, muted: boolean) => void;
@@ -75,7 +76,7 @@ export interface MainState {
 
 export const useMainStore = create<MainState>()(
   subscribeWithSelector(
-    stateApplyLog<MainState>((set) => ({
+    stateApplyLog<MainState>((set, get) => ({
       initialised: false,
 
       streams: [],
@@ -144,16 +145,9 @@ export const useMainStore = create<MainState>()(
           useKickStore.getState().actions.syncChannels(channels);
         },
 
-        cycleStreams: () =>
+        setStreamPositions: (streamPositions) =>
           set((state) => {
-            const { streams, streamPositions: streamPositionsBase } = state;
-            const entries = Object.entries(streamPositionsBase);
-            const streamPositions = Object.assign(
-              {},
-              ...entries.map(([channel, pos]) => ({
-                [channel]: (pos + 1) % entries.length,
-              })),
-            );
+            const { streams } = state;
 
             const streamsOrdered = orderStreams(streams, streamPositions);
 
@@ -165,6 +159,19 @@ export const useMainStore = create<MainState>()(
 
             return { streamsOrdered, streamPositions };
           }),
+
+        cycleStreams: () => {
+          const { streamPositions: streamPositionsBase, actions } = get();
+          const entries = Object.entries(streamPositionsBase);
+          const streamPositions = Object.assign(
+            {},
+            ...entries.map(([channel, pos]) => ({
+              [channel]: (pos + 1) % entries.length,
+            })),
+          );
+
+          actions.setStreamPositions(streamPositions);
+        },
 
         setStreamPlayer: (channel, player) =>
           set((state) => ({

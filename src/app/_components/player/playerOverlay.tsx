@@ -47,30 +47,35 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   }, [channel, type]);
 
   const focusClick = useCallback(() => {
-    const { streams, streamPositions, actions } = useMainStore.getState();
+    const { streams, streamPositions, streamsOrdered, actions } =
+      useMainStore.getState();
+    const currentPosition = streamPositions[channel];
 
-    // If already focused or only one stream, do nothing
-    if (streamPositions[channel] === 0 || streams.length <= 1) {
+    // Ensure currentPosition is valid and the channel is not already focused
+    if (
+      typeof currentPosition !== "number" ||
+      currentPosition === 0 ||
+      streams.length <= 1
+    ) {
       return;
     }
 
-    // Create new positions map
-    const newStreamPositions: Record<string, number> = {};
-    newStreamPositions[channel] = 0; // Make the clicked channel focused
+    // Find the channel currently at position 0
+    const currentFocusedChannel = streamsOrdered[0]?.value;
 
-    // Get other channels sorted by their current position
-    const otherChannels = streams
-      .map((s) => s.value)
-      .filter((c) => c !== channel)
-      .sort((a, b) => (streamPositions[a] ?? 0) - (streamPositions[b] ?? 0));
+    // Should always find a focused channel if length > 1 and currentPosition !== 0
+    if (!currentFocusedChannel) {
+      console.error("Could not find the currently focused channel.");
+      return;
+    }
 
-    // Assign positions 1, 2, ... to the other channels
-    otherChannels.forEach((otherChannel, index) => {
-      newStreamPositions[otherChannel] = index + 1;
-    });
+    // Create the new positions map by swapping
+    const newStreamPositions = { ...streamPositions };
+    newStreamPositions[channel] = 0; // Clicked channel becomes focused
+    newStreamPositions[currentFocusedChannel] = currentPosition; // Old focused channel takes clicked channel's position
 
-    // Update the store (this also updates URL via streamsToPath inside setStreams)
-    actions.setStreams(streams, newStreamPositions);
+    // Update the store
+    actions.setStreamPositions(newStreamPositions);
   }, [channel]);
 
   const moveStream = useCallback(
@@ -99,7 +104,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
       newStreamPositions[channel] = targetPosition;
       newStreamPositions[channelToSwapWith] = currentPosition;
 
-      actions.setStreams(streams, newStreamPositions);
+      actions.setStreamPositions(newStreamPositions);
     },
     [channel],
   );
