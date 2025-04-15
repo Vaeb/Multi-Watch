@@ -145,6 +145,11 @@
     "np": true,
     "assumeFaction": "northcypress"
   },
+  "Saab": {
+    "id": 984265,
+    "np": true,
+    "assumeFaction": "northcypress"
+  },
   "roshtein": {
     "id": 4598
   },
