@@ -11,6 +11,8 @@ import WhiteSpeakerIcon from "../icons/whiteSpeakerIcon";
 import WhiteChatIcon from "../icons/whiteChatIcon";
 import { log } from "../../utils/log";
 import { useShallow } from "zustand/shallow";
+import ArrowIcon from "../icons/arrowIcon";
+import RefreshIcon from "../icons/refreshIcon";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
@@ -153,45 +155,21 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
           ) : null}
           {canMoveLeft ? (
             <button onClick={moveLeft} title="Move Left">
-              <Image
-                src="/up1.svg"
-                className="rotate-90" // Rotate arrow left
-                width={21}
-                height={21}
-                alt="Move Left"
-              />
+              <ArrowIcon size={21} className="rotate-90" alt="Move Right" />
             </button>
           ) : null}
           {viewFocused && !streamFocused ? (
             <button onClick={focusClick} className="" title="Focus Stream">
-              <Image
-                src="/up1.svg"
-                className="rotate-180"
-                width={21}
-                height={21}
-                alt="Focus Stream"
-              />
+              <ArrowIcon size={21} className="rotate-180" alt="Move Right" />
             </button>
           ) : null}
           {canMoveRight ? (
             <button onClick={moveRight} title="Move Right">
-              <Image
-                src="/up1.svg"
-                className="-rotate-90" // Rotate arrow right
-                width={21}
-                height={21}
-                alt="Move Right"
-              />
+              <ArrowIcon size={21} className="-rotate-90" alt="Move Right" />
             </button>
           ) : null}
           <button onClick={reloadStream}>
-            <Image
-              src="/refresh3.svg"
-              className=""
-              width={21}
-              height={21}
-              alt="Reload"
-            />
+            <RefreshIcon size={21} alt="Reload" />
           </button>
           <button onClick={closeStream}>
             <WhiteXIcon size={28} />
