@@ -9,6 +9,7 @@ import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chat/chatWrapper";
 import { PlayerWrapper } from "./player/playerWrapper";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
+import { VerticalResizer } from "./player/verticalResizer";
 // import { log } from "../utils/log";
 
 const selector = (state: MainState) => ({
@@ -51,6 +52,9 @@ function StreamsComponent() {
             </PlayerWrapper>
           );
         })}
+        {viewMode === "focused" && streams.length > 1 && (
+          <VerticalResizer top={focusHeight} />
+        )}
       </div>
       <ChatsContainer show={chatShown}>
         {streams.map((stream) => {

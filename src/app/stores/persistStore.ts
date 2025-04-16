@@ -10,6 +10,7 @@ export interface PersistState {
   autoplay: Autoplay;
   focusHeight: number;
   chatWidth: number;
+  isResizing: boolean;
 
   actions: {
     resetDefaults: () => void;
@@ -17,6 +18,7 @@ export interface PersistState {
     setAutoplay: (autoplay: Autoplay) => void;
     setChatWidth: (value: number) => void;
     setFocusHeight: (value: number) => void;
+    setIsResizing: (isResizing: boolean) => void;
   };
 }
 
@@ -25,6 +27,7 @@ export const persistDefaults = {
   autoplay: "all",
   focusHeight: 63,
   chatWidth: 470,
+  isResizing: false,
 } as const satisfies Partial<PersistState>;
 
 export const usePersistStore = create<PersistState>()(
@@ -40,6 +43,7 @@ export const usePersistStore = create<PersistState>()(
           setAutoplay: (autoplay) => set({ autoplay }),
           setFocusHeight: (focusHeight) => set({ focusHeight }),
           setChatWidth: (chatWidth) => set({ chatWidth }),
+          setIsResizing: (isResizing) => set({ isResizing }),
         },
       })),
       {

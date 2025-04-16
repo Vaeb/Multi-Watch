@@ -3,6 +3,8 @@ import { PlayerOverlay } from "./playerOverlay";
 import { type GridMode, type ViewMode } from "../../stores/storeTypes";
 import { type Platform } from "~/types";
 import { log } from "../../utils/log";
+import { usePersistStore } from "../../stores/persistStore";
+import clsx from "clsx";
 
 interface Dimensions {
   height: string;
@@ -193,20 +195,25 @@ function PlayerWrapperComponent({
     gridMode,
     focusHeight,
   );
+  const isResizing = usePersistStore((state) => state.isResizing);
 
   log(`[PlayerWrapper] Re-rendered ${channel}:`, height, width, top, left);
 
   return (
     <div
-      className={
-        "duration-50 absolute flex h-[var(--height)] w-[var(--width)] translate-x-[var(--left)] translate-y-[var(--top)] flex-col items-center transition ease-linear"
+      className={clsx(
+        "absolute flex flex-col items-center",
+        !isResizing && "duration-50 transition ease-linear",
+        "h-[var(--height)] w-[var(--width)] translate-x-[var(--left)] translate-y-[var(--top)]",
+      )}
+      style={
+        {
+          "--height": height,
+          "--width": width,
+          "--top": top,
+          "--left": left,
+        } as React.CSSProperties
       }
-      style={{
-        "--height": height,
-        "--width": width,
-        "--top": top,
-        "--left": left,
-      }}
     >
       <PlayerOverlay channel={channel} type={type} />
       {children}
