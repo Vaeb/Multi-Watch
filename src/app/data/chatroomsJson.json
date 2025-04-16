@@ -130,6 +130,11 @@
     "np": true,
     "assumeFaction": "hydragang"
   },
+  "arniev": {
+    "id": 3879287,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
   "Sayeed": {
     "id": 125993,
     "np": true,
@@ -142,6 +147,11 @@
   },
   "AnthonyZ": {
     "id": 1822781,
+    "np": true,
+    "assumeFaction": "northcypress"
+  },
+  "Saab": {
+    "id": 984265,
     "np": true,
     "assumeFaction": "northcypress"
   },
