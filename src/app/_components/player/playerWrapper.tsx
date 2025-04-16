@@ -3,7 +3,7 @@ import { PlayerOverlay } from "./playerOverlay";
 import { type GridMode, type ViewMode } from "../../stores/storeTypes";
 import { type Platform } from "~/types";
 import { log } from "../../utils/log";
-import { usePersistStore } from "../../stores/persistStore";
+import { useMainStore } from "../../stores/mainStore";
 import clsx from "clsx";
 
 interface Dimensions {
@@ -195,7 +195,7 @@ function PlayerWrapperComponent({
     gridMode,
     focusHeight,
   );
-  const isResizing = usePersistStore((state) => state.isResizing);
+  const isResizing = useMainStore((state) => state.isResizing);
 
   log(`[PlayerWrapper] Re-rendered ${channel}:`, height, width, top, left);
 

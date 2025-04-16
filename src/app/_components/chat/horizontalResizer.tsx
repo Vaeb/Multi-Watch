@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { useMainStore } from "../../stores/mainStore";
 import { usePersistStore } from "../../stores/persistStore";
 import { clamp } from "../../utils/math";
 
@@ -9,7 +10,7 @@ const MAX_WIDTH = 800; // Define a maximum chat width
 
 export function HorizontalResizer({ width }: { width: number }) {
   const setChatWidth = usePersistStore((state) => state.actions.setChatWidth);
-  const setIsChatResizing = usePersistStore(
+  const setIsChatResizing = useMainStore(
     (state) => state.actions.setIsChatResizing,
   );
   const containerRef = useRef<HTMLDivElement>(null);

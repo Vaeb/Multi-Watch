@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { useMainStore } from "../../stores/mainStore";
 import { usePersistStore } from "../../stores/persistStore";
 import { clamp } from "../../utils/math";
 
@@ -11,7 +12,7 @@ export function VerticalResizer({ top }: { top: number }) {
   const setFocusHeight = usePersistStore(
     (state) => state.actions.setFocusHeight,
   );
-  const setIsResizing = usePersistStore((state) => state.actions.setIsResizing);
+  const setIsResizing = useMainStore((state) => state.actions.setIsResizing);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startY = useRef(0);
@@ -93,7 +94,7 @@ export function VerticalResizer({ top }: { top: number }) {
       // Reset cursor style
       document.body.style.cursor = "";
     },
-    [setIsResizing, updateHeight, setFocusHeight], // Add dependencies
+    [setIsResizing, updateHeight, setFocusHeight], // Dependency correct
   );
 
   // Use Pointer Events directly on the element

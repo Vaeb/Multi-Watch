@@ -46,6 +46,8 @@ export interface MainState {
   settingsShown: boolean;
   nopixelShown: boolean;
   chatShown: boolean;
+  isResizing: boolean;
+  isChatResizing: boolean;
 
   actions: {
     markInitialised: () => void;
@@ -71,6 +73,8 @@ export interface MainState {
     toggleNopixel: () => void;
     setChat: (chatShown: boolean) => void;
     toggleChat: () => void;
+    setIsResizing: (isResizing: boolean) => void;
+    setIsChatResizing: (isChatResizing: boolean) => void;
   };
 }
 
@@ -95,6 +99,8 @@ export const useMainStore = create<MainState>()(
       settingsShown: false,
       nopixelShown: false,
       chatShown: true,
+      isResizing: false,
+      isChatResizing: false,
 
       actions: {
         markInitialised: () => set({ initialised: true }),
@@ -211,6 +217,10 @@ export const useMainStore = create<MainState>()(
         setChat: (chatShown) => set({ chatShown }),
 
         toggleChat: () => set((state) => ({ chatShown: !state.chatShown })),
+
+        setIsResizing: (isResizing) => set({ isResizing }),
+
+        setIsChatResizing: (isChatResizing) => set({ isChatResizing }),
       },
     })),
   ),
