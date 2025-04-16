@@ -11,6 +11,7 @@ export interface PersistState {
   focusHeight: number;
   chatWidth: number;
   isResizing: boolean;
+  isChatResizing: boolean;
 
   actions: {
     resetDefaults: () => void;
@@ -19,6 +20,7 @@ export interface PersistState {
     setChatWidth: (value: number) => void;
     setFocusHeight: (value: number) => void;
     setIsResizing: (isResizing: boolean) => void;
+    setIsChatResizing: (isChatResizing: boolean) => void;
   };
 }
 
@@ -28,6 +30,7 @@ export const persistDefaults = {
   focusHeight: 63,
   chatWidth: 470,
   isResizing: false,
+  isChatResizing: false,
 } as const satisfies Partial<PersistState>;
 
 export const usePersistStore = create<PersistState>()(
@@ -44,6 +47,7 @@ export const usePersistStore = create<PersistState>()(
           setFocusHeight: (focusHeight) => set({ focusHeight }),
           setChatWidth: (chatWidth) => set({ chatWidth }),
           setIsResizing: (isResizing) => set({ isResizing }),
+          setIsChatResizing: (isChatResizing) => set({ isChatResizing }),
         },
       })),
       {

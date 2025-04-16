@@ -2,6 +2,7 @@
 
 import { persistDefaults, usePersistStore } from "../../stores/persistStore";
 import { ChatTitle } from "./chatTitle";
+import { HorizontalResizer } from "./horizontalResizer";
 
 export function ChatsContainer({
   show,
@@ -13,9 +14,13 @@ export function ChatsContainer({
   const chatWidth = usePersistStore((state) => state.chatWidth);
   return (
     <div
+      id="chat-container"
       style={{ width: `${chatWidth}px` }}
-      className={`flex h-full ${chatWidth === persistDefaults.chatWidth ? "max-w-[25%]" : ""} flex-col ${show ? "" : "hidden"}`}
+      className={`relative flex h-full ${
+        chatWidth === persistDefaults.chatWidth ? "max-w-[25%]" : ""
+      } flex-col ${show ? "" : "hidden"}`}
     >
+      <HorizontalResizer width={chatWidth} />
       <ChatTitle />
       <div className={`relative flex-1`}>
         {children}

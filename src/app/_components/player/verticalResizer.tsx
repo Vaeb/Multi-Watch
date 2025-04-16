@@ -100,7 +100,7 @@ export function VerticalResizer({ top }: { top: number }) {
   return (
     <div
       ref={containerRef}
-      className="absolute left-0 z-10 h-1 w-full cursor-ns-resize touch-none bg-transparent py-1 hover:bg-blue-500/50"
+      className="absolute left-0 z-10 h-1 w-full cursor-ns-resize touch-none bg-transparent py-[6px] hover:bg-blue-500/50"
       style={{ top: `${top}vh`, transform: "translateY(-50%)" }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove} // Direct handler for move
