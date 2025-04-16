@@ -5,8 +5,8 @@ import { useMainStore } from "../../stores/mainStore";
 import { usePersistStore } from "../../stores/persistStore";
 import { clamp } from "../../utils/math";
 
-const MIN_WIDTH = 200; // Define a minimum chat width
-const MAX_WIDTH = 800; // Define a maximum chat width
+const MIN_WIDTH = 120; // Define a minimum chat width
+const MAX_WIDTH = 870; // Define a maximum chat width
 
 export function HorizontalResizer({ width }: { width: number }) {
   const setChatWidth = usePersistStore((state) => state.actions.setChatWidth);

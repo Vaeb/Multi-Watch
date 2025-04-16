@@ -20,14 +20,11 @@ export interface PersistState {
   };
 }
 
-const defaultFocusHeight = 63;
-const defaultChatWidth = 470;
-
 export const persistDefaults = {
   gridMode: "normal",
   autoplay: "all",
-  focusHeight: defaultFocusHeight,
-  chatWidth: defaultChatWidth,
+  focusHeight: 63,
+  chatWidth: 470,
 } as const satisfies Partial<PersistState>;
 
 export const usePersistStore = create<PersistState>()(
@@ -42,19 +39,19 @@ export const usePersistStore = create<PersistState>()(
           setGridMode: (gridMode) => set({ gridMode }),
           setAutoplay: (autoplay) => set({ autoplay }),
           setFocusHeight: (focusHeight) =>
-            set({
+            set((state) => ({
               focusHeight:
                 focusHeight && !Number.isNaN(focusHeight)
-                  ? focusHeight
-                  : defaultFocusHeight,
-            }),
+                  ? Number(focusHeight)
+                  : state.focusHeight,
+            })),
           setChatWidth: (chatWidth) =>
-            set({
+            set((state) => ({
               chatWidth:
                 chatWidth && !Number.isNaN(chatWidth)
-                  ? chatWidth
-                  : defaultChatWidth,
-            }),
+                  ? Number(chatWidth)
+                  : state.chatWidth,
+            })),
         },
       })),
       {

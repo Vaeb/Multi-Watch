@@ -53,7 +53,7 @@ function StreamsComponent() {
           );
         })}
         {viewMode === "focused" && streams.length > 1 && (
-          <VerticalResizer top={focusHeight} />
+          <VerticalResizer top={Number(focusHeight)} />
         )}
       </div>
       <ChatsContainer show={chatShown}>

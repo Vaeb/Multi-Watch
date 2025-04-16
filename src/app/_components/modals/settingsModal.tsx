@@ -133,14 +133,17 @@ function SettingsModal() {
           setting="Focused stream height"
           values={makeNumsInterval(10, 90, 1)}
           mapper={(val) => (val as number) - 9}
-          current={focusHeight}
+          current={Math.round(focusHeight)}
           cb={setFocusHeight}
         />
         <SettingsOption
           setting="Chat width"
           values={makeNumsInterval(120, 870, 50)}
           mapper={(val) => ((val as number) - 20) / 50 - 1}
-          current={chatWidth}
+          current={Math.max(
+            120,
+            Math.min(120 + Math.round((chatWidth - 120) / 50) * 50, 870),
+          )}
           cb={setChatWidth}
         />
         <div className="flex gap-2">

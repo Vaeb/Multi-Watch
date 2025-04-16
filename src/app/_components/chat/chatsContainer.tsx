@@ -20,7 +20,7 @@ export function ChatsContainer({
         chatWidth === persistDefaults.chatWidth ? "max-w-[25%]" : ""
       } flex-col ${show ? "" : "hidden"}`}
     >
-      <HorizontalResizer width={chatWidth} />
+      <HorizontalResizer width={Number(chatWidth)} />
       <ChatTitle />
       <div className={`relative flex-1`}>
         {children}
