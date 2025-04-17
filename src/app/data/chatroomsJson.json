@@ -25,6 +25,11 @@
     "id": 89446,
     "np": true
   },
+  "Aus24": {
+    "id": 1215902,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "4HEAD": {
     "id": 2579856,
     "np": true,
