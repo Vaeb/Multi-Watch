@@ -125,6 +125,20 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "traycee": {
+    "id": 123740,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "CLEErp": {
+    "id": 49051259,
+    "np": true
+  },
+  "itsHolmes": {
+    "id": 50496895,
+    "np": true,
+    "assumeFaction": "ssb"
+  },
   "Silent": {
     "id": 2738597,
     "np": true,
@@ -137,6 +151,16 @@
   },
   "arniev": {
     "id": 3879287,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "Jeimiru": {
+    "id": 2752771,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "StankXO": {
+    "id": 1120711,
     "np": true,
     "assumeFaction": "hydragang"
   },
