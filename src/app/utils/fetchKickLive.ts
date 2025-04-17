@@ -18,7 +18,7 @@ export const fetchKickLive = async (
     .map(([channel]) => channel);
 
   const kickStreams: RemoteKickLivestream[] = [];
-  const delayMs = 201;
+  const delayMs = 501;
 
   for (const channel of channels) {
     const url = `https://kick.com/api/v2/channels/${channel}/livestream`;
