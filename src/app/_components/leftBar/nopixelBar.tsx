@@ -301,6 +301,10 @@ function NopixelBarComponent({
     })
     .replace(" ", "\n");
 
+  /**
+   * Get kick streams from server.
+   * Also includes whether the server's kick stream cache needs to be updated by this client.
+   */
   const hydrateStreamsHandler = useCallback(
     async (_received?: RemoteReceived) => {
       const hydrateTime = +new Date();
@@ -331,11 +335,12 @@ function NopixelBarComponent({
 
   useEffect(() => {
     // resolves also 'needs kick live data', aka has it been >5 minutes since server received live data
-    // if so, lookup data & send in server action to server
+    // if so, lookup kick data & send in server action to server to store and pass back to all clients
     // then shift interval by random amount from NOPIXEL_DATA_INTERVAL*0.25 to NOPIXEL_DATA_INTERVAL*0.75
     const { clear, shiftOnce } = shiftableInterval(() => {
       hydrateStreamsHandler()
         .then((received) => {
+          // update server's cache of kick streams by fetching on client
           if (received.needsKickLiveStreams) {
             shiftOnce(
               randomInt(
@@ -350,6 +355,7 @@ function NopixelBarComponent({
     }, NOPIXEL_DATA_INTERVAL);
 
     if (_receivedData.needsKickLiveStreams) {
+      // update server's cache of kick streams by fetching on client
       updateLiveKickStreams().catch(console.error);
     }
 
