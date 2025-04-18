@@ -210,21 +210,21 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
                 <WhiteSpeakerIcon size={28} />
               </button>
             ) : null}
-            {canMoveLeft ? (
+            {/* {canMoveLeft ? (
               <button onClick={moveLeft} title="Move Left">
                 <ArrowIcon size={21} className="rotate-90" alt="Move Right" />
               </button>
-            ) : null}
+            ) : null} */}
             {viewFocused && !streamFocused ? (
               <button onClick={focusClick} className="" title="Focus Stream">
                 <ArrowIcon size={21} className="rotate-180" alt="Move Right" />
               </button>
             ) : null}
-            {canMoveRight ? (
+            {/* {canMoveRight ? (
               <button onClick={moveRight} title="Move Right">
                 <ArrowIcon size={21} className="-rotate-90" alt="Move Right" />
               </button>
-            ) : null}
+            ) : null} */}
             <button onClick={reloadStream}>
               <RefreshIcon size={21} alt="Reload" />
             </button>
