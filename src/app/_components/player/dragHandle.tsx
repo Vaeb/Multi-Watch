@@ -4,6 +4,7 @@ import { memo } from "react";
 import { useMainStore } from "../../stores/mainStore";
 import clsx from "clsx";
 import { useDrag } from "./dragContext";
+import { useStableCallback } from "~/app/hooks/useStableCallback";
 
 interface DragHandleProps {
   channel: string;
@@ -21,6 +22,13 @@ function DragHandleComponent({ channel }: DragHandleProps) {
     startDrag(channel, e.clientX, e.clientY);
   };
 
+  // Handler for double-click to go fullscreen
+  const onDoubleClick = useStableCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    useMainStore.getState().actions.forcePlayerFullscreen(channel);
+  });
+
   return (
     <div
       className={clsx(
@@ -30,6 +38,7 @@ function DragHandleComponent({ channel }: DragHandleProps) {
         isDraggingThis ? "cursor-grabbing" : "cursor-grab",
       )}
       onMouseDown={onMouseDown}
+      onDoubleClick={onDoubleClick}
       data-drag-handle={channel}
     />
   );

@@ -97,6 +97,9 @@ export interface MainState {
         >
       >,
     ) => void;
+
+    // New action to trigger fullscreen for a specific player
+    forcePlayerFullscreen: (channel: string) => void;
   };
 }
 
@@ -252,8 +255,37 @@ export const useMainStore = create<MainState>()(
 
         setIsChatResizing: (isChatResizing) => set({ isChatResizing }),
 
-        // New simpler action implementation
         setDragState: (newState) => set(newState),
+
+        forcePlayerFullscreen: (channel: string) => {
+          const { streamPlayer } = get();
+          const player = streamPlayer[channel];
+
+          if (player) {
+            // For Twitch players, they might have a setFullscreen method
+            if (
+              "setFullscreen" in player &&
+              typeof player.setFullscreen === "function"
+            ) {
+              player.setFullscreen(true);
+              return;
+            }
+
+            // For other players or as a fallback, find the iframe and request fullscreen
+            const playerElement = document.querySelector(
+              `iframe[title="${channel}"], iframe[src*="${channel}"]`,
+            );
+            if (playerElement instanceof HTMLElement) {
+              if (playerElement.requestFullscreen) {
+                playerElement.requestFullscreen().catch((err) => {
+                  console.error(
+                    `Error attempting to enable fullscreen: ${err.message}`,
+                  );
+                });
+              }
+            }
+          }
+        },
       },
     })),
   ),

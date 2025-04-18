@@ -14,6 +14,7 @@ import ArrowIcon from "../icons/arrowIcon";
 import RefreshIcon from "../icons/refreshIcon";
 import clsx from "clsx";
 import { useDrag } from "./dragContext";
+import { useStableCallback } from "~/app/hooks/useStableCallback";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
@@ -167,6 +168,17 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
       (currentPosition !== 0 && // personal pref: should have arrows on focused or not?
         (currentPosition < streamCount - 1 || currentPosition === 0)));
 
+  // Handler for double-click to go fullscreen
+  const onDoubleClick = useStableCallback((e: React.MouseEvent) => {
+    // Don't trigger if clicking on buttons
+    if ((e.target as HTMLElement).closest("button")) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    useMainStore.getState().actions.forcePlayerFullscreen(channel);
+  });
+
   return (
     <div
       className={clsx(
@@ -175,6 +187,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
         isDraggingThis ? "cursor-grabbing" : "cursor-grab",
       )}
       onMouseDown={onMouseDown}
+      onDoubleClick={onDoubleClick}
     >
       <div className="flex flex-col items-center justify-center rounded-md bg-black/0 px-4 pb-2 pt-1 transition duration-100 ease-out group-hover:bg-black/50">
         {/* New wrapper for opacity control */}
