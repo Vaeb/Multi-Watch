@@ -10,6 +10,7 @@ import { ChatWrapper } from "./chat/chatWrapper";
 import { PlayerWrapper } from "./player/playerWrapper";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
 import { VerticalResizer } from "./player/verticalResizer";
+import { DragProvider } from "./player/dragContext";
 // import { log } from "../utils/log";
 
 const selector = (state: MainState) => ({
@@ -34,41 +35,43 @@ function StreamsComponent() {
   // log("[Page Streams] Re-rendered");
 
   return (
-    <div className="flex flex-1">
-      <div className="relative h-full flex-1">
-        {streams.map((stream) => {
-          return (
-            <PlayerWrapper
-              key={`video-${stream.value}-${stream.type}`}
-              channel={stream.value}
-              type={stream.type}
-              total={streams.length}
-              pos={streamPositions[stream.value]!}
-              viewMode={viewMode}
-              gridMode={gridMode}
-              focusHeight={focusHeight}
-            >
-              <Player type={stream.type} channel={stream.value} />
-            </PlayerWrapper>
-          );
-        })}
-        {viewMode === "focused" && streams.length > 1 && (
-          <VerticalResizer top={Number(focusHeight)} />
-        )}
+    <DragProvider>
+      <div className="flex flex-1">
+        <div className="relative h-full flex-1">
+          {streams.map((stream) => {
+            return (
+              <PlayerWrapper
+                key={`video-${stream.value}-${stream.type}`}
+                channel={stream.value}
+                type={stream.type}
+                total={streams.length}
+                pos={streamPositions[stream.value]!}
+                viewMode={viewMode}
+                gridMode={gridMode}
+                focusHeight={focusHeight}
+              >
+                <Player type={stream.type} channel={stream.value} />
+              </PlayerWrapper>
+            );
+          })}
+          {viewMode === "focused" && streams.length > 1 && (
+            <VerticalResizer top={Number(focusHeight)} />
+          )}
+        </div>
+        <ChatsContainer show={chatShown}>
+          {streams.map((stream) => {
+            return (
+              <ChatWrapper
+                key={`chat-${stream.value}-${stream.type}`}
+                channel={stream.value}
+              >
+                <Chat type={stream.type} channel={stream.value} />
+              </ChatWrapper>
+            );
+          })}
+        </ChatsContainer>
       </div>
-      <ChatsContainer show={chatShown}>
-        {streams.map((stream) => {
-          return (
-            <ChatWrapper
-              key={`chat-${stream.value}-${stream.type}`}
-              channel={stream.value}
-            >
-              <Chat type={stream.type} channel={stream.value} />
-            </ChatWrapper>
-          );
-        })}
-      </ChatsContainer>
-    </div>
+    </DragProvider>
   );
 }
 

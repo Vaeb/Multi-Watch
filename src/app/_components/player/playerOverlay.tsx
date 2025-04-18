@@ -3,7 +3,6 @@
 import { memo, useCallback } from "react";
 import { type PlayerProps } from "./videoClient";
 import { useMainStore } from "../../stores/mainStore";
-import Image from "next/image";
 import { useKickStore } from "../../stores/kickStore";
 import { removeStream } from "../../utils/removeStream";
 import WhiteXIcon from "../icons/whiteXIcon";
@@ -13,6 +12,8 @@ import { log } from "../../utils/log";
 import { useShallow } from "zustand/shallow";
 import ArrowIcon from "../icons/arrowIcon";
 import RefreshIcon from "../icons/refreshIcon";
+import clsx from "clsx";
+import { useDrag } from "./dragContext";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
@@ -115,17 +116,42 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   const moveLeft = useCallback(() => moveStream(-1), [moveStream]);
   const moveRight = useCallback(() => moveStream(1), [moveStream]);
 
-  // Get stream count and position for move button logic
-  const { streamCount, currentPosition, viewFocused, streamFocused } =
-    useMainStore(
-      useShallow((state) => ({
-        streamCount: state.streams.length,
-        currentPosition: state.streamPositions[channel], // Keep potential undefined here
-        viewFocused: state.viewMode === "focused", // Check the current view mode is focused
-        streamFocused:
-          state.streams.length <= 1 || state.streamPositions[channel] === 0, // Check if the current stream is focused or the only stream
-      })),
-    );
+  // Get necessary state directly from mainStore for rendering logic
+  const {
+    streamCount,
+    currentPosition,
+    viewFocused,
+    streamFocused,
+    isDragging,
+    dragChannel,
+  } = useMainStore(
+    useShallow((state) => ({
+      streamCount: state.streams.length,
+      currentPosition: state.streamPositions[channel],
+      viewFocused: state.viewMode === "focused",
+      streamFocused:
+        state.streams.length <= 1 || state.streamPositions[channel] === 0,
+      isDragging: state.isDragging,
+      dragChannel: state.dragChannel,
+    })),
+  );
+
+  // Use the context hook to get startDrag
+  const { startDrag } = useDrag();
+
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).closest("button")) {
+        return;
+      }
+      e.preventDefault();
+      // Call startDrag from context
+      startDrag(channel, e.clientX, e.clientY);
+    },
+    [channel, startDrag], // Dependency on context startDrag
+  );
+
+  const isDraggingThis = isDragging && dragChannel === channel;
 
   // Check if position is defined and valid for moving
   const canMoveLeft =
@@ -142,7 +168,14 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
         (currentPosition < streamCount - 1 || currentPosition === 0)));
 
   return (
-    <div className="group absolute mt-8 flex h-[35%] w-[50%] items-start justify-center">
+    <div
+      className={clsx(
+        "group absolute flex h-[35%] w-[50%] items-start justify-center bg-white/0 pt-8",
+        // "active:cursor-grabbing active:bg-white/5",
+        isDraggingThis ? "cursor-grabbing" : "cursor-grab",
+      )}
+      onMouseDown={onMouseDown}
+    >
       <div className="flex items-center justify-center rounded-md bg-black/0 transition duration-100 ease-out group-hover:bg-black/50">
         <div className="flex gap-4 p-4 opacity-0 group-hover:opacity-80">
           <button onClick={chatClick}>

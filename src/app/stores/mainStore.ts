@@ -49,6 +49,14 @@ export interface MainState {
   isResizing: boolean;
   isChatResizing: boolean;
 
+  // Drag state
+  isDragging: boolean;
+  dragChannel: string | null;
+  dragStartX: number;
+  dragStartY: number;
+  dragCurrentX: number;
+  dragCurrentY: number;
+
   actions: {
     markInitialised: () => void;
 
@@ -75,6 +83,20 @@ export interface MainState {
     toggleChat: () => void;
     setIsResizing: (isResizing: boolean) => void;
     setIsChatResizing: (isChatResizing: boolean) => void;
+
+    setDragState: (
+      newState: Partial<
+        Pick<
+          MainState,
+          | "isDragging"
+          | "dragChannel"
+          | "dragStartX"
+          | "dragStartY"
+          | "dragCurrentX"
+          | "dragCurrentY"
+        >
+      >,
+    ) => void;
   };
 }
 
@@ -101,6 +123,14 @@ export const useMainStore = create<MainState>()(
       chatShown: true,
       isResizing: false,
       isChatResizing: false,
+
+      // Drag state initial values
+      isDragging: false,
+      dragChannel: null,
+      dragStartX: 0,
+      dragStartY: 0,
+      dragCurrentX: 0,
+      dragCurrentY: 0,
 
       actions: {
         markInitialised: () => set({ initialised: true }),
@@ -221,6 +251,9 @@ export const useMainStore = create<MainState>()(
         setIsResizing: (isResizing) => set({ isResizing }),
 
         setIsChatResizing: (isChatResizing) => set({ isChatResizing }),
+
+        // New simpler action implementation
+        setDragState: (newState) => set(newState),
       },
     })),
   ),
