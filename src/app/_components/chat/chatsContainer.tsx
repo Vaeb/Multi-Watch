@@ -26,9 +26,10 @@ export function ChatsContainer({
         {children}
         {chatWidth >= 320 ? (
           <div className="absolute h-[48px] w-full bg-[#18181b] p-4 pt-1 text-sm font-bold">
+            <p>Tip: Switch chat by hovering at the top of a stream.</p>
             <p>
-              MultiWatch Tip: Hover at the top of a stream to view chat and
-              audio controls.
+              Tip: Resize chat by dragging the border between the chat and
+              streams.
             </p>
           </div>
         ) : null}

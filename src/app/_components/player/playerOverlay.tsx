@@ -176,37 +176,49 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
       )}
       onMouseDown={onMouseDown}
     >
-      <div className="flex items-center justify-center rounded-md bg-black/0 transition duration-100 ease-out group-hover:bg-black/50">
-        <div className="flex gap-4 p-4 opacity-0 group-hover:opacity-80">
-          <button onClick={chatClick}>
-            <WhiteChatIcon size={28} />
-          </button>
-          {type === "twitch" ? (
-            <button onClick={audioClick}>
-              <WhiteSpeakerIcon size={28} />
+      <div className="flex flex-col items-center justify-center rounded-md bg-black/0 px-4 pb-2 pt-1 transition duration-100 ease-out group-hover:bg-black/50">
+        {/* New wrapper for opacity control */}
+        <div className="flex flex-col items-center opacity-0 transition-opacity duration-100 group-hover:opacity-80">
+          {/* Channel Name */}
+          <div className="mb-1 text-center text-sm font-medium text-white">
+            {channel}
+          </div>
+          {/* New Hint Text */}
+          <div className="mb-2 text-center text-xs text-gray-300/95">
+            Tip: Drag streams to reorder.
+          </div>
+          {/* Buttons Container */}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+            <button onClick={chatClick}>
+              <WhiteChatIcon size={28} />
             </button>
-          ) : null}
-          {canMoveLeft ? (
-            <button onClick={moveLeft} title="Move Left">
-              <ArrowIcon size={21} className="rotate-90" alt="Move Right" />
+            {type === "twitch" ? (
+              <button onClick={audioClick}>
+                <WhiteSpeakerIcon size={28} />
+              </button>
+            ) : null}
+            {canMoveLeft ? (
+              <button onClick={moveLeft} title="Move Left">
+                <ArrowIcon size={21} className="rotate-90" alt="Move Right" />
+              </button>
+            ) : null}
+            {viewFocused && !streamFocused ? (
+              <button onClick={focusClick} className="" title="Focus Stream">
+                <ArrowIcon size={21} className="rotate-180" alt="Move Right" />
+              </button>
+            ) : null}
+            {canMoveRight ? (
+              <button onClick={moveRight} title="Move Right">
+                <ArrowIcon size={21} className="-rotate-90" alt="Move Right" />
+              </button>
+            ) : null}
+            <button onClick={reloadStream}>
+              <RefreshIcon size={21} alt="Reload" />
             </button>
-          ) : null}
-          {viewFocused && !streamFocused ? (
-            <button onClick={focusClick} className="" title="Focus Stream">
-              <ArrowIcon size={21} className="rotate-180" alt="Move Right" />
+            <button onClick={closeStream}>
+              <WhiteXIcon size={28} />
             </button>
-          ) : null}
-          {canMoveRight ? (
-            <button onClick={moveRight} title="Move Right">
-              <ArrowIcon size={21} className="-rotate-90" alt="Move Right" />
-            </button>
-          ) : null}
-          <button onClick={reloadStream}>
-            <RefreshIcon size={21} alt="Reload" />
-          </button>
-          <button onClick={closeStream}>
-            <WhiteXIcon size={28} />
-          </button>
+          </div>
         </div>
       </div>
     </div>

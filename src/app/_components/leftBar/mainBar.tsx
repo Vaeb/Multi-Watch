@@ -119,10 +119,14 @@ const MainBarComponent = () => {
         message="Settings"
         onClick={toggleSettingsShown}
       />
-      <BarText
-        message={"Tip: Hover at the top of a stream to switch chat."}
-        maxLines={2}
-      />
+      {viewMode === "focused" ? (
+        <BarText
+          message={
+            "Tip: Resize the streams by dragging the border between the focused stream and small streams."
+          }
+          maxLines={4}
+        />
+      ) : null}
     </div>
   );
 };
