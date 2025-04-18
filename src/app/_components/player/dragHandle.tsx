@@ -32,7 +32,7 @@ function DragHandleComponent({ channel }: DragHandleProps) {
   return (
     <div
       className={clsx(
-        "absolute inset-x-0 bottom-[64px] top-[35%] pt-8 transition-all duration-150",
+        "absolute inset-x-0 bottom-[64px] top-[40%] pt-8 transition-all duration-150",
         "bg-white/20 opacity-0",
         // "active:cursor-grabbing active:opacity-15",
         isDraggingThis ? "cursor-grabbing" : "cursor-grab",

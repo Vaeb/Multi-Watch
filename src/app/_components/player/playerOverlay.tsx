@@ -182,7 +182,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   return (
     <div
       className={clsx(
-        "group absolute flex h-[35%] w-[50%] items-start justify-center bg-white/0 pt-8",
+        "group absolute flex h-[40%] w-[50%] items-start justify-center bg-white/0 pt-8",
         // "active:cursor-grabbing active:bg-white/5",
         isDraggingThis ? "cursor-grabbing" : "cursor-grab",
       )}
