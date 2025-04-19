@@ -18,6 +18,7 @@ function DragHandleComponent({ channel }: DragHandleProps) {
   const isDraggingThis = isDragging && dragChannel === channel;
 
   const onMouseDown = useStableCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     onMouseDownDrag(channel, e);
   });
 

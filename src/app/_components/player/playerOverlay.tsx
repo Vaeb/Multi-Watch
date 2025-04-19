@@ -143,7 +143,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
     if ((e.target as HTMLElement).closest("button")) {
       return;
     }
-    // Initiate drag flow
+    e.preventDefault();
     onMouseDownDrag(channel, e);
   });
 
