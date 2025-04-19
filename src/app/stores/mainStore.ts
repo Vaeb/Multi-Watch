@@ -263,20 +263,21 @@ export const useMainStore = create<MainState>()(
 
           if (player) {
             // For Twitch players, they might have a setFullscreen method
-            if (
-              "setFullscreen" in player &&
-              typeof player.setFullscreen === "function"
-            ) {
-              player.setFullscreen(true);
-              return;
-            }
+            // if (
+            //   "getPlaybackStats" in player
+            // ) {
+            //   log("Twitch native fullscreen", channel);
+            //   player.setFullscreen(true);
+            //   return;
+            // }
 
-            // For other players or as a fallback, find the iframe and request fullscreen
+            // As a fallback, find the iframe and request fullscreen
             const playerElement = document.querySelector(
-              `iframe[title="${channel}"], iframe[src*="${channel}"]`,
+              `iframe[src*="channel=${channel}"]`,
             );
             if (playerElement instanceof HTMLElement) {
               if (playerElement.requestFullscreen) {
+                log("IFrame fullscreen", channel);
                 playerElement.requestFullscreen().catch((err) => {
                   console.error(
                     `Error attempting to enable fullscreen: ${err.message}`,

@@ -11,16 +11,15 @@ interface DragHandleProps {
 }
 
 function DragHandleComponent({ channel }: DragHandleProps) {
-  const { startDrag } = useDrag();
+  const { onMouseDownDrag } = useDrag();
   const isDragging = useMainStore((state) => state.isDragging);
   const dragChannel = useMainStore((state) => state.dragChannel);
 
   const isDraggingThis = isDragging && dragChannel === channel;
 
-  const onMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    startDrag(channel, e.clientX, e.clientY);
-  };
+  const onMouseDown = useStableCallback((e: React.MouseEvent) => {
+    onMouseDownDrag(channel, e);
+  });
 
   // Handler for double-click to go fullscreen
   const onDoubleClick = useStableCallback((e: React.MouseEvent) => {

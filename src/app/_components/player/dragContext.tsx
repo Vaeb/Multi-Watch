@@ -3,7 +3,6 @@
 import React, {
   createContext,
   useContext,
-  useCallback,
   useRef,
   useEffect,
   useMemo,
@@ -13,7 +12,7 @@ import { useShallow } from "zustand/shallow";
 import { useStableCallback } from "~/app/hooks/useStableCallback";
 
 interface DragContextType {
-  startDrag: (channel: string, x: number, y: number) => void;
+  onMouseDownDrag: (channel: string, e: React.MouseEvent) => void;
 }
 
 const DragContext = createContext<DragContextType | undefined>(undefined);
@@ -45,6 +44,10 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
   );
 
   const dragChannelRef = useRef<string | null>(null); // Ref to track current drag channel
+
+  // Track mouse position to detect if there was movement
+  const startPosRef = useRef({ x: 0, y: 0 });
+  const didMoveRef = useRef(false);
 
   // --- Internal Drag Logic ---
 
@@ -115,13 +118,86 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     dragChannelRef.current = null; // Clear ref
   });
 
+  // Track when mouse goes down for a potential drag
+  const onMouseDownDrag = useStableCallback(
+    (channel: string, e: React.MouseEvent) => {
+      // Store initial position
+      startPosRef.current = { x: e.clientX, y: e.clientY };
+      didMoveRef.current = false;
+
+      // Setup mousemove and mouseup listeners to check whether it's a click or drag
+      const onMouseMove = (moveEvent: MouseEvent) => {
+        // Check if mouse has moved enough to consider it a drag
+        const dx = moveEvent.clientX - startPosRef.current.x;
+        const dy = moveEvent.clientY - startPosRef.current.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // If moved more than 5px, consider it a drag
+        if (distance > 5) {
+          didMoveRef.current = true;
+
+          // Initiate drag and cleanup listeners
+          e.preventDefault(); // Prevent any default action
+
+          // Start drag!
+          setDragState({
+            isDragging: true,
+            dragChannel: channel,
+            dragStartX: startPosRef.current.x,
+            dragStartY: startPosRef.current.y,
+            dragCurrentX: startPosRef.current.x,
+            dragCurrentY: startPosRef.current.y,
+          });
+          dragChannelRef.current = channel;
+
+          window.removeEventListener("mousemove", onMouseMove);
+          window.removeEventListener("mouseup", onMouseUp);
+        }
+      };
+
+      const onMouseUp = () => {
+        // If mouse was released without moving enough, simulate click on underlying element
+        if (!didMoveRef.current) {
+          // Instead of synthetic click, use the player API
+          const { streamPlayer } = useMainStore.getState();
+          const player = streamPlayer[channel];
+
+          if (player && "getPlaybackStats" in player) {
+            // For Twitch players, use the play/pause API methods if available
+            // Note: Using optional chaining to safely call these methods if they exist
+            try {
+              if (player.isPaused()) {
+                player.play();
+              } else {
+                player.pause();
+              }
+            } catch (e) {
+              console.log("Error toggling player state", e);
+            }
+          }
+        }
+
+        // Clean up
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+      };
+
+      // Add temporary listeners to track mouse movement
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp, { once: true });
+    },
+  );
+
   // Effect to manage global listeners
   useEffect(() => {
     if (!isDragging) return;
 
+    // Handle mouse move during drag
     const handleMouseMove = (e: MouseEvent) => {
       updateDrag(e.clientX, e.clientY);
     };
+
+    // Handle mouse up after drag
     const handleMouseUp = () => {
       endDrag();
     };
@@ -135,29 +211,13 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     };
   }, [endDrag, updateDrag, isDragging]); // Runs only when isDragging changes
 
-  // --- Exposed Context Function ---
-
-  const startDrag = useStableCallback(
-    (channel: string, x: number, y: number) => {
-      setDragState({
-        isDragging: true,
-        dragChannel: channel,
-        dragStartX: x,
-        dragStartY: y,
-        dragCurrentX: x,
-        dragCurrentY: y,
-      });
-      dragChannelRef.current = channel;
-    },
-  );
-
   // --- Provide Context ---
 
   const contextValue: DragContextType = useMemo(
     () => ({
-      startDrag,
+      onMouseDownDrag,
     }),
-    [startDrag],
+    [onMouseDownDrag],
   );
 
   return (

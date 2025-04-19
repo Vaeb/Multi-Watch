@@ -137,20 +137,15 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
     })),
   );
 
-  // Use the context hook to get startDrag
-  const { startDrag } = useDrag();
+  const { onMouseDownDrag } = useDrag();
 
-  const onMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      if ((e.target as HTMLElement).closest("button")) {
-        return;
-      }
-      e.preventDefault();
-      // Call startDrag from context
-      startDrag(channel, e.clientX, e.clientY);
-    },
-    [channel, startDrag], // Dependency on context startDrag
-  );
+  const onMouseDown = useStableCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest("button")) {
+      return;
+    }
+    // Initiate drag flow
+    onMouseDownDrag(channel, e);
+  });
 
   const isDraggingThis = isDragging && dragChannel === channel;
 
