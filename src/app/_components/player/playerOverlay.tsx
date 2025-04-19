@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import { type PlayerProps } from "./videoClient";
 import { useMainStore } from "../../stores/mainStore";
 import { useKickStore } from "../../stores/kickStore";
@@ -19,6 +19,9 @@ import { useStableCallback } from "~/app/hooks/useStableCallback";
 interface PlayerOverlayProps extends PlayerProps {}
 
 function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
+  const [tipText, setTipText] = useState("Tip: Drag streams to reorder.");
+  const defaultTipText = "Tip: Drag streams to reorder.";
+
   const audioClick = useCallback(() => {
     const { streams, streamPlayer, actions } = useMainStore.getState();
     log("[PlayerOverlay]", streamPlayer);
@@ -184,7 +187,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
       onMouseDown={onMouseDown}
       onDoubleClick={onDoubleClick}
     >
-      <div className="flex flex-col items-center justify-center rounded-md bg-black/0 px-4 pb-2 pt-1 transition duration-100 ease-out group-hover:bg-black/50">
+      <div className="flex min-w-48 flex-col items-center justify-center rounded-md bg-black/0 px-4 pb-2 pt-1 transition duration-100 ease-out group-hover:bg-black/50">
         {/* New wrapper for opacity control */}
         <div className="flex flex-col items-center opacity-0 transition-opacity duration-100 group-hover:opacity-80">
           {/* Channel Name */}
@@ -192,16 +195,26 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
             {channel}
           </div>
           {/* New Hint Text */}
-          <div className="mb-2 text-center text-xs text-gray-300/95">
-            Tip: Drag streams to reorder.
+          <div className="relative mb-2 h-4 w-full text-center text-xs text-gray-300/95">
+            <p className="absolute inset-0 flex w-full items-center justify-center whitespace-nowrap p-0">
+              {tipText}
+            </p>
           </div>
           {/* Buttons Container */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-            <button onClick={chatClick}>
+            <button
+              onClick={chatClick}
+              onMouseEnter={() => setTipText("Press to switch chat.")}
+              onMouseLeave={() => setTipText(defaultTipText)}
+            >
               <WhiteChatIcon size={28} />
             </button>
             {type === "twitch" ? (
-              <button onClick={audioClick}>
+              <button
+                onClick={audioClick}
+                onMouseEnter={() => setTipText("Press to switch audio.")}
+                onMouseLeave={() => setTipText(defaultTipText)}
+              >
                 <WhiteSpeakerIcon size={28} />
               </button>
             ) : null}
@@ -211,7 +224,13 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
               </button>
             ) : null} */}
             {viewFocused && !streamFocused ? (
-              <button onClick={focusClick} className="" title="Focus Stream">
+              <button
+                onClick={focusClick}
+                className=""
+                title="Focus Stream"
+                onMouseEnter={() => setTipText("Press to focus stream.")}
+                onMouseLeave={() => setTipText(defaultTipText)}
+              >
                 <ArrowIcon size={21} className="rotate-180" alt="Move Right" />
               </button>
             ) : null}
@@ -220,10 +239,18 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
                 <ArrowIcon size={21} className="-rotate-90" alt="Move Right" />
               </button>
             ) : null} */}
-            <button onClick={reloadStream}>
+            <button
+              onClick={reloadStream}
+              onMouseEnter={() => setTipText("Press to refresh stream.")}
+              onMouseLeave={() => setTipText(defaultTipText)}
+            >
               <RefreshIcon size={21} alt="Reload" />
             </button>
-            <button onClick={closeStream}>
+            <button
+              onClick={closeStream}
+              onMouseEnter={() => setTipText("Press to close stream.")}
+              onMouseLeave={() => setTipText(defaultTipText)}
+            >
               <WhiteXIcon size={28} />
             </button>
           </div>
