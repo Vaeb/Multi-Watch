@@ -140,6 +140,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "ZPapz": {
+    "id": 2513940,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "CLEErp": {
     "id": 49051259,
     "np": true
