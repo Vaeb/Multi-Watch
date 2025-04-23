@@ -60,6 +60,11 @@
     "np": true,
     "assumeFaction": "besties"
   },
+  "Daisyks": {
+    "id": 57646900,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "AcezProduction": {
     "id": 1669680,
     "np": true,
@@ -132,6 +137,11 @@
   },
   "traycee": {
     "id": 123740,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "ZPapz": {
+    "id": 2513940,
     "np": true,
     "assumeFaction": "police"
   },
