@@ -1,3 +1,5 @@
+"use client";
+
 import { memo, useRef } from "react";
 import { PlayerOverlay } from "./playerOverlay";
 import { type Platform } from "~/types";
@@ -8,20 +10,15 @@ import { DragHandle } from "./dragHandle";
 import React from "react";
 import { type Rect } from "~/app/utils/layoutCellsTight";
 import { areEqualObj } from "~/app/utils/areEqualObj";
+import { Player } from "./videoClient";
 
 interface PlayerWrapperProps {
-  children: React.ReactNode;
   channel: string;
   type: Platform;
   cell: Rect | undefined;
 }
 
-function PlayerWrapperComponent({
-  children,
-  channel,
-  type,
-  cell,
-}: PlayerWrapperProps) {
+function PlayerWrapperComponent({ channel, type, cell }: PlayerWrapperProps) {
   const isResizing = useMainStore((state) => state.isResizing);
   const isDragging = useMainStore((state) => state.isDragging);
   const dragChannel = useMainStore((state) => state.dragChannel);
@@ -109,7 +106,7 @@ function PlayerWrapperComponent({
     >
       <PlayerOverlay channel={channel} type={type} />
       <DragHandle channel={channel} />
-      {children}
+      <Player type={type} channel={channel} />
     </div>
   );
 }

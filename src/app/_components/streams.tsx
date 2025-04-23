@@ -86,9 +86,7 @@ function StreamsComponent() {
                 channel={stream.value}
                 type={stream.type}
                 cell={layoutCells[streamPositions[stream.value]!]}
-              >
-                <Player type={stream.type} channel={stream.value} />
-              </PlayerWrapper>
+              />
             );
           })}
           {viewMode === "focused" && streams.length > 1 && (
@@ -101,9 +99,8 @@ function StreamsComponent() {
               <ChatWrapper
                 key={`chat-${stream.value}-${stream.type}`}
                 channel={stream.value}
-              >
-                <Chat type={stream.type} channel={stream.value} />
-              </ChatWrapper>
+                type={stream.type}
+              />
             );
           })}
         </ChatsContainer>
