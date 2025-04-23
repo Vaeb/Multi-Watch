@@ -39,16 +39,17 @@ function StreamsComponent() {
   const [containerHeight, setContainerHeight] = useState(0);
   // log("[Page Streams] Re-rendered");
 
-  const layoutCells = useMemo(() => {
-    log("Recalculating cells layout");
-    return layoutCellsTight(
-      streams.length,
-      containerWidth,
-      containerHeight,
-      viewMode,
-      focusHeight,
-    );
-  }, [streams.length, containerWidth, containerHeight, viewMode, focusHeight]);
+  const layoutCells = useMemo(
+    () =>
+      layoutCellsTight(
+        streams.length,
+        containerWidth,
+        containerHeight,
+        viewMode,
+        focusHeight,
+      ),
+    [streams.length, containerWidth, containerHeight, viewMode, focusHeight],
+  );
 
   useEffect(() => {
     const containerElement = containerRef.current;

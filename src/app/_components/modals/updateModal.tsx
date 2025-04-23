@@ -217,12 +217,16 @@ export function UpdateModalWrapper({ isLanding }: { isLanding: boolean }) {
     hasRenderedRef.current = true;
   }, []);
 
-  const closeModal = useStableCallback(() => {
-    useMainStore.getState().actions.setUpdateShown(false);
-  });
+  const closeModal = useStableCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (e.target === e.currentTarget) {
+        useMainStore.getState().actions.setUpdateShown(false);
+      }
+    },
+  );
 
   return updateShown ? (
-    <div className="absolute z-10 h-full w-full" onClick={closeModal}>
+    <div className="absolute z-10 h-full w-full" onMouseDown={closeModal}>
       <UpdateModal />
     </div>
   ) : null;
