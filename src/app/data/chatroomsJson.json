@@ -16,6 +16,11 @@
     "np": true,
     "assumeFaction": "changgang"
   },
+  "JaksonLIVE": {
+    "id": 1343202,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "Simo": {
     "id": 133200,
     "np": true,
