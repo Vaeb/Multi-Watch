@@ -54,7 +54,7 @@ const LeftBarButton = ({
 const nextLayoutImage: Record<GridMode | "_", string> = {
   _: "/rectangle1.png",
   normal: "/squares2.png",
-  horiz: "/squaresH.png",
+  horiz: "/squares2.png", // squaresH
 };
 
 const nextLayoutText: Record<GridMode | "_", string> = {

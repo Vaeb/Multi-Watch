@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useRef, useState, useEffect, useMemo } from "react";
 import { Player } from "./player/videoClient";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { Chat } from "./chat/chat";
@@ -11,6 +11,8 @@ import { PlayerWrapper } from "./player/playerWrapper";
 import { type PersistState, usePersistStore } from "../stores/persistStore";
 import { VerticalResizer } from "./player/verticalResizer";
 import { DragProvider } from "./player/dragContext";
+import { log } from "../utils/log";
+import { layoutCellsTight } from "../utils/layoutCellsTight";
 // import { log } from "../utils/log";
 
 const selector = (state: MainState) => ({
@@ -32,23 +34,58 @@ function StreamsComponent() {
   const { gridMode, focusHeight } = usePersistStore(
     useShallow(selectorPersist),
   );
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(0);
   // log("[Page Streams] Re-rendered");
+
+  const layoutCells = useMemo(() => {
+    log("Recalculating cells layout");
+    return layoutCellsTight(
+      streams.length,
+      containerWidth,
+      containerHeight,
+      viewMode,
+      focusHeight,
+    );
+  }, [streams.length, containerWidth, containerHeight, viewMode, focusHeight]);
+
+  useEffect(() => {
+    const containerElement = containerRef.current;
+    if (!containerElement) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      log("Updating dimensions on resize");
+      for (const entry of entries) {
+        if (entry.target === containerElement) {
+          setContainerWidth(entry.contentRect.width);
+          setContainerHeight(entry.contentRect.height);
+          log("Dimensions updated");
+        }
+      }
+    });
+
+    resizeObserver.observe(containerElement);
+    // Initial dimensions
+    setContainerWidth(containerElement.offsetWidth);
+    setContainerHeight(containerElement.offsetHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   return (
     <DragProvider>
       <div className="flex flex-1">
-        <div className="relative h-full flex-1">
+        <div ref={containerRef} className="relative h-full flex-1">
           {streams.map((stream) => {
             return (
               <PlayerWrapper
                 key={`video-${stream.value}-${stream.type}`}
                 channel={stream.value}
                 type={stream.type}
-                total={streams.length}
-                pos={streamPositions[stream.value]!}
-                viewMode={viewMode}
-                gridMode={gridMode}
-                focusHeight={focusHeight}
+                cell={layoutCells[streamPositions[stream.value]!]}
               >
                 <Player type={stream.type} channel={stream.value} />
               </PlayerWrapper>

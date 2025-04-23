@@ -122,13 +122,13 @@ function SettingsModal() {
           current={autoplay}
           cb={setAutoplay}
         />
-        <SettingsOption
+        {/* <SettingsOption
           setting="Grid mode"
           values={["normal", "horiz"] as GridMode[]}
           mapper={["Vertical", "Horizontal"]}
           current={gridMode}
           cb={setGridMode}
-        />
+        /> */}
         <SettingsOption
           setting="Focused stream height"
           values={makeNumsInterval(10, 90, 1)}
