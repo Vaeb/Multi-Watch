@@ -207,7 +207,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      // not needed to remove handleMouseUp because it's a one-time listener
     };
   }, [endDrag, updateDrag, isDragging]); // Runs only when isDragging changes
 
