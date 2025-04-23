@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { DragHandle } from "./dragHandle";
 import React from "react";
 import { type Rect } from "~/app/utils/layoutCellsTight";
+import { areEqualObj } from "~/app/utils/areEqualObj";
 
 interface PlayerWrapperProps {
   children: React.ReactNode;
@@ -113,4 +114,4 @@ function PlayerWrapperComponent({
   );
 }
 
-export const PlayerWrapper = memo(PlayerWrapperComponent);
+export const PlayerWrapper = memo(PlayerWrapperComponent, areEqualObj("cell"));
