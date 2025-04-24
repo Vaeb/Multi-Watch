@@ -35,6 +35,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "travpiper": {
+    "id": 43042315,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "4HEAD": {
     "id": 2579856,
     "np": true,
