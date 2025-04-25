@@ -117,7 +117,7 @@ export const layoutCellsFocused = (
   H: number,
   focusHeight: number,
 ): Rect[] => {
-  const focusedRowHeight = H * (focusHeight / 100);
+  const focusedRowHeight = N > 1 ? H * (focusHeight / 100) : H;
   const rects = getSingleRowRects(1, W, focusedRowHeight, 0, W, H);
 
   if (N === 1) return rects;
