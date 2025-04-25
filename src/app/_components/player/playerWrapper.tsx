@@ -8,7 +8,7 @@ import { useMainStore } from "../../stores/mainStore";
 import clsx from "clsx";
 import { DragHandle } from "./dragHandle";
 import React from "react";
-import { type Rect } from "~/app/utils/layoutCellsTight";
+import { type Rect } from "~/app/utils/layoutCells";
 import { areEqualObj } from "~/app/utils/areEqualObj";
 import { Player } from "./videoClient";
 

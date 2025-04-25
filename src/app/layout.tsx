@@ -5,7 +5,7 @@ import { type Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "MultiWatch",
-  description: "MultiWatch by Vaeb",
+  description: "NoPixel MultiWatch by Vaeb",
   icons: [{ rel: "icon", url: "/besties.png" }],
 };
 

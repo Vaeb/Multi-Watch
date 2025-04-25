@@ -12,7 +12,7 @@ import { type PersistState, usePersistStore } from "../stores/persistStore";
 import { VerticalResizer } from "./player/verticalResizer";
 import { DragProvider } from "./player/dragContext";
 import { log } from "../utils/log";
-import { layoutCellsTight } from "../utils/layoutCellsTight";
+import { layoutCells } from "../utils/layoutCells";
 // import { log } from "../utils/log";
 
 const selector = (state: MainState) => ({
@@ -39,9 +39,9 @@ function StreamsComponent() {
   const [containerHeight, setContainerHeight] = useState(0);
   // log("[Page Streams] Re-rendered");
 
-  const layoutCells = useMemo(
+  const cells = useMemo(
     () =>
-      layoutCellsTight(
+      layoutCells(
         streams.length,
         containerWidth,
         containerHeight,
@@ -86,7 +86,7 @@ function StreamsComponent() {
                 key={`video-${stream.value}-${stream.type}`}
                 channel={stream.value}
                 type={stream.type}
-                cell={layoutCells[streamPositions[stream.value]!]}
+                cell={cells[streamPositions[stream.value]!]}
               />
             );
           })}
