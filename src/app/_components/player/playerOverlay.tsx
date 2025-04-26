@@ -180,7 +180,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   return (
     <div
       className={clsx(
-        "group absolute flex h-[40%] w-[50%] items-start justify-center bg-white/0 pt-8",
+        "group absolute z-[9999] flex min-h-[40%] w-[50%] items-start justify-center bg-white/0 pt-8",
         // "active:cursor-grabbing active:bg-white/5",
         isDraggingThis ? "cursor-grabbing" : "cursor-grab",
       )}
@@ -201,7 +201,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
             </p>
           </div>
           {/* Buttons Container */}
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+          <div className="flex items-center justify-center gap-x-3 gap-y-2">
             <button
               onClick={chatClick}
               onMouseEnter={() => setTipText("Press to switch chat.")}
