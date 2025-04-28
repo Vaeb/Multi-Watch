@@ -180,10 +180,13 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   return (
     <div
       className={clsx(
-        "group absolute z-[9999] flex min-h-[40%] w-[50%] items-start justify-center bg-white/0 pt-8",
+        "group absolute z-[9999] flex min-h-[40%] w-full items-start justify-center bg-white/0 pt-8",
         // "active:cursor-grabbing active:bg-white/5",
         isDraggingThis ? "cursor-grabbing" : "cursor-grab",
       )}
+      style={{
+        clipPath: "inset(0 0 -9999px 20%)",
+      }}
       onMouseDown={onMouseDown}
       onDoubleClick={onDoubleClick}
     >

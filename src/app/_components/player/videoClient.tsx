@@ -59,7 +59,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   const [id] = useState(`${type}-${channel}`);
   const playerRef = useRef<TwitchPlayerInstance | null>(null);
   const ref = useRef<HTMLIFrameElement | null>(null);
-  const [seed, setSeed] = useState(-1);
+  const [seed, setSeed] = useState(0);
 
   // Intentionally non-reactive
   const { streamPositions } = useMainStore.getState();
@@ -78,7 +78,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       playerAddedDelta > THRESHOLD_RECENT_PLAYER_ADDED_DELTA);
 
   const streamAutoplay =
-    autoplay === "all" || (autoplay === "one" && !!recentPriority) || seed > -1;
+    autoplay === "all" || (autoplay === "one" && !!recentPriority) || seed > 0;
 
   const streamMuted = autoplay === "all" ? !recentPriority : false;
 
@@ -103,13 +103,38 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       if (newChannel !== channel) {
         oldSetChannel.call(player, newChannel);
       } else {
-        setSeed(Math.random());
+        setSeed(+new Date());
       }
     };
     playerRef.current = player;
     player.setVolume(0.75);
     log("[Player] Creating twitch player:", channel, player);
     useMainStore.getState().actions.setStreamPlayer(channel, player);
+  });
+
+  // TODO: Temp remove DragHandle for interaction?
+  const handlePlaybackBlocked = useStableCallback(() => {
+    log("[Player] Playback blocked:", channel);
+  });
+
+  const handleOffline = useStableCallback(() => {
+    log("[Player] Offline:", channel);
+  });
+
+  const handlePause = useStableCallback(() => {
+    log("[Player] Paused:", channel);
+  });
+
+  const handleEnded = useStableCallback(() => {
+    log("[Player] Ended:", channel);
+  });
+
+  const handlePlaying = useStableCallback(() => {
+    log("[Player] Playing:", channel);
+  });
+
+  const handlePlay = useStableCallback(() => {
+    log("[Player] Play:", channel);
   });
 
   useEffect(() => {
@@ -134,6 +159,12 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       autoplay={streamAutoplay}
       muted={streamMuted}
       onReady={handleReady}
+      onPlaybackBlocked={handlePlaybackBlocked}
+      onOffline={handleOffline}
+      onPause={handlePause}
+      onEnded={handleEnded}
+      onPlaying={handlePlaying}
+      onPlay={handlePlay}
     />
   ) : (
     <div className="flex h-full w-full justify-center">
