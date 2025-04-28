@@ -30,6 +30,11 @@
     "id": 89446,
     "np": true
   },
+  "KamKamEU": {
+    "id": 55986509,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "Aus24": {
     "id": 1215902,
     "np": true,
