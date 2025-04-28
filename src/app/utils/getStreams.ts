@@ -97,7 +97,7 @@ const getParsedTwitchData = async () => {
 
   const { streams, filterFactions, useColorsDark } = data || {};
 
-  filterFactions[0]![1] = "All NoPixel Groups";
+  filterFactions[0]![1] = "Press to Filter by Group";
   if (filterFactions[2]![0] === "publicnp") filterFactions.splice(2, 1);
   if (filterFactions[1]![0] === "alltwitch") filterFactions.splice(1, 1);
 

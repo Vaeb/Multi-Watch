@@ -183,7 +183,7 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
     >
       <div className="flex flex-col">
         <div
-          className="relative flex h-[30px] w-fit cursor-pointer items-center gap-2 whitespace-nowrap rounded-md border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.2)] bg-clip-padding py-[0.5rem] pl-[10px] pr-[24px] text-sm font-semibold leading-[100%] focus:outline-none"
+          className="relative flex h-[30px] w-fit cursor-pointer items-center gap-2 whitespace-nowrap rounded-md border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.2)] bg-clip-padding py-[0.5rem] pl-[10px] pr-[10px] text-sm font-semibold leading-[100%] focus:outline-none"
           style={{
             color: useColorsDark[factionValue[0]] || useColorsDark.independent,
             transition: `box-shadow 0.1s ease-in, border 0.1s ease-in, background-color 0.1s ease-in`,
@@ -197,7 +197,7 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
 
         {showFactions ? (
           <div
-            className="absolute top-[30px] z-10 box-border block max-h-[377px] w-[calc(100%-12px)] overflow-y-auto overflow-x-hidden border-[1px] border-t-0 border-[rgb(134,91,215)] bg-black py-2"
+            className="absolute top-[30px] z-10 box-border block max-h-[377px] w-[calc(100%-6px)] overflow-y-auto overflow-x-hidden border-[1px] border-t-0 border-[rgb(134,91,215)] bg-black py-2"
             style={{
               boxShadow: `rgba(0,0,0,0.4) 0px 4px 8px, rgba(0,0,0,0.4) 0px 0px 4px`,
             }}
