@@ -52,24 +52,26 @@ const SkeletonComponent = forwardRef<SkeletonHandle, SkeletonProps>(
     lastCell.current = visible ? cell : undefined; // When the skeleton is hidden, reset the cell for future updates
 
     return visible ? (
-      <div
-        className="absolute inset-0 flex items-center justify-center"
-        style={
-          imageUrl
-            ? {
-                backgroundImage: `url(${imageUrl})`,
-                // backgroundImage: `url(https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel.toLowerCase()}.jpg?nocache=${Date.now()})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }
-            : {}
-        }
-      >
-        <div className="relative ml-[1px] h-[30px] w-[30px]">
-          <div className="absolute inset-0 rounded-full border-[4px] border-gray-700"></div>
-          <div className="absolute inset-0 animate-spin rounded-full border-[3px] border-b-transparent border-l-transparent border-r-transparent border-t-white"></div>
+      <>
+        <div
+          className="animate-pulse2 absolute inset-0"
+          style={
+            imageUrl
+              ? {
+                  backgroundImage: `url(${imageUrl})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }
+              : {}
+          }
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative ml-[1px] h-[30px] w-[30px]">
+            <div className="absolute inset-0 rounded-full border-[4px] border-gray-700"></div>
+            <div className="absolute inset-0 animate-spin rounded-full border-[3px] border-b-transparent border-l-transparent border-r-transparent border-t-white"></div>
+          </div>
         </div>
-      </div>
+      </>
     ) : null;
   },
 );
