@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useRef } from "react";
+import { memo, useRef, useEffect, useState } from "react";
 import { PlayerOverlay } from "./playerOverlay";
 import { type Platform } from "~/types";
 import { log } from "../../utils/log";
@@ -26,15 +26,16 @@ function PlayerWrapperComponent({ channel, type, cell }: PlayerWrapperProps) {
   const dragStartY = useMainStore((state) => state.dragStartY);
   const dragCurrentX = useMainStore((state) => state.dragCurrentX);
   const dragCurrentY = useMainStore((state) => state.dragCurrentY);
+  const setStreamCell = useMainStore((state) => state.actions.setStreamCell);
 
   const isDraggingThis = isDragging && dragChannel === channel;
   const isPotentialDropTarget = isDragging && !isDraggingThis;
 
   // Calculate if cursor is over this player (potential drop target)
-  const [isHovered, setIsHovered] = React.useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null); // Ref to get the element directly
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Only set up listener if this component is a potential drop target
     if (!isPotentialDropTarget) {
       setIsHovered(false); // Ensure hover state is reset
@@ -65,6 +66,11 @@ function PlayerWrapperComponent({ channel, type, cell }: PlayerWrapperProps) {
     };
     // Dependencies: Only run when dragging starts/stops or the dragged item changes
   }, [isPotentialDropTarget, channel]); // Removed coordinate dependencies
+
+  // Update the main store with the cell dimensions for this channel
+  useEffect(() => {
+    setStreamCell(channel, cell);
+  }, [channel, cell, setStreamCell]);
 
   if (!cell) return null;
   const { height, width, y: top, x: left } = cell;

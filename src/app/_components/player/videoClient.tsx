@@ -213,7 +213,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
           ></iframe>
         </div>
       )}
-      <Skeleton ref={skeletonRef} />
+      <Skeleton ref={skeletonRef} channel={channel} type={type} />
     </>
   );
 }

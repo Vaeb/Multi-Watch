@@ -9,6 +9,7 @@ import { type Stream, type ViewMode } from "./storeTypes";
 import { useKickStore } from "./kickStore";
 import { log } from "../utils/log";
 import { type TwitchPlayerInstance } from "react-twitch-embed";
+import { type Rect } from "../utils/layoutCells";
 
 const fromNewChannels = <T extends Record<string, any>>(
   channels: string[],
@@ -38,6 +39,7 @@ export interface MainState {
   manuallyMuted: Record<string, boolean>;
   newestStream: string;
   selectedChat: string;
+  streamCells: Record<string, Rect>;
 
   viewMode: ViewMode;
   hasManuallyToggledView: boolean;
@@ -70,6 +72,7 @@ export interface MainState {
     setManuallyMuted: (channel: string, muted: boolean) => void;
     setNewestStream: (newestStream: string) => void;
     setSelectedChat: (selectedChat: string) => void;
+    setStreamCell: (channel: string, cell: Rect | undefined) => void;
 
     setViewMode: (viewMode: ViewMode) => void;
     toggleViewMode: () => void;
@@ -116,6 +119,7 @@ export const useMainStore = create<MainState>()(
       manuallyMuted: {},
       newestStream: "",
       selectedChat: "",
+      streamCells: {},
 
       viewMode: "focused",
       hasManuallyToggledView: false,
@@ -167,6 +171,7 @@ export const useMainStore = create<MainState>()(
                 ) as Record<string, number>),
               streamPlayer: fromNewChannels(channels, state.streamPlayer),
               manuallyMuted: fromNewChannels(channels, state.manuallyMuted),
+              streamCells: fromNewChannels(channels, state.streamCells),
               newestStream: streamsMap[state.newestStream?.toLowerCase() ?? ""]
                 ? state.newestStream
                 : "",
@@ -225,6 +230,18 @@ export const useMainStore = create<MainState>()(
         setNewestStream: (newestStream) => set({ newestStream }),
 
         setSelectedChat: (selectedChat) => set({ selectedChat }),
+
+        setStreamCell: (channel, cell) =>
+          set((state) => {
+            if (!cell) {
+              const newStreamCells = { ...state.streamCells };
+              delete newStreamCells[channel];
+              return { streamCells: newStreamCells };
+            }
+            return {
+              streamCells: { ...state.streamCells, [channel]: cell },
+            };
+          }),
 
         setViewMode: (viewMode) => set({ viewMode }),
 
