@@ -110,11 +110,18 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       );
     }
 
+    skeletonRef.current?.hide();
+
+    /* (
+      player as typeof player & { _iframe: HTMLIFrameElement | undefined }
+    )._iframe?.addEventListener("load", handleIframeLoad); */
+
     const oldSetChannel = player.setChannel;
     player.setChannel = (newChannel) => {
       if (newChannel !== channel) {
         oldSetChannel.call(player, newChannel);
       } else {
+        skeletonRef.current?.show();
         setSeed(+new Date());
       }
     };
@@ -122,6 +129,11 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
     player.setVolume(0.75);
     log("[Player] Creating twitch player:", channel, player);
     useMainStore.getState().actions.setStreamPlayer(channel, player);
+  });
+
+  const handleIframeLoad = useStableCallback(() => {
+    log("[Player] Iframe loaded:", channel);
+    skeletonRef.current?.hide();
   });
 
   // TODO: Temp remove DragHandle for interaction?
@@ -155,6 +167,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       useMainStore.getState().actions.setStreamPlayer(channel, {
         setChannel(_c) {
           if (!ref.current) return;
+          skeletonRef.current?.show();
           ref.current.src = `${getSrc(type, channel, false)}&autoplay=true`;
         },
       } as TwitchPlayerInstance);
@@ -191,11 +204,12 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
             scrolling="no"
             frameBorder="0"
             allow="autoplay; fullscreen"
+            onLoad={handleIframeLoad}
             {...iframePlayerProps[type]}
           ></iframe>
         </div>
       )}
-      <Skeleton ref={skeletonRef} type={type} />
+      <Skeleton ref={skeletonRef} />
     </>
   );
 }

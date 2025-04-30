@@ -1,9 +1,6 @@
 import { forwardRef, memo, useImperativeHandle, useState } from "react";
-import { type Platform } from "~/types";
 
-type SkeletonProps = {
-  type: Platform;
-};
+type SkeletonProps = {};
 
 export interface SkeletonHandle {
   show(): void;
@@ -11,7 +8,7 @@ export interface SkeletonHandle {
 }
 
 const SkeletonComponent = forwardRef<SkeletonHandle, SkeletonProps>(
-  ({ type }, ref) => {
+  (_props, ref) => {
     const [visible, setVisible] = useState(true);
 
     // expose show() and hide() to the parent via ref
@@ -24,7 +21,7 @@ const SkeletonComponent = forwardRef<SkeletonHandle, SkeletonProps>(
       [],
     );
 
-    return type === "twitch" && visible ? (
+    return visible ? (
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative ml-[1px] h-[30px] w-[30px]">
           <div className="absolute inset-0 rounded-full border-[4px] border-gray-700"></div>
