@@ -101,15 +101,18 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
     streamMuted,
   );
 
-  const handleReady = useStableCallback((player: TwitchPlayerInstance) => {
+  const recordReadyTime = useStableCallback(() => {
+    const readyTime = performance.now();
     if (mountTimeRef.current) {
-      const readyTime = performance.now();
       const elapsedTime = readyTime - mountTimeRef.current;
       log(
         `[Player] ${channel} ready after ${(elapsedTime / 1000).toFixed(2)} seconds`,
       );
     }
+  });
 
+  const handleReady = useStableCallback((player: TwitchPlayerInstance) => {
+    recordReadyTime();
     skeletonRef.current?.hide();
 
     /* (
@@ -132,6 +135,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   });
 
   const handleIframeLoad = useStableCallback(() => {
+    recordReadyTime();
     log("[Player] Iframe loaded:", channel);
     skeletonRef.current?.hide();
   });
