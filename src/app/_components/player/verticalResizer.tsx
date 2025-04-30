@@ -2,29 +2,18 @@
 
 import { memo, useCallback, useRef } from "react";
 import { useMainStore } from "../../stores/mainStore";
-import { usePersistStore } from "../../stores/persistStore";
 import { clamp } from "../../utils/math";
-import { layoutCellsFocused } from "~/app/utils/layoutCells";
 import { useStableCallback } from "~/app/hooks/useStableCallback";
-
-const MIN_HEIGHT = 10;
-const MAX_HEIGHT = 90;
+import { MAX_FOCUS_HEIGHT, MIN_FOCUS_HEIGHT } from "~/app/constants";
 
 interface VerticalResizerProps {
   top: number;
-  containerWidth: number;
-  containerHeight: number;
 }
 
-function VerticalResizerComponent({
-  top,
-  containerWidth,
-  containerHeight,
-}: VerticalResizerProps) {
-  const setFocusHeight = usePersistStore(
-    (state) => state.actions.setFocusHeight,
+function VerticalResizerComponent({ top }: VerticalResizerProps) {
+  const { setFocusHeight, setIsResizing } = useMainStore(
+    (state) => state.actions,
   );
-  const setIsResizing = useMainStore((state) => state.actions.setIsResizing);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startY = useRef(0);
@@ -34,7 +23,7 @@ function VerticalResizerComponent({
 
   // Function to update state within RAF
   const updateHeight = useCallback(() => {
-    setFocusHeight(latestHeight.current);
+    setFocusHeight(latestHeight.current, false);
     animationFrameId.current = null; // Reset RAF ID
   }, [setFocusHeight]);
 
@@ -71,8 +60,8 @@ function VerticalResizerComponent({
       const deltaPercent = (deltaY / containerHeight) * 100;
       const newHeight = clamp(
         startHeight.current + deltaPercent,
-        MIN_HEIGHT,
-        MAX_HEIGHT,
+        MIN_FOCUS_HEIGHT,
+        MAX_FOCUS_HEIGHT,
       );
 
       latestHeight.current = newHeight; // Store the latest height
@@ -106,38 +95,12 @@ function VerticalResizerComponent({
       // Reset cursor style
       document.body.style.cursor = "";
     },
-    [setIsResizing, updateHeight, setFocusHeight], // Dependency correct
+    [setIsResizing, updateHeight, setFocusHeight],
   );
 
   const handleDoubleClick = useStableCallback(() => {
-    const { streamsOrdered, viewMode } = useMainStore.getState();
-
-    if (!containerHeight || viewMode !== "focused") return;
-
-    const smallCellHeight = Number.parseFloat(
-      layoutCellsFocused(
-        streamsOrdered.length,
-        containerWidth,
-        containerHeight,
-        0,
-      )[1]?.height ?? "-1",
-    );
-
-    if (smallCellHeight < 0) return;
-
+    setFocusHeight(0, true);
     isDragging.current = false;
-
-    const autoFocusHeightPx = containerHeight - smallCellHeight;
-    const autoFocusHeightVh = clamp(
-      (autoFocusHeightPx / containerHeight) * 100,
-      MIN_HEIGHT,
-      MAX_HEIGHT,
-    );
-
-    // Update latestHeight ref and call setFocusHeight directly
-    // This avoids potential race conditions with RAF if the user clicks fast
-    latestHeight.current = autoFocusHeightVh;
-    setFocusHeight(autoFocusHeightVh);
     // Cancel any pending animation frame from dragging, just in case
     if (animationFrameId.current !== null) {
       cancelAnimationFrame(animationFrameId.current);
@@ -158,8 +121,8 @@ function VerticalResizerComponent({
       onDoubleClick={handleDoubleClick}
       role="separator"
       aria-valuenow={top}
-      aria-valuemin={MIN_HEIGHT}
-      aria-valuemax={MAX_HEIGHT}
+      aria-valuemin={MIN_FOCUS_HEIGHT}
+      aria-valuemax={MAX_FOCUS_HEIGHT}
       aria-label="Resize focused player"
     />
   );

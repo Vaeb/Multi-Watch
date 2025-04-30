@@ -28,6 +28,8 @@ interface KickPlayer {
 
 type AnyPlayer = TwitchPlayerInstance | KickPlayer;
 
+type ContainerSize = { width: number; height: number };
+
 export interface MainState {
   initialised: boolean;
 
@@ -43,6 +45,11 @@ export interface MainState {
 
   viewMode: ViewMode;
   hasManuallyToggledView: boolean;
+
+  focusHeightAuto: boolean;
+  focusHeight: number;
+
+  containerSize: ContainerSize | undefined;
 
   updateShown: boolean;
   settingsShown: boolean;
@@ -69,13 +76,17 @@ export interface MainState {
     setStreamPositions: (streamPositions: MainState["streamPositions"]) => void;
     cycleStreams: () => void;
     setStreamPlayer: (channel: string, player: AnyPlayer) => void;
-    setStreamCell: (channel: string, cell: Rect | undefined) => void;
+    setStreamCells: (cells: Rect[]) => void;
     setManuallyMuted: (channel: string, muted: boolean) => void;
     setNewestStream: (newestStream: string) => void;
     setSelectedChat: (selectedChat: string) => void;
 
     setViewMode: (viewMode: ViewMode) => void;
     toggleViewMode: () => void;
+
+    setFocusHeight: (value: number, isAuto?: boolean) => void;
+
+    setContainerSize: (size: ContainerSize) => void;
 
     setUpdateShown: (updateShown: boolean) => void;
     toggleUpdateShown: () => void;
@@ -123,6 +134,11 @@ export const useMainStore = create<MainState>()(
 
       viewMode: "focused",
       hasManuallyToggledView: false,
+
+      focusHeightAuto: true,
+      focusHeight: 63,
+
+      containerSize: undefined,
 
       updateShown: false,
       settingsShown: false,
@@ -222,17 +238,22 @@ export const useMainStore = create<MainState>()(
             streamPlayer: { ...state.streamPlayer, [channel]: player },
           })),
 
-        setStreamCell: (channel, cell) =>
-          set((state) => {
-            if (!cell) {
-              const newStreamCells = { ...state.streamCells };
-              delete newStreamCells[channel];
-              return { streamCells: newStreamCells };
-            }
-            return {
-              streamCells: { ...state.streamCells, [channel]: cell },
-            };
-          }),
+        setStreamCells: (cells) => {
+          const streamCells = Object.assign(
+            {},
+            ...get().streamsOrdered.map(({ value }, i) => ({
+              [value]: cells[i],
+            })),
+          ) as Record<string, Rect>;
+
+          if (
+            JSON.stringify(streamCells) === JSON.stringify(get().streamCells)
+          ) {
+            return;
+          }
+
+          set({ streamCells });
+        },
 
         setManuallyMuted: (channel, muted) =>
           set((state) => ({
@@ -250,6 +271,33 @@ export const useMainStore = create<MainState>()(
             viewMode: viewMode === "focused" ? "grid" : "focused",
             hasManuallyToggledView: true,
           })),
+
+        setFocusHeight: (focusHeight, isAuto = get().focusHeightAuto) => {
+          if (
+            focusHeight === get().focusHeight &&
+            isAuto === get().focusHeightAuto
+          ) {
+            return;
+          }
+          set((state) => ({
+            focusHeight:
+              focusHeight && !Number.isNaN(focusHeight)
+                ? Number(focusHeight)
+                : state.focusHeight,
+            focusHeightAuto: isAuto,
+          }));
+        },
+
+        setContainerSize: (containerSize) => {
+          const currentContainerSize = get().containerSize;
+          if (
+            containerSize.width === currentContainerSize?.width &&
+            containerSize.height === currentContainerSize?.height
+          ) {
+            return;
+          }
+          set({ containerSize });
+        },
 
         setUpdateShown: (updateShown) => set({ updateShown }),
 

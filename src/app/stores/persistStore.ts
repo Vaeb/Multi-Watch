@@ -8,7 +8,6 @@ import { type Autoplay, type GridMode } from "./storeTypes";
 export interface PersistState {
   gridMode: GridMode;
   autoplay: Autoplay;
-  focusHeight: number;
   chatWidth: number;
 
   actions: {
@@ -16,14 +15,12 @@ export interface PersistState {
     setGridMode: (gridMode: GridMode) => void;
     setAutoplay: (autoplay: Autoplay) => void;
     setChatWidth: (value: number) => void;
-    setFocusHeight: (value: number) => void;
   };
 }
 
 export const persistDefaults = {
   gridMode: "normal",
   autoplay: "all",
-  focusHeight: 63,
   chatWidth: 470,
 } as const satisfies Partial<PersistState>;
 
@@ -38,13 +35,6 @@ export const usePersistStore = create<PersistState>()(
 
           setGridMode: (gridMode) => set({ gridMode }),
           setAutoplay: (autoplay) => set({ autoplay }),
-          setFocusHeight: (focusHeight) =>
-            set((state) => ({
-              focusHeight:
-                focusHeight && !Number.isNaN(focusHeight)
-                  ? Number(focusHeight)
-                  : state.focusHeight,
-            })),
           setChatWidth: (chatWidth) =>
             set((state) => ({
               chatWidth:

@@ -6,11 +6,11 @@ import { ChatsContainer } from "./chat/chatsContainer";
 import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chat/chatWrapper";
 import { PlayerWrapper } from "./player/playerWrapper";
-import { type PersistState, usePersistStore } from "../stores/persistStore";
 import { VerticalResizer } from "./player/verticalResizer";
 import { DragProvider } from "./player/dragContext";
 import { log } from "../utils/log";
 import { layoutCells } from "../utils/layoutCells";
+import { SizeManager } from "./sizeManager";
 // import { log } from "../utils/log";
 
 const selector = (state: MainState) => ({
@@ -18,20 +18,18 @@ const selector = (state: MainState) => ({
   streamPositions: state.streamPositions,
   viewMode: state.viewMode,
   chatShown: state.chatShown,
-});
-
-const selectorPersist = (state: PersistState) => ({
-  gridMode: state.gridMode,
-  focusHeight: state.focusHeight,
+  actions: state.actions,
 });
 
 function StreamsComponent() {
-  const { streams, streamPositions, viewMode, chatShown } = useMainStore(
-    useShallow(selector),
-  );
-  const { gridMode, focusHeight } = usePersistStore(
-    useShallow(selectorPersist),
-  );
+  const {
+    streams,
+    streamPositions,
+    viewMode,
+    chatShown,
+    actions: { setContainerSize, setStreamCells },
+  } = useMainStore(useShallow(selector));
+  const focusHeight = useMainStore((state) => state.focusHeight);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
@@ -50,6 +48,10 @@ function StreamsComponent() {
   );
 
   useEffect(() => {
+    setStreamCells(cells);
+  }, [setStreamCells, cells]);
+
+  useEffect(() => {
     const containerElement = containerRef.current;
     if (!containerElement) return;
 
@@ -59,6 +61,10 @@ function StreamsComponent() {
         if (entry.target === containerElement) {
           setContainerWidth(entry.contentRect.width);
           setContainerHeight(entry.contentRect.height);
+          setContainerSize({
+            width: entry.contentRect.width,
+            height: entry.contentRect.height,
+          });
           log("Dimensions updated");
         }
       }
@@ -68,14 +74,18 @@ function StreamsComponent() {
     // Initial dimensions
     setContainerWidth(containerElement.offsetWidth);
     setContainerHeight(containerElement.offsetHeight);
-
+    setContainerSize({
+      width: containerElement.offsetWidth,
+      height: containerElement.offsetHeight,
+    });
     return () => {
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [setContainerSize]);
 
   return (
-    <DragProvider>
+    <>
+      <SizeManager />
       <div className="flex flex-1">
         <div ref={containerRef} className="relative h-full flex-1">
           {streams.map((stream) => {
@@ -89,11 +99,7 @@ function StreamsComponent() {
             );
           })}
           {viewMode === "focused" && streams.length > 1 && (
-            <VerticalResizer
-              top={Number(focusHeight)}
-              containerWidth={containerWidth}
-              containerHeight={containerHeight}
-            />
+            <VerticalResizer top={Number(focusHeight)} />
           )}
         </div>
         <ChatsContainer show={chatShown}>
@@ -108,7 +114,7 @@ function StreamsComponent() {
           })}
         </ChatsContainer>
       </div>
-    </DragProvider>
+    </>
   );
 }
 

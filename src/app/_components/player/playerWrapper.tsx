@@ -67,11 +67,6 @@ function PlayerWrapperComponent({ channel, type, cell }: PlayerWrapperProps) {
     // Dependencies: Only run when dragging starts/stops or the dragged item changes
   }, [isPotentialDropTarget, channel]); // Removed coordinate dependencies
 
-  // Update the main store with the cell dimensions for this channel
-  useEffect(() => {
-    setStreamCell(channel, cell);
-  }, [channel, cell, setStreamCell]);
-
   if (!cell) return null;
   const { height, width, y: top, x: left } = cell;
 

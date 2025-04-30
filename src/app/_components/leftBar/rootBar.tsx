@@ -1,7 +1,6 @@
 "use client";
 
 import { type PropsWithChildren } from "react";
-import { usePersistStore } from "../../stores/persistStore";
 import { useMainStore } from "../../stores/mainStore";
 import { useShallow } from "zustand/shallow";
 
@@ -14,7 +13,7 @@ export function RootBar({ children }: PropsWithChildren) {
         state.streamsOrdered[0]?.type === "twitch",
     ]),
   );
-  const focusHeight = usePersistStore((state) => state.focusHeight);
+  const focusHeight = useMainStore((state) => state.focusHeight);
 
   const showBottomHole = oneStreamWithNpBar;
 

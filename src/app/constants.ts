@@ -7,3 +7,6 @@ export const LARGE_FACTIONS: Record<string, boolean> = {
   nponly: true,
   independent: true,
 };
+
+export const MIN_FOCUS_HEIGHT = 10;
+export const MAX_FOCUS_HEIGHT = 90;

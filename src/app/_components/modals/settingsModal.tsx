@@ -28,6 +28,7 @@ function ModalButton({ text, onClick }: ModalButtonProps) {
 
 const selectorMain = (state: MainState) => ({
   actions: state.actions,
+  focusHeight: state.focusHeight,
 });
 const selectorWrapper = (state: MainState) => state.settingsShown;
 
@@ -80,24 +81,14 @@ const SettingsOption = ({
 
 function SettingsModal() {
   const {
-    actions: { toggleSettingsShown },
+    actions: { toggleSettingsShown, setFocusHeight },
+    focusHeight,
   } = useMainStore(useShallow(selectorMain));
 
-  const [
-    { resetDefaults, setGridMode, setAutoplay, setFocusHeight, setChatWidth },
-    autoplay,
-    gridMode,
-    focusHeight,
-    chatWidth,
-  ] = usePersistStore(
-    useShallow((state) => [
-      state.actions,
-      state.autoplay,
-      state.gridMode,
-      state.focusHeight,
-      state.chatWidth,
-    ]),
-  );
+  const [{ resetDefaults, setAutoplay, setChatWidth }, autoplay, chatWidth] =
+    usePersistStore(
+      useShallow((state) => [state.actions, state.autoplay, state.chatWidth]),
+    );
 
   const [seed, setSeed] = useState(-1);
 

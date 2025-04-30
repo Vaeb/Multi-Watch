@@ -8,6 +8,7 @@ import { MainBar } from "../_components/leftBar/mainBar";
 import { NopixelBarWrapper } from "../_components/leftBar/nopixelBarWrapper";
 import { SettingsModalWrapper } from "../_components/modals/settingsModal";
 import { log } from "../utils/log";
+import { DragProvider } from "../_components/player/dragContext";
 
 export default async function Page({ params }: PageParams) {
   const { slug } = await params;
@@ -44,7 +45,9 @@ export default async function Page({ params }: PageParams) {
         </RootBar>
         <UpdateModalServerWrapper params={params} />
         <SettingsModalWrapper />
-        <Streams />
+        <DragProvider>
+          <Streams />
+        </DragProvider>
       </main>
     </>
   );
