@@ -36,10 +36,10 @@ export interface MainState {
   streamsMap: Record<string, Stream>;
   streamPositions: Record<string, number>;
   streamPlayer: Record<string, AnyPlayer>;
+  streamCells: Record<string, Rect>;
   manuallyMuted: Record<string, boolean>;
   newestStream: string;
   selectedChat: string;
-  streamCells: Record<string, Rect>;
 
   viewMode: ViewMode;
   hasManuallyToggledView: boolean;
@@ -69,10 +69,10 @@ export interface MainState {
     setStreamPositions: (streamPositions: MainState["streamPositions"]) => void;
     cycleStreams: () => void;
     setStreamPlayer: (channel: string, player: AnyPlayer) => void;
+    setStreamCell: (channel: string, cell: Rect | undefined) => void;
     setManuallyMuted: (channel: string, muted: boolean) => void;
     setNewestStream: (newestStream: string) => void;
     setSelectedChat: (selectedChat: string) => void;
-    setStreamCell: (channel: string, cell: Rect | undefined) => void;
 
     setViewMode: (viewMode: ViewMode) => void;
     toggleViewMode: () => void;
@@ -116,10 +116,10 @@ export const useMainStore = create<MainState>()(
       streamsMap: {},
       streamPositions: {},
       streamPlayer: {},
+      streamCells: {},
       manuallyMuted: {},
       newestStream: "",
       selectedChat: "",
-      streamCells: {},
 
       viewMode: "focused",
       hasManuallyToggledView: false,
@@ -222,15 +222,6 @@ export const useMainStore = create<MainState>()(
             streamPlayer: { ...state.streamPlayer, [channel]: player },
           })),
 
-        setManuallyMuted: (channel, muted) =>
-          set((state) => ({
-            manuallyMuted: { ...state.manuallyMuted, [channel]: muted },
-          })),
-
-        setNewestStream: (newestStream) => set({ newestStream }),
-
-        setSelectedChat: (selectedChat) => set({ selectedChat }),
-
         setStreamCell: (channel, cell) =>
           set((state) => {
             if (!cell) {
@@ -242,6 +233,15 @@ export const useMainStore = create<MainState>()(
               streamCells: { ...state.streamCells, [channel]: cell },
             };
           }),
+
+        setManuallyMuted: (channel, muted) =>
+          set((state) => ({
+            manuallyMuted: { ...state.manuallyMuted, [channel]: muted },
+          })),
+
+        setNewestStream: (newestStream) => set({ newestStream }),
+
+        setSelectedChat: (selectedChat) => set({ selectedChat }),
 
         setViewMode: (viewMode) => set({ viewMode }),
 

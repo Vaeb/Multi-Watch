@@ -1,14 +1,26 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { memo, useCallback, useRef } from "react";
 import { useMainStore } from "../../stores/mainStore";
 import { usePersistStore } from "../../stores/persistStore";
 import { clamp } from "../../utils/math";
+import { layoutCellsFocused } from "~/app/utils/layoutCells";
+import { useStableCallback } from "~/app/hooks/useStableCallback";
 
 const MIN_HEIGHT = 10;
 const MAX_HEIGHT = 90;
 
-export function VerticalResizer({ top }: { top: number }) {
+interface VerticalResizerProps {
+  top: number;
+  containerWidth: number;
+  containerHeight: number;
+}
+
+function VerticalResizerComponent({
+  top,
+  containerWidth,
+  containerHeight,
+}: VerticalResizerProps) {
   const setFocusHeight = usePersistStore(
     (state) => state.actions.setFocusHeight,
   );
@@ -97,6 +109,42 @@ export function VerticalResizer({ top }: { top: number }) {
     [setIsResizing, updateHeight, setFocusHeight], // Dependency correct
   );
 
+  const handleDoubleClick = useStableCallback(() => {
+    const { streamsOrdered, viewMode } = useMainStore.getState();
+
+    if (!containerHeight || viewMode !== "focused") return;
+
+    const smallCellHeight = Number.parseFloat(
+      layoutCellsFocused(
+        streamsOrdered.length,
+        containerWidth,
+        containerHeight,
+        0,
+      )[1]?.height ?? "-1",
+    );
+
+    if (smallCellHeight < 0) return;
+
+    isDragging.current = false;
+
+    const autoFocusHeightPx = containerHeight - smallCellHeight;
+    const autoFocusHeightVh = clamp(
+      (autoFocusHeightPx / containerHeight) * 100,
+      MIN_HEIGHT,
+      MAX_HEIGHT,
+    );
+
+    // Update latestHeight ref and call setFocusHeight directly
+    // This avoids potential race conditions with RAF if the user clicks fast
+    latestHeight.current = autoFocusHeightVh;
+    setFocusHeight(autoFocusHeightVh);
+    // Cancel any pending animation frame from dragging, just in case
+    if (animationFrameId.current !== null) {
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = null;
+    }
+  });
+
   // Use Pointer Events directly on the element
   return (
     <div
@@ -104,9 +152,10 @@ export function VerticalResizer({ top }: { top: number }) {
       className="absolute left-0 z-10 h-1 w-full cursor-ns-resize touch-none bg-transparent py-[6px] hover:bg-blue-500/50"
       style={{ top: `${top}vh`, transform: "translateY(-50%)" }}
       onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove} // Direct handler for move
-      onPointerUp={handlePointerUp} // Direct handler for up/cancel
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp} // Handle cancellation (e.g., browser intervention)
+      onDoubleClick={handleDoubleClick}
       role="separator"
       aria-valuenow={top}
       aria-valuemin={MIN_HEIGHT}
@@ -115,3 +164,5 @@ export function VerticalResizer({ top }: { top: number }) {
     />
   );
 }
+
+export const VerticalResizer = memo(VerticalResizerComponent);

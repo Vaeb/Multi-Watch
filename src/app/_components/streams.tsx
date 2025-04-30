@@ -1,9 +1,7 @@
 "use client";
 
 import { memo, useRef, useState, useEffect, useMemo } from "react";
-import { Player } from "./player/videoClient";
 import { type MainState, useMainStore } from "../stores/mainStore";
-import { Chat } from "./chat/chat";
 import { ChatsContainer } from "./chat/chatsContainer";
 import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chat/chatWrapper";
@@ -91,7 +89,11 @@ function StreamsComponent() {
             );
           })}
           {viewMode === "focused" && streams.length > 1 && (
-            <VerticalResizer top={Number(focusHeight)} />
+            <VerticalResizer
+              top={Number(focusHeight)}
+              containerWidth={containerWidth}
+              containerHeight={containerHeight}
+            />
           )}
         </div>
         <ChatsContainer show={chatShown}>
