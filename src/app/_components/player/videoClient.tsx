@@ -14,6 +14,7 @@ import { TwitchPlayer, type TwitchPlayerInstance } from "react-twitch-embed";
 import { checkShowChat } from "../../utils/checkShowChat";
 import { usePersistStore } from "../../stores/persistStore";
 import { log } from "../../utils/log";
+import { Skeleton, type SkeletonHandle } from "./skeleton";
 
 type Platform = "twitch" | "kick";
 
@@ -60,6 +61,8 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   const playerRef = useRef<TwitchPlayerInstance | null>(null);
   const ref = useRef<HTMLIFrameElement | null>(null);
   const [seed, setSeed] = useState(0);
+  const mountTimeRef = useRef<number | null>(null);
+  const skeletonRef = useRef<SkeletonHandle | null>(null);
 
   // Intentionally non-reactive
   const { streamPositions } = useMainStore.getState();
@@ -84,6 +87,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
 
   useEffect(() => {
     log("[Player] Mounted:", channel);
+    mountTimeRef.current = performance.now();
     hasAddedPlayers = true;
   }, []);
 
@@ -98,6 +102,14 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   );
 
   const handleReady = useStableCallback((player: TwitchPlayerInstance) => {
+    if (mountTimeRef.current) {
+      const readyTime = performance.now();
+      const elapsedTime = readyTime - mountTimeRef.current;
+      log(
+        `[Player] ${channel} ready after ${(elapsedTime / 1000).toFixed(2)} seconds`,
+      );
+    }
+
     const oldSetChannel = player.setChannel;
     player.setChannel = (newChannel) => {
       if (newChannel !== channel) {
@@ -130,6 +142,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   });
 
   const handlePlaying = useStableCallback(() => {
+    skeletonRef.current?.hide();
     log("[Player] Playing:", channel);
   });
 
@@ -148,37 +161,42 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
     }
   }, [type, channel]);
 
-  return type === "twitch" ? (
-    <TwitchPlayer
-      key={`${id}_${seed}`}
-      className="border-none"
-      id={id}
-      height="100%"
-      width="100%"
-      channel={channel}
-      autoplay={streamAutoplay}
-      muted={streamMuted}
-      onReady={handleReady}
-      onPlaybackBlocked={handlePlaybackBlocked}
-      onOffline={handleOffline}
-      onPause={handlePause}
-      onEnded={handleEnded}
-      onPlaying={handlePlaying}
-      onPlay={handlePlay}
-    />
-  ) : (
-    <div className="flex h-full w-full justify-center">
-      <iframe
-        ref={ref}
-        className="aspect-video h-full max-h-full max-w-full border-none"
-        src={`${getSrc(type, channel, streamMuted)}&autoplay=${streamAutoplay ? "true" : "false"}`}
-        allowFullScreen={true}
-        scrolling="no"
-        frameBorder="0"
-        allow="autoplay; fullscreen"
-        {...iframePlayerProps[type]}
-      ></iframe>
-    </div>
+  return (
+    <>
+      {type === "twitch" ? (
+        <TwitchPlayer
+          key={`${id}_${seed}`}
+          className="border-none"
+          id={id}
+          height="100%"
+          width="100%"
+          channel={channel}
+          autoplay={streamAutoplay}
+          muted={streamMuted}
+          onReady={handleReady}
+          onPlaybackBlocked={handlePlaybackBlocked}
+          onOffline={handleOffline}
+          onPause={handlePause}
+          onEnded={handleEnded}
+          onPlaying={handlePlaying}
+          onPlay={handlePlay}
+        />
+      ) : (
+        <div className="flex h-full w-full justify-center">
+          <iframe
+            ref={ref}
+            className="aspect-video h-full max-h-full max-w-full border-none"
+            src={`${getSrc(type, channel, streamMuted)}&autoplay=${streamAutoplay ? "true" : "false"}`}
+            allowFullScreen={true}
+            scrolling="no"
+            frameBorder="0"
+            allow="autoplay; fullscreen"
+            {...iframePlayerProps[type]}
+          ></iframe>
+        </div>
+      )}
+      <Skeleton ref={skeletonRef} type={type} />
+    </>
   );
 }
 

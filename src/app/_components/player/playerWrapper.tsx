@@ -105,8 +105,8 @@ function PlayerWrapperComponent({ channel, type, cell }: PlayerWrapperProps) {
       }
     >
       <PlayerOverlay channel={channel} type={type} />
-      <DragHandle channel={channel} />
       <Player type={type} channel={channel} />
+      <DragHandle channel={channel} />
     </div>
   );
 }
