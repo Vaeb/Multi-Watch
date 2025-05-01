@@ -1,7 +1,7 @@
 export interface ChatroomsInfo {
   id: number;
   np?: boolean;
-  assumeFaction?: string;
+  assumeFaction?: string; // The faction slug that the Kick streamer belongs to
 }
 
 export interface PageParams {
@@ -18,7 +18,7 @@ export interface RemoteLive {
   tick: number;
   factionCount: Record<string, number>;
   npFactions: Record<string, number>;
-  filterFactions: [string, string, boolean, number][];
+  filterFactions: [string, string, boolean, number][]; // [slug, name, enabled, order]
   useColorsDark: Record<string, string>;
 }
 

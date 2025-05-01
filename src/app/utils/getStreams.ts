@@ -1,11 +1,13 @@
 import "server-only";
 
+import { promises as fs } from "fs";
 import {
   type RemoteReceived,
   type RemoteLive,
   type RemoteParsed,
   type RemoteStream,
   type RemoteKickLivestream,
+  type ChatroomsInfo,
 } from "../../types";
 import { IS_LOCALHOST, NOPIXEL_DATA_INTERVAL } from "../constants";
 import { log } from "./log";
@@ -48,7 +50,7 @@ const getTwitchData = async () => {
   }
 };
 
-const mergeKickIntoParsed = (
+const mergeKickIntoParsed = async (
   parsed: RemoteParsed,
   _kickStreams: RemoteKickLivestream[],
 ) => {
@@ -57,6 +59,19 @@ const mergeKickIntoParsed = (
   parsed.streams = streams;
 
   streams.push({ viewers: Infinity } as RemoteStream);
+
+  const chatroomsJson = await fs.readFile(
+    process.cwd() + "/src/app/data/chatroomsJson.json",
+    "utf8",
+  );
+  const chatrooms = JSON.parse(chatroomsJson) as Record<string, ChatroomsInfo>;
+  // Map of kick streamer names (lowercase) to their info (including faction)
+  const chatroomsLower = Object.fromEntries(
+    Object.entries(chatrooms).map(([channel, data]) => [
+      channel.toLowerCase(),
+      data,
+    ]),
+  );
 
   const kickStreams = _kickStreams.map(
     (_kickStream) =>
@@ -69,6 +84,38 @@ const mergeKickIntoParsed = (
         faction: "Kick",
       }) as RemoteStream,
   );
+
+  // Collect factions slugs for live Kick streamers
+  const liveKickFactions = new Set<string>();
+  kickStreams.forEach((stream) => {
+    const factionSlug =
+      chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction;
+    if (factionSlug) {
+      liveKickFactions.add(factionSlug);
+    }
+  });
+
+  // Update filterFactions based on live Kick streamers and maintain order
+  const updatedFilterFactions = parsed.filterFactions.map((factionInfo) => {
+    const [slug, name, enabled, order] = factionInfo;
+    // Enable faction if it was already enabled OR if a Kick streamer from that faction is live
+    const shouldBeEnabled = enabled || liveKickFactions.has(slug);
+    return [slug, name, shouldBeEnabled, order] as [
+      string,
+      string,
+      boolean,
+      number,
+    ];
+  });
+
+  // Sort by the original order field to maintain position, keeping enabled factions first
+  updatedFilterFactions.sort((a, b) => {
+    const enabledA = a[2];
+    const enabledB = b[2];
+    return enabledA === enabledB ? a[3] - b[3] : enabledA ? -1 : 1;
+  });
+
+  parsed.filterFactions = updatedFilterFactions;
 
   let kickStreamIdx = 0;
   let kickStreamNext = kickStreams[kickStreamIdx];
@@ -170,7 +217,7 @@ const _getStreams = async (): Promise<RemoteReceived> => {
       ? (globalData as GlobalData & CachedStreams)
       : await cachePromise;
 
-  const mergedStreams = mergeKickIntoParsed(
+  const mergedStreams = await mergeKickIntoParsed(
     cachedTwitch,
     globalData.cachedKickStreams,
   );
