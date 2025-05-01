@@ -199,6 +199,10 @@ export const useMainStore = create<MainState>()(
                 : streams.length >= 5
                   ? "grid"
                   : "focused",
+              focusHeightAuto:
+                streams.length !== state.streams.length
+                  ? true
+                  : state.focusHeightAuto,
             };
           });
 
