@@ -21,6 +21,11 @@
     "np": true,
     "assumeFaction": "manor"
   },
+  "Louuis": {
+    "id": 2504848,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "Simo": {
     "id": 133200,
     "np": true,
@@ -29,6 +34,11 @@
   "omie": {
     "id": 89446,
     "np": true
+  },
+  "Hurnani": {
+    "id": 2848971,
+    "np": true,
+    "assumeFaction": "police"
   },
   "Kam-EU": {
     "id": 55986509,
@@ -168,6 +178,11 @@
     "id": 50496895,
     "np": true,
     "assumeFaction": "ssb"
+  },
+  "Reedy": {
+    "id": 1281792,
+    "np": true,
+    "assumeFaction": "hydragang"
   },
   "Silent": {
     "id": 2738597,
