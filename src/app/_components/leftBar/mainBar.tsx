@@ -119,12 +119,20 @@ const MainBarComponent = () => {
         message="Settings"
         onClick={toggleSettingsShown}
       />
+      <BarText
+        message={
+          "Tip: Drag streams to reorder."
+          // "Tip 1: Reorder streams by dragging."
+        }
+        maxLines={2}
+      />
       {viewMode === "focused" ? (
         <BarText
           message={
-            "Tip: Resize the streams by dragging the border between the focused stream and small streams."
+            "Tip: Resize streams by dragging the border between the focused and small streams."
+            // "Tip 2: Drag the border between focused and small streams to resize."
           }
-          maxLines={4}
+          maxLines={3}
         />
       ) : null}
     </div>

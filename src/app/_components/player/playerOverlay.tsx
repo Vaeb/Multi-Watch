@@ -207,7 +207,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
           <div className="flex items-center justify-center gap-x-3 gap-y-2">
             <button
               onClick={chatClick}
-              onMouseEnter={() => setTipText("Press to switch chat.")}
+              onMouseEnter={() => setTipText("Press to view chat.")}
               onMouseLeave={() => setTipText(defaultTipText)}
             >
               <WhiteChatIcon size={28} />
@@ -215,7 +215,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
             {type === "twitch" ? (
               <button
                 onClick={audioClick}
-                onMouseEnter={() => setTipText("Press to switch audio.")}
+                onMouseEnter={() => setTipText("Press to select audio.")}
                 onMouseLeave={() => setTipText(defaultTipText)}
               >
                 <WhiteSpeakerIcon size={28} />
