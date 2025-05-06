@@ -114,6 +114,9 @@ export interface MainState {
 
     // New action to trigger fullscreen for a specific player
     forcePlayerFullscreen: (channel: string) => void;
+
+    // New action to reload all streams
+    reloadAllStreams: () => void;
   };
 }
 
@@ -355,6 +358,18 @@ export const useMainStore = create<MainState>()(
               }
             }
           }
+        },
+
+        reloadAllStreams: () => {
+          const { streamPlayer, streams } = get();
+          log("[MainStore] Reloading all streams");
+          streams.forEach((stream) => {
+            const player = streamPlayer[stream.value];
+            if (player && "setChannel" in player) {
+              log("[MainStore] Reloading stream:", stream.value);
+              player.setChannel(stream.value);
+            }
+          });
         },
       },
     })),

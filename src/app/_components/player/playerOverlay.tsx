@@ -244,7 +244,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
             ) : null} */}
             <button
               onClick={reloadStream}
-              onMouseEnter={() => setTipText("Press to refresh stream.")}
+              onMouseEnter={() => setTipText("Press to reload stream.")}
               onMouseLeave={() => setTipText(defaultTipText)}
             >
               <RefreshIcon size={21} alt="Reload" />

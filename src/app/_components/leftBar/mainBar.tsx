@@ -72,6 +72,7 @@ const MainBarComponent = () => {
     toggleNopixel,
     setUpdateShown,
     toggleChat,
+    reloadAllStreams,
   } = useMainStore(selector);
   const nopixelShown = useMainStore(selector2);
   const viewMode = useMainStore(selector3);
@@ -108,6 +109,11 @@ const MainBarComponent = () => {
         imageUrl="/cycle2.svg"
         message="Rotate streams"
         onClick={cycleStreams}
+      />
+      <LeftBarButton
+        imageUrl="/refresh3.svg"
+        message="Reload streams"
+        onClick={reloadAllStreams}
       />
       <LeftBarButton
         imageUrl="/chat3.png"
