@@ -5,7 +5,6 @@ import { memo, useLayoutEffect } from "react";
 import { type MainState, useMainStore } from "../stores/mainStore";
 import { shallow } from "zustand/shallow";
 import { layoutCellsFocused } from "../utils/layoutCells";
-import { MAX_FOCUS_HEIGHT, MIN_FOCUS_HEIGHT } from "../constants";
 import { clamp } from "../utils/math";
 import { log } from "../utils/log";
 
@@ -14,13 +13,14 @@ const selector = (state: MainState) => ({
   viewMode: state.viewMode,
   numStreams: state.streams.length,
   containerSize: state.containerSize,
+  chatShown: state.chatShown,
 });
 
 function SizeManagerComponent() {
   useLayoutEffect(() => {
     useMainStore.subscribe(
       selector,
-      ({ focusHeightAuto, viewMode, numStreams, containerSize }) => {
+      ({ focusHeightAuto, viewMode, numStreams, containerSize, chatShown }) => {
         log(
           "[SizeManager]",
           focusHeightAuto,
@@ -28,23 +28,43 @@ function SizeManagerComponent() {
           numStreams,
           containerSize,
         );
+
+        const minFocus = chatShown ? 60 : 60; // 60, 65 // 60, 61
+
         if (!focusHeightAuto || !containerSize || viewMode !== "focused") {
           return;
         }
 
         const { width, height } = containerSize;
 
-        const smallCellHeight = Number.parseFloat(
-          layoutCellsFocused(numStreams, width, height, 0)[1]?.height ?? "-1",
+        const baseCells = layoutCellsFocused(
+          numStreams,
+          width,
+          height,
+          minFocus,
         );
+        if (baseCells.length <= 1) {
+          return;
+        }
 
-        if (smallCellHeight < 0) return;
+        let smallestY = Infinity;
+        let largestY = -Infinity;
+        for (let i = 1; i < baseCells.length; i++) {
+          const cell = baseCells[i]!;
+          const y = Number.parseFloat(cell.y);
+          const height = Number.parseFloat(cell.height);
+          smallestY = Math.min(smallestY, y);
+          largestY = Math.max(largestY, y + height);
+        }
 
-        const autoFocusHeightPx = height - smallCellHeight;
+        const smallCellsHeight = largestY - smallestY;
+        if (!smallCellsHeight) return;
+
+        const autoFocusHeightPx = height - smallCellsHeight;
         const autoFocusHeightVh = clamp(
           (autoFocusHeightPx / height) * 100,
-          63,
-          MAX_FOCUS_HEIGHT,
+          0,
+          100,
         );
 
         log("[SizeManager] Setting auto focus height:", autoFocusHeightVh);

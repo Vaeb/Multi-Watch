@@ -7,76 +7,6 @@ export interface Rect {
   x: string;
 }
 
-function spiralOrder(cols: number, rows: number): [number, number][] {
-  const midC = (cols - 1) / 2,
-    midR = (rows - 1) / 2;
-  return [...Array(rows * cols).keys()]
-    .map((i) => [Math.floor(i / cols), i % cols] as [number, number])
-    .sort(
-      ([r1, c1], [r2, c2]) =>
-        Math.abs(r1 - midR) +
-        Math.abs(c1 - midC) -
-        (Math.abs(r2 - midR) + Math.abs(c2 - midC)),
-    );
-}
-
-export const layoutCellsGrid = (
-  N: number,
-  W: number,
-  H: number,
-  spiral = false,
-): Rect[] => {
-  if (N <= 0 || W <= 0 || H <= 0) return [];
-
-  // Find the max-area grid
-  let bestCols = 1,
-    bestRows = 1,
-    tileW = 0,
-    tileH = 0,
-    bestArea = -1;
-  for (let cols = 1; cols <= N; cols++) {
-    const rows = Math.ceil(N / cols);
-    const s = Math.min(W / (16 * cols), H / (9 * rows));
-    const w = 16 * s,
-      h = 9 * s,
-      area = w * h;
-    if (area > bestArea) {
-      bestArea = area;
-      bestCols = cols;
-      bestRows = rows;
-      tileW = w;
-      tileH = h;
-    }
-  }
-
-  // Common margins (centres the whole mosaic)
-  const mosaicW = bestCols * tileW;
-  const mosaicH = bestRows * tileH;
-  const marginX = (W - mosaicW) / 2;
-  const marginY = (H - mosaicH) / 2;
-
-  // Pre-compute optional spiral order
-  const coordList = spiral
-    ? spiralOrder(bestCols, bestRows).slice(0, N)
-    : [...Array(N).keys()].map(
-        (i) => [Math.floor(i / bestCols), i % bestCols] as [number, number],
-      );
-
-  // Produce rectangles
-  return coordList.map(([row, col]) => {
-    const lastRowCols =
-      row === bestRows - 1 ? N % bestCols || bestCols : bestCols;
-    const rowShiftX =
-      row === bestRows - 1 ? ((bestCols - lastRowCols) * tileW) / 2 : 0;
-    return {
-      x: `${marginX + rowShiftX + col * tileW}px`,
-      y: `${marginY + row * tileH}px`,
-      width: `${tileW}px`,
-      height: `${tileH}px`,
-    };
-  });
-};
-
 const getSingleRowRects = (
   numCells: number,
   rowWidth: number,
@@ -111,6 +41,78 @@ const getSingleRowRects = (
   return rects;
 };
 
+function spiralOrder(cols: number, rows: number): [number, number][] {
+  const midC = (cols - 1) / 2,
+    midR = (rows - 1) / 2;
+  return [...Array(rows * cols).keys()]
+    .map((i) => [Math.floor(i / cols), i % cols] as [number, number])
+    .sort(
+      ([r1, c1], [r2, c2]) =>
+        Math.abs(r1 - midR) +
+        Math.abs(c1 - midC) -
+        (Math.abs(r2 - midR) + Math.abs(c2 - midC)),
+    );
+}
+
+export const layoutCellsGrid = (
+  N: number,
+  W: number,
+  H: number,
+  spiral = false,
+  centerY = 0.5,
+  yOffset = 0,
+): Rect[] => {
+  if (N <= 0 || W <= 0 || H <= 0) return [];
+
+  // Find the max-area grid
+  let bestCols = 1,
+    bestRows = 1,
+    tileW = 0,
+    tileH = 0,
+    bestArea = -1;
+  for (let cols = 1; cols <= N; cols++) {
+    const rows = Math.ceil(N / cols);
+    const s = Math.min(W / (16 * cols), H / (9 * rows));
+    const w = 16 * s,
+      h = 9 * s,
+      area = w * h;
+    if (area > bestArea) {
+      bestArea = area;
+      bestCols = cols;
+      bestRows = rows;
+      tileW = w;
+      tileH = h;
+    }
+  }
+
+  // Common margins (centres the whole mosaic)
+  const mosaicW = bestCols * tileW;
+  const mosaicH = bestRows * tileH;
+  const marginX = (W - mosaicW) / 2;
+  const marginY = (H - mosaicH) * centerY;
+
+  // Pre-compute optional spiral order
+  const coordList = spiral
+    ? spiralOrder(bestCols, bestRows).slice(0, N)
+    : [...Array(N).keys()].map(
+        (i) => [Math.floor(i / bestCols), i % bestCols] as [number, number],
+      );
+
+  // Produce rectangles
+  return coordList.map(([row, col]) => {
+    const lastRowCols =
+      row === bestRows - 1 ? N % bestCols || bestCols : bestCols;
+    const rowShiftX =
+      row === bestRows - 1 ? ((bestCols - lastRowCols) * tileW) / 2 : 0;
+    return {
+      x: `${marginX + rowShiftX + col * tileW}px`,
+      y: `${yOffset + marginY + row * tileH}px`,
+      width: `${tileW}px`,
+      height: `${tileH}px`,
+    };
+  });
+};
+
 export const layoutCellsFocused = (
   N: number,
   W: number,
@@ -123,7 +125,15 @@ export const layoutCellsFocused = (
   if (N === 1) return rects;
 
   const smallRowHeight = H - focusedRowHeight;
-  rects.push(...getSingleRowRects(N - 1, W, smallRowHeight, focusHeight, W, H));
+  const grid = layoutCellsGrid(
+    N - 1,
+    W,
+    smallRowHeight,
+    false,
+    0,
+    focusedRowHeight,
+  );
+  rects.push(...grid);
 
   return rects;
 };
