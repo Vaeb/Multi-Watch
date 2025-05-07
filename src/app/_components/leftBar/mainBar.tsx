@@ -14,6 +14,7 @@ const selector2 = (state: MainState) => state.nopixelShown;
 const selector3 = (state: MainState) => state.viewMode;
 const selectorGrid = (state: PersistState) => state.gridMode;
 const selector4 = (state: MainState) => state.chatShown;
+const selector5 = (state: MainState) => state.streams.length < 4;
 
 interface LeftBarButtonProps {
   imageUrl?: string;
@@ -80,6 +81,7 @@ const MainBarComponent = () => {
   const viewMode = useMainStore(selector3);
   const gridMode = usePersistStore(selectorGrid);
   const chatShown = useMainStore(selector4);
+  const lowStreams = useMainStore(selector5);
 
   const [quickAddValue, setQuickAddValue] = useState("");
 
@@ -187,13 +189,14 @@ const MainBarComponent = () => {
         message="Settings"
         onClick={toggleSettingsShown}
       />
-      {viewMode === "focused" ? (
+      {viewMode === "focused" && lowStreams ? (
         <BarText
           message={
-            "Tip: Resize streams by dragging the border between the focused and small streams."
+            "Tip: Resize streams by dragging the border between the focused stream and small streams."
             // "Tip 2: Drag the border between focused and small streams to resize."
           }
           maxLines={3}
+          shortMaxLines={1}
         />
       ) : null}
     </div>
