@@ -31,7 +31,7 @@ interface InputData {
 function ModalButton({ text, onClick }: ModalButtonProps) {
   return (
     <button
-      className="flex-1 rounded-sm bg-slate-300 px-2 py-1 text-center text-sm"
+      className="flex-1 rounded-sm bg-slate-500 px-2 py-1 text-center text-sm text-white hover:bg-slate-600"
       onClick={onClick}
     >
       <p>{text}</p>

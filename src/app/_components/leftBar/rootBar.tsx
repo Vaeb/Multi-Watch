@@ -3,6 +3,7 @@
 import { type PropsWithChildren } from "react";
 import { useMainStore } from "../../stores/mainStore";
 import { useShallow } from "zustand/shallow";
+import { MainBar } from "./mainBar";
 
 export function RootBar({ children }: PropsWithChildren) {
   const [oneStreamWithNpBar, showTopHole] = useMainStore(
@@ -58,6 +59,7 @@ export function RootBar({ children }: PropsWithChildren) {
       className="group absolute z-10 box-content flex w-[42px] overflow-hidden rounded-lg pl-[2px] pr-[4px] transition-all duration-75 hover:w-[228px] hover:bg-[rgba(0,0,0,0.8)]"
     >
       {children}
+      <MainBar />
     </div>
   );
 }

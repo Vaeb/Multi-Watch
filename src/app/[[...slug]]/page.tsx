@@ -4,7 +4,6 @@ import { promises as fs } from "fs";
 import { type ChatroomsInfo, type PageParams } from "~/types";
 import { UpdateModalServerWrapper } from "../_components/modals/updateModalServerWrapper";
 import { RootBar } from "../_components/leftBar/rootBar";
-import { MainBar } from "../_components/leftBar/mainBar";
 import { NopixelBarWrapper } from "../_components/leftBar/nopixelBarWrapper";
 import { SettingsModalWrapper } from "../_components/modals/settingsModal";
 import { log } from "../utils/log";
@@ -41,7 +40,6 @@ export default async function Page({ params }: PageParams) {
       <main className="flex min-h-screen bg-black text-white">
         <RootBar>
           <NopixelBarWrapper chatrooms={chatrooms} />
-          <MainBar />
         </RootBar>
         <UpdateModalServerWrapper params={params} />
         <SettingsModalWrapper />
