@@ -48,6 +48,8 @@ const getSingleRowRects = (
   return rects;
 };
 
+const lerp = (a: number, b: number, p: number) => a + (b - a) * p;
+
 const adjustCellsGrid = (
   coords: RectCoords[],
   W: number,
@@ -60,14 +62,11 @@ const adjustCellsGrid = (
     return [];
   }
 
-  // lastCell
   const firstCell = coords[0]!;
   const lastCell = coords[coords.length - 1]!;
 
   const secondRowFirstIndex = firstRowCols + 0 * totalCols;
-  const lastRowFirstIndex = firstRowCols + (totalRows - 2) * totalCols;
 
-  // numCellsLastRow
   const numCellsFirstRow = secondRowFirstIndex;
 
   const topGap = coords[0]!.y;
@@ -75,51 +74,48 @@ const adjustCellsGrid = (
   const bottomGap = H - bottomRowEnd;
   const totalGap = topGap + bottomGap; // The total vertical gap (black bars) aka remaining space.
 
-  // The max *additional* height the last row cells can gain before hitting the width W constraint
+  // The max *additional* height the first row cells can gain before hitting the width W constraint
   // while maintaining 16:9 aspect ratio.
   const maxGrowthByWidth = Math.max(
     0,
     (W / numCellsFirstRow) * (9 / 16) - firstCell.height,
   );
 
-  // totalGrowth is the actual amount the last row cell height will increase by (accounting for constraints by rest of grid).
+  // totalGrowth is the actual amount the first row cell height will increase by (accounting for constraints by rest of grid).
   // It's limited by available vertical space (totalGap)
-  // AND by how much cells can grow before becoming too wide (maxCellHeightIncreaseConstrainedByWidth).
+  // AND by how much cells can grow before becoming too wide (maxGrowthByWidth).
   const totalGrowth = Math.min(totalGap, maxGrowthByWidth);
 
   if (totalGrowth <= 1e-6) {
     return coords;
   }
 
-  // Calculate new height for the last row's recalculation
-  // lastRowHeightNew
+  // Calculate new height for the first row's recalculation
   const firstRowHeightNew = firstCell.height + totalGrowth;
 
-  // Recalculate cells for the last row
-  const lastRowCoordsIsolated = layoutCellsGrid(
+  // Recalculate cells for the first row
+  const firstRowCoordsIsolated = layoutCellsGrid(
     numCellsFirstRow,
     W,
     firstRowHeightNew,
     true,
   );
 
-  const remainingGap = totalGap - totalGrowth;
-  // const centerYAdjustment = -Math.min(topGap, totalGap * 0.5);
-  // const centerYAdjustment = -topGap + remainingGap * 0.5;
-  // maxDown
   const maxUp = -topGap;
-  const bringYDown = Math.max(maxUp, (maxUp - (totalGrowth - topGap)) * 0.66); // Shift Y down by 75% of possible space so that top streams aren't as tucked away
+  const maxDown = maxUp + (totalGap - totalGrowth);
+  // const centerYAdjustment = lerp(maxUp, maxDown, 0.5);
+  const adjustOffset = lerp(maxUp, maxDown, 0.1); // Shift Y by % of container space so that bottom streams aren't as tucked away
 
   const shiftedCoords =
     topGap > 1e-6
       ? coords.map((c, i) => ({
           ...c,
-          y: c.y + bringYDown + (i >= secondRowFirstIndex ? totalGrowth : 0),
+          y: c.y + adjustOffset + (i >= secondRowFirstIndex ? totalGrowth : 0),
         }))
       : coords;
 
   for (let i = 0; i < secondRowFirstIndex; i++) {
-    const recalculatedCell = lastRowCoordsIsolated[i]!;
+    const recalculatedCell = firstRowCoordsIsolated[i]!;
 
     shiftedCoords[i]!.x = recalculatedCell.x;
     shiftedCoords[i]!.y = shiftedCoords[i]!.y + recalculatedCell.y;
