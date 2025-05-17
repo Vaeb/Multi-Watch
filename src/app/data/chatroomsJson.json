@@ -36,6 +36,31 @@
     "np": true,
     "assumeFaction": "manor"
   },
+  "STE_Eire": {
+    "id": 2718894,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "Cheez": {
+    "id": 60822788,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "AbbottJake": {
+    "id": 4818996,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "Frank_Ladd": {
+    "id": 59874256,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "Cashxzy": {
+    "id": 60487463,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "Simo": {
     "id": 133200,
     "np": true,
@@ -62,6 +87,11 @@
   },
   "travpiper": {
     "id": 43042315,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "ClaytonERP": {
+    "id": 52715994,
     "np": true,
     "assumeFaction": "police"
   },
@@ -221,6 +251,16 @@
   },
   "StankXO": {
     "id": 1120711,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "Reedy": {
+    "id": 1281792,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "JJFried": {
+    "id": 1297825,
     "np": true,
     "assumeFaction": "hydragang"
   },
