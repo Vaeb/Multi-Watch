@@ -60,6 +60,7 @@ const adjustCellsGrid = (
   }
 
   const lastCell = coords[coords.length - 1]!;
+  const lastCellHeight = lastCell.height;
 
   const lastRowFirstIndex = (totalRows - 1) * totalCols;
   const numCellsLastRow = coords.length - lastRowFirstIndex;
@@ -90,16 +91,8 @@ const adjustCellsGrid = (
     return coords;
   }
 
-  const shiftedCoords =
-    topGap > 1e-6
-      ? coords.map((c) => ({
-          ...c,
-          y: c.y - Math.min(topGap, totalGap / 2),
-        }))
-      : coords;
-
   // Calculate new height for the last row's recalculation
-  const lastRowHeightNew = shiftedCoords[lastRowFirstIndex]!.height + totalGap;
+  const lastRowHeightNew = coords[lastRowFirstIndex]!.height + totalGap;
 
   // Recalculate cells for the last row
   const lastRowCoordsIsolated = layoutCellsGrid(
@@ -108,6 +101,20 @@ const adjustCellsGrid = (
     lastRowHeightNew,
     true,
   );
+
+  const remainingGap = topGap + bottomGap - totalGap;
+  // const centerYAdjustment = -Math.min(topGap, totalGap * 0.5);
+  // const centerYAdjustment = -topGap + remainingGap * 0.5;
+  const maxDown = -topGap + remainingGap;
+  const bringYDown = Math.min(maxDown, -topGap + remainingGap * 0.75); // Shift Y down by 75% of possible space so that top streams aren't as tucked away
+
+  const shiftedCoords =
+    topGap > 1e-6
+      ? coords.map((c) => ({
+          ...c,
+          y: c.y + bringYDown,
+        }))
+      : coords;
 
   for (let i = lastRowFirstIndex; i < coords.length; i++) {
     const recalculatedCell = lastRowCoordsIsolated[i - lastRowFirstIndex];
