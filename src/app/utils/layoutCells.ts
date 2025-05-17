@@ -60,39 +60,33 @@ const adjustCellsGrid = (
   }
 
   const lastCell = coords[coords.length - 1]!;
-  const lastCellHeight = lastCell.height;
 
   const lastRowFirstIndex = (totalRows - 1) * totalCols;
   const numCellsLastRow = coords.length - lastRowFirstIndex;
 
-  // Max height a single cell in the last row can achieve if it, along with its N-1 siblings,
-  // fills width W while maintaining 16:9 aspect ratio.
-  const maxPossibleCellHeightForLastRow =
-    numCellsLastRow > 0 ? (W / numCellsLastRow) * (9 / 16) : 0;
-
-  // The max *additional* height these cells can gain before hitting the width W constraint.
-  const maxCellHeightIncreaseConstrainedByWidth = Math.max(
-    0,
-    maxPossibleCellHeightForLastRow - coords[lastRowFirstIndex]!.height,
-  );
-
   const topGap = coords[0]!.y;
   const bottomRowEnd = lastCell.y + lastCell.height;
   const bottomGap = H - bottomRowEnd;
-  // totalGap is the actual amount the last row cell height will increase by.
-  // It's limited by available vertical space (topGap + bottomGap)
-  // AND by how much cells can grow before becoming too wide (maxCellHeightIncreaseConstrainedByWidth).
-  const totalGap = Math.min(
-    topGap + bottomGap,
-    maxCellHeightIncreaseConstrainedByWidth,
+  const totalGap = topGap + bottomGap; // The total vertical gap (black bars) aka remaining space.
+
+  // The max *additional* height the last row cells can gain before hitting the width W constraint
+  // while maintaining 16:9 aspect ratio.
+  const maxGrowthByWidth = Math.max(
+    0,
+    (W / numCellsLastRow) * (9 / 16) - coords[lastRowFirstIndex]!.height,
   );
 
-  if (totalGap <= 1e-6) {
+  // totalGrowth is the actual amount the last row cell height will increase by (accounting for constraints by rest of grid).
+  // It's limited by available vertical space (totalGap)
+  // AND by how much cells can grow before becoming too wide (maxCellHeightIncreaseConstrainedByWidth).
+  const totalGrowth = Math.min(totalGap, maxGrowthByWidth);
+
+  if (totalGrowth <= 1e-6) {
     return coords;
   }
 
   // Calculate new height for the last row's recalculation
-  const lastRowHeightNew = coords[lastRowFirstIndex]!.height + totalGap;
+  const lastRowHeightNew = coords[lastRowFirstIndex]!.height + totalGrowth;
 
   // Recalculate cells for the last row
   const lastRowCoordsIsolated = layoutCellsGrid(
@@ -102,7 +96,7 @@ const adjustCellsGrid = (
     true,
   );
 
-  const remainingGap = topGap + bottomGap - totalGap;
+  const remainingGap = totalGap - totalGrowth;
   // const centerYAdjustment = -Math.min(topGap, totalGap * 0.5);
   // const centerYAdjustment = -topGap + remainingGap * 0.5;
   const maxDown = -topGap + remainingGap;
