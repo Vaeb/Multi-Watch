@@ -54,15 +54,21 @@ const adjustCellsGrid = (
   H: number,
   totalRows: number,
   totalCols: number,
+  firstRowCols: number,
 ): RectCoords[] => {
   if (totalRows <= 1) {
     return [];
   }
 
+  // lastCell
+  const firstCell = coords[0]!;
   const lastCell = coords[coords.length - 1]!;
 
-  const lastRowFirstIndex = (totalRows - 1) * totalCols;
-  const numCellsLastRow = coords.length - lastRowFirstIndex;
+  const secondRowFirstIndex = firstRowCols + 0 * totalCols;
+  const lastRowFirstIndex = firstRowCols + (totalRows - 2) * totalCols;
+
+  // numCellsLastRow
+  const numCellsFirstRow = secondRowFirstIndex;
 
   const topGap = coords[0]!.y;
   const bottomRowEnd = lastCell.y + lastCell.height;
@@ -73,7 +79,7 @@ const adjustCellsGrid = (
   // while maintaining 16:9 aspect ratio.
   const maxGrowthByWidth = Math.max(
     0,
-    (W / numCellsLastRow) * (9 / 16) - coords[lastRowFirstIndex]!.height,
+    (W / numCellsFirstRow) * (9 / 16) - firstCell.height,
   );
 
   // totalGrowth is the actual amount the last row cell height will increase by (accounting for constraints by rest of grid).
@@ -86,40 +92,39 @@ const adjustCellsGrid = (
   }
 
   // Calculate new height for the last row's recalculation
-  const lastRowHeightNew = coords[lastRowFirstIndex]!.height + totalGrowth;
+  // lastRowHeightNew
+  const firstRowHeightNew = firstCell.height + totalGrowth;
 
   // Recalculate cells for the last row
   const lastRowCoordsIsolated = layoutCellsGrid(
-    numCellsLastRow,
+    numCellsFirstRow,
     W,
-    lastRowHeightNew,
+    firstRowHeightNew,
     true,
   );
 
   const remainingGap = totalGap - totalGrowth;
   // const centerYAdjustment = -Math.min(topGap, totalGap * 0.5);
   // const centerYAdjustment = -topGap + remainingGap * 0.5;
-  const maxDown = -topGap + remainingGap;
-  const bringYDown = Math.min(maxDown, -topGap + remainingGap * 0.75); // Shift Y down by 75% of possible space so that top streams aren't as tucked away
+  // maxDown
+  const maxUp = -topGap;
+  const bringYDown = Math.max(maxUp, (maxUp - (totalGrowth - topGap)) * 0.66); // Shift Y down by 75% of possible space so that top streams aren't as tucked away
 
   const shiftedCoords =
     topGap > 1e-6
-      ? coords.map((c) => ({
+      ? coords.map((c, i) => ({
           ...c,
-          y: c.y + bringYDown,
+          y: c.y + bringYDown + (i >= secondRowFirstIndex ? totalGrowth : 0),
         }))
       : coords;
 
-  for (let i = lastRowFirstIndex; i < coords.length; i++) {
-    const recalculatedCell = lastRowCoordsIsolated[i - lastRowFirstIndex];
+  for (let i = 0; i < secondRowFirstIndex; i++) {
+    const recalculatedCell = lastRowCoordsIsolated[i]!;
 
-    // Ensure both the index and the recalculated cell data are valid
-    if (shiftedCoords[i] && recalculatedCell !== undefined) {
-      shiftedCoords[i]!.x = recalculatedCell.x;
-      shiftedCoords[i]!.y = shiftedCoords[i]!.y + recalculatedCell.y; // Key adjustment for y
-      shiftedCoords[i]!.width = recalculatedCell.width;
-      shiftedCoords[i]!.height = recalculatedCell.height;
-    }
+    shiftedCoords[i]!.x = recalculatedCell.x;
+    shiftedCoords[i]!.y = shiftedCoords[i]!.y + recalculatedCell.y;
+    shiftedCoords[i]!.width = recalculatedCell.width;
+    shiftedCoords[i]!.height = recalculatedCell.height;
   }
 
   return shiftedCoords;
@@ -163,14 +168,25 @@ export const layoutCellsGrid = <T extends boolean>(
   const marginY = (H - mosaicH) * centerY;
 
   // Compute cells
-  let coords = [...Array(N).keys()].map((i) => {
-    const row = Math.floor(i / totalCols);
-    const col = i % totalCols;
+  const firstRowCols = N > 0 ? N - (totalRows - 1) * totalCols : 0;
 
-    const lastRowCols =
-      row === totalRows - 1 ? N % totalCols || totalCols : totalCols;
-    const rowShiftX =
-      row === totalRows - 1 ? ((totalCols - lastRowCols) * tileW) / 2 : 0;
+  let coords = [...Array(N).keys()].map((i) => {
+    let row: number;
+    let col: number;
+    let rowShiftX = 0;
+
+    if (i < firstRowCols) {
+      row = 0;
+      col = i;
+      if (firstRowCols < totalCols) {
+        rowShiftX = ((totalCols - firstRowCols) * tileW) / 2;
+      }
+    } else {
+      const indexInSubsequentRows = i - firstRowCols;
+      row = 1 + Math.floor(indexInSubsequentRows / totalCols); // Row index, offset by 1 (for the first row)
+      col = indexInSubsequentRows % totalCols; // Column index within this full row
+    }
+
     return {
       x: marginX + rowShiftX + col * tileW,
       y: yOffset + marginY + row * tileH,
@@ -180,7 +196,7 @@ export const layoutCellsGrid = <T extends boolean>(
   });
 
   if (totalRows > 1) {
-    coords = adjustCellsGrid(coords, W, H, totalRows, totalCols);
+    coords = adjustCellsGrid(coords, W, H, totalRows, totalCols, firstRowCols);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
