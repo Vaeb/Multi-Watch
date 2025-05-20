@@ -75,6 +75,11 @@
     "id": 89446,
     "np": true
   },
+  "Deansocool": {
+    "id": 5579351,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "Hurnani": {
     "id": 2848971,
     "np": true,
