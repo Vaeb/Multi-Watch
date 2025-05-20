@@ -206,7 +206,7 @@ export const layoutCellsGrid = <T extends boolean>(
     const w = 16 * s,
       h = 9 * s,
       area = w * h;
-    if (area > bestArea) {
+    if (area >= bestArea) {
       bestArea = area;
       totalCols = cols;
       totalRows = rows;
