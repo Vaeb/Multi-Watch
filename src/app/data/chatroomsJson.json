@@ -61,6 +61,11 @@
     "np": true,
     "assumeFaction": "manor"
   },
+  "Azza0-0": {
+    "id": 2020520,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "Simo": {
     "id": 133200,
     "np": true,
@@ -261,6 +266,11 @@
   },
   "JJFried": {
     "id": 1297825,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "Moboking": {
+    "id": 5706693,
     "np": true,
     "assumeFaction": "hydragang"
   },
