@@ -57,12 +57,13 @@ const adjustCellsGrid = (
   totalRows: number,
   totalCols: number,
   firstRowCols: number,
-): RectCoords[] => {
+): [RectCoords[], number] => {
   if (totalRows <= 1) {
-    return [];
+    return [coords, 0];
   }
 
   const firstCell = coords[0]!;
+  const initialHeight = firstCell.height;
   const lastCell = coords[coords.length - 1]!;
 
   const secondRowFirstIndex = firstRowCols + 0 * totalCols;
@@ -78,7 +79,7 @@ const adjustCellsGrid = (
   // while maintaining 16:9 aspect ratio.
   const maxGrowthByWidth = Math.max(
     0,
-    (W / numCellsFirstRow) * (9 / 16) - firstCell.height,
+    (W / numCellsFirstRow) * (9 / 16) - initialHeight,
   );
 
   // totalGrowth is the actual amount the first row cell height will increase by (accounting for constraints by rest of grid).
@@ -86,12 +87,12 @@ const adjustCellsGrid = (
   // AND by how much cells can grow before becoming too wide (maxGrowthByWidth).
   const totalGrowth = Math.min(totalGap, maxGrowthByWidth);
 
-  if (totalGrowth <= 1e-6) {
-    return coords;
+  if (totalGrowth <= 1e-6 || (totalGrowth / initialHeight) * 100 <= 1e-6) {
+    return [coords, 0];
   }
 
   // Calculate new height for the first row's recalculation
-  const firstRowHeightNew = firstCell.height + totalGrowth;
+  const firstRowHeightNew = initialHeight + totalGrowth;
 
   // Recalculate cells for the first row
   const firstRowCoordsIsolated = layoutCellsGrid(
@@ -123,7 +124,64 @@ const adjustCellsGrid = (
     shiftedCoords[i]!.height = recalculatedCell.height;
   }
 
-  return shiftedCoords;
+  return [shiftedCoords, (totalGrowth / initialHeight) * 100];
+};
+
+const produceGridCoords = (
+  gridKeys: number[],
+  isTopRowLight: boolean,
+  N: number,
+  totalCols: number,
+  totalRows: number,
+  marginX: number,
+  marginY: number,
+  tileW: number,
+  tileH: number,
+  yOffset: number,
+  firstRowCols: number,
+) => {
+  if (isTopRowLight) {
+    return gridKeys.map((i) => {
+      let row: number;
+      let col: number;
+      let rowShiftX = 0;
+
+      if (i < firstRowCols) {
+        row = 0;
+        col = i;
+        if (firstRowCols < totalCols) {
+          rowShiftX = ((totalCols - firstRowCols) * tileW) / 2;
+        }
+      } else {
+        const indexInSubsequentRows = i - firstRowCols;
+        row = 1 + Math.floor(indexInSubsequentRows / totalCols); // Row index, offset by 1 (for the first row)
+        col = indexInSubsequentRows % totalCols; // Column index within this full row
+      }
+
+      return {
+        x: marginX + rowShiftX + col * tileW,
+        y: yOffset + marginY + row * tileH,
+        width: tileW,
+        height: tileH,
+      };
+    });
+  } else {
+    return gridKeys.map((i) => {
+      const row = Math.floor(i / totalCols);
+      const col = i % totalCols;
+
+      const lastRowCols =
+        row === totalRows - 1 ? N % totalCols || totalCols : totalCols;
+      const rowShiftX =
+        row === totalRows - 1 ? ((totalCols - lastRowCols) * tileW) / 2 : 0;
+      return {
+        x: marginX + rowShiftX + col * tileW,
+        y: yOffset + marginY + row * tileH,
+        width: tileW,
+        height: tileH,
+      };
+    });
+  }
 };
 
 export const layoutCellsGrid = <T extends boolean>(
@@ -166,33 +224,50 @@ export const layoutCellsGrid = <T extends boolean>(
   // Compute cells
   const firstRowCols = N > 0 ? N - (totalRows - 1) * totalCols : 0;
 
-  let coords = [...Array(N).keys()].map((i) => {
-    let row: number;
-    let col: number;
-    let rowShiftX = 0;
-
-    if (i < firstRowCols) {
-      row = 0;
-      col = i;
-      if (firstRowCols < totalCols) {
-        rowShiftX = ((totalCols - firstRowCols) * tileW) / 2;
-      }
-    } else {
-      const indexInSubsequentRows = i - firstRowCols;
-      row = 1 + Math.floor(indexInSubsequentRows / totalCols); // Row index, offset by 1 (for the first row)
-      col = indexInSubsequentRows % totalCols; // Column index within this full row
-    }
-
-    return {
-      x: marginX + rowShiftX + col * tileW,
-      y: yOffset + marginY + row * tileH,
-      width: tileW,
-      height: tileH,
-    };
-  });
+  const gridKeys = [...Array(N).keys()];
+  let coords = produceGridCoords(
+    gridKeys,
+    true,
+    N,
+    totalCols,
+    totalRows,
+    marginX,
+    marginY,
+    tileW,
+    tileH,
+    yOffset,
+    firstRowCols,
+  );
 
   if (totalRows > 1) {
-    coords = adjustCellsGrid(coords, W, H, totalRows, totalCols, firstRowCols);
+    const [shiftedCoords, percGrowth] = adjustCellsGrid(
+      coords,
+      W,
+      H,
+      totalRows,
+      totalCols,
+      firstRowCols,
+    );
+    // If no growth and unmatching top-row cols, flip to bottom-row-light
+    // Maybe: If 0.001-5% growth, flip to bottom-row-light and adjustCellsGridBottomRowLight
+    // Current: If 0.001-5% growth, retain adjusted top-row-light
+    if (percGrowth <= 1e-6 && N % totalCols !== 0) {
+      coords = produceGridCoords(
+        gridKeys,
+        false,
+        N,
+        totalCols,
+        totalRows,
+        marginX,
+        marginY,
+        tileW,
+        tileH,
+        yOffset,
+        firstRowCols,
+      );
+    } else {
+      coords = shiftedCoords;
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
