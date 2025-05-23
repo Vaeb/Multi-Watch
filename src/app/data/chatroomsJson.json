@@ -11,10 +11,49 @@
     "id": 875062,
     "np": false
   },
+  "IrishGT": {
+    "id": 50840382,
+    "np": true
+  },
   "Ramee": {
     "id": 129914,
     "np": true,
     "assumeFaction": "changgang"
+  },
+  "xHolty": {
+    "id": 5836174,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "PaperStackerJ": {
+    "id": 7013092,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "imDEVYN": {
+    "id": 133841,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "kieron": {
+    "id": 78555,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "Zixtah": {
+    "id": 3494647,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "DEFAC3D": {
+    "id": 1187734,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "JustKiku": {
+    "id": 3307962,
+    "np": true,
+    "assumeFaction": "manor"
   },
   "Txylorz": {
     "id": 63567,
@@ -205,6 +244,11 @@
     "np": true,
     "assumeFaction": "hades"
   },
+  "Xiceman": {
+    "id": 1767118,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "dasMEHDI": {
     "id": 2381527,
     "np": true,
@@ -228,6 +272,26 @@
     "id": 50496895,
     "np": true,
     "assumeFaction": "ssb"
+  },
+  "Boogie": {
+    "id": 2427744,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "chillypanda": {
+    "id": 66320,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "Kemony": {
+    "id": 2733117,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "ChasRP": {
+    "id": 1346767,
+    "np": true,
+    "assumeFaction": "hydragang"
   },
   "Reedy": {
     "id": 1281792,
