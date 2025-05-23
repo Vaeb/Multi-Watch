@@ -12,14 +12,7 @@ import {
   type RemoteStream,
   type ChatroomsInfo,
 } from "../../../types";
-import { hydrateStreams } from "../../actions/hydrateStreams";
-import { getDateString, log } from "../../utils/log";
-import { NOPIXEL_DATA_INTERVAL } from "../../constants";
-import { shiftableInterval } from "../../utils/shiftableInterval";
-import { randomInt } from "../../utils/randomInt";
-import { useKickStore, type KickState } from "../../stores/kickStore";
-import { fetchKickLive } from "../../utils/fetchKickLive";
-import { updateServerKickLive } from "../../actions/updateServerKickLive";
+import { useKickStore } from "../../stores/kickStore";
 import { BarText } from "./BarText";
 import { LARGE_FACTIONS } from "../../constants";
 
@@ -254,18 +247,15 @@ const parseLookup = (text: string, retainCase = false) => {
 };
 
 function NopixelBarComponent({
-  receivedData: _receivedData,
-  chatrooms,
+  receivedData,
+  timeFormatted,
 }: {
   receivedData: RemoteReceived;
-  chatrooms: KickState["chatrooms"];
+  timeFormatted: string;
 }) {
   const nopixelShown = useMainStore((state) => state.nopixelShown);
   const chatroomsLower = useKickStore((state) => state.chatrooms);
   const { toggleNopixel } = useMainStore.getState().actions;
-
-  const [receivedData, setReceivedData] = useState(_receivedData);
-  const [hydrateTime, setHydrateTime] = useState(+new Date());
 
   const { parsed } = receivedData;
   const {
@@ -292,79 +282,6 @@ function NopixelBarComponent({
     };
     return [factionFilterEdited, useColorsDarkEdited];
   }, [_filterFactions, _useColorsDark]);
-
-  const timeFormatted = new Date(hydrateTime)
-    .toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    })
-    .replace(" ", "\n");
-
-  /**
-   * Get kick streams from server.
-   * Also includes whether the server's kick stream cache needs to be updated by this client.
-   */
-  const hydrateStreamsHandler = useCallback(
-    async (_received?: RemoteReceived) => {
-      const hydrateTime = +new Date();
-      const received = _received ?? (await hydrateStreams());
-      log(
-        "[NopixelBar] Hydrating streams from server:",
-        received.parsed.streams.length,
-        "from",
-        getDateString(new Date(received.time)),
-      );
-      setReceivedData(received);
-      setHydrateTime(hydrateTime);
-      return received;
-    },
-    [],
-  );
-
-  const updateLiveKickStreams = useCallback(async () => {
-    log("[NopixelBar] Needs kick live streams...");
-    const kickStreams = await fetchKickLive(chatrooms);
-    const received = await updateServerKickLive(kickStreams);
-    log(
-      "[NopixelBar] Updated server kick streams",
-      kickStreams.map((stream) => `${stream.channelName} ${stream.viewers}`),
-    );
-    hydrateStreamsHandler(received).catch(console.error);
-  }, [hydrateStreamsHandler, chatrooms]);
-
-  useEffect(() => {
-    // resolves also 'needs kick live data', aka has it been >5 minutes since server received live data
-    // if so, lookup kick data & send in server action to server to store and pass back to all clients
-    // then shift interval by random amount from NOPIXEL_DATA_INTERVAL*0.25 to NOPIXEL_DATA_INTERVAL*0.75
-    const { clear, shiftOnce } = shiftableInterval(() => {
-      hydrateStreamsHandler()
-        .then((received) => {
-          // update server's cache of kick streams by fetching on client
-          if (received.needsKickLiveStreams) {
-            shiftOnce(
-              randomInt(
-                NOPIXEL_DATA_INTERVAL * 0.25,
-                NOPIXEL_DATA_INTERVAL * 0.75,
-              ),
-            );
-            updateLiveKickStreams().catch(console.error);
-          }
-        })
-        .catch(console.error);
-    }, NOPIXEL_DATA_INTERVAL);
-
-    if (_receivedData.needsKickLiveStreams) {
-      // update server's cache of kick streams by fetching on client
-      updateLiveKickStreams().catch(console.error);
-    }
-
-    return () => clear();
-  }, [
-    hydrateStreamsHandler,
-    updateLiveKickStreams,
-    _receivedData.needsKickLiveStreams,
-  ]);
 
   const filteredStreams = useMemo(() => {
     let _filteredStreams = streams;

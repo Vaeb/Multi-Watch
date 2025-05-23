@@ -7,7 +7,7 @@ import {
 import { type KickState } from "../stores/kickStore";
 import { sleep } from "./sleep";
 
-// Make a request to the Kick API to fetch the streams
+// Client periodically makes a request to the Kick API to fetch the streams
 // This should only be needed if the server's cache of kick streams becomes outdated and needs updating by a client
 // (FYI: Kick API can only be accessed client-side)
 export const fetchKickLive = async (
