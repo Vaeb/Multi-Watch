@@ -331,18 +331,6 @@ function NopixelBarComponent({
     [filteredStreams],
   );
 
-  log(
-    "[NopixelBar] chatroomsLower",
-    chatroomsLower,
-    filteredStreams
-      .filter((stream) => stream.channelName === "Ramee")
-      .map((stream) => [
-        stream.channelName,
-        stream.faction,
-        chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction,
-      ])[0],
-  );
-
   // 18+(42+12)*15-12
   // 816px
   return (
