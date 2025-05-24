@@ -28,8 +28,6 @@ function NopixelBarWithDataComponent({
     [_chatrooms, receivedData.chatrooms],
   );
 
-  log("[NopixelBarWithData] chatrooms", chatrooms);
-
   const timeFormatted = new Date(hydrateTime)
     .toLocaleString("en-US", {
       hour: "numeric",

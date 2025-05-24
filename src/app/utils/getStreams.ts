@@ -227,7 +227,6 @@ const _getStreams = async (): Promise<RemoteReceived> => {
     process.cwd() + "/src/app/data/chatroomsJson.json",
     "utf8",
   );
-  log("[getStreams] Processed new chatroomsJson", chatroomsJson);
   const chatrooms = JSON.parse(chatroomsJson) as Record<string, ChatroomsInfo>;
 
   return {
