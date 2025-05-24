@@ -20,6 +20,11 @@
     "np": true,
     "assumeFaction": "changgang"
   },
+  "Klutch": {
+    "id": 3018324,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "xHolty": {
     "id": 5836174,
     "np": true,
@@ -105,11 +110,6 @@
     "np": true,
     "assumeFaction": "manor"
   },
-  "Simo": {
-    "id": 133200,
-    "np": true,
-    "assumeFaction": "hades"
-  },
   "omie": {
     "id": 89446,
     "np": true
@@ -178,6 +178,16 @@
     "id": 65073,
     "np": true,
     "assumeFaction": "besties"
+  },
+  "Tobii": {
+    "id": 2424324,
+    "np": true,
+    "assumeFaction": "hades"
+  },
+  "Simo": {
+    "id": 133200,
+    "np": true,
+    "assumeFaction": "hades"
   },
   "AcezProduction": {
     "id": 1669680,

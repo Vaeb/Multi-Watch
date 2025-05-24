@@ -17,6 +17,7 @@ const filterObjFrom = (obj: Record<string, any>, base: string[]) =>
 
 export interface KickState {
   chatrooms: Record<string, ChatroomsInfo>;
+  chatroomsLower: Record<string, ChatroomsInfo>;
   chatMethods: Record<string, ChatMethods>;
 
   actions: {
@@ -30,10 +31,20 @@ export const useKickStore = create<KickState>()(
   subscribeWithSelector(
     stateApplyLog<KickState>((set) => ({
       chatrooms: {},
+      chatroomsLower: {},
       chatMethods: {},
 
       actions: {
-        setChatrooms: (chatrooms) => set({ chatrooms }),
+        setChatrooms: (chatrooms) =>
+          set({
+            chatrooms,
+            chatroomsLower: Object.fromEntries(
+              Object.entries(chatrooms).map(([channel, data]) => [
+                channel.toLowerCase(),
+                data,
+              ]),
+            ),
+          }),
 
         setChatMethods: (channel, chatMethods) =>
           set((state) => ({

@@ -222,10 +222,19 @@ const _getStreams = async (): Promise<RemoteReceived> => {
     globalData.cachedKickStreams,
   );
 
+  // Read chatrooms data from file system
+  const chatroomsJson = await fs.readFile(
+    process.cwd() + "/src/app/data/chatroomsJson.json",
+    "utf8",
+  );
+  log("[getStreams] Processed new chatroomsJson", chatroomsJson);
+  const chatrooms = JSON.parse(chatroomsJson) as Record<string, ChatroomsInfo>;
+
   return {
     parsed: mergedStreams,
     time: cachedTwitchTime,
     needsKickLiveStreams,
+    chatrooms,
   };
 };
 

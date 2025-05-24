@@ -15,6 +15,7 @@ import {
 import { useKickStore } from "../../stores/kickStore";
 import { BarText } from "./BarText";
 import { LARGE_FACTIONS } from "../../constants";
+import { log } from "~/app/utils/log";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -254,7 +255,7 @@ function NopixelBarComponent({
   timeFormatted: string;
 }) {
   const nopixelShown = useMainStore((state) => state.nopixelShown);
-  const chatroomsLower = useKickStore((state) => state.chatrooms);
+  const chatroomsLower = useKickStore((state) => state.chatroomsLower);
   const { toggleNopixel } = useMainStore.getState().actions;
 
   const { parsed } = receivedData;
@@ -328,6 +329,18 @@ function NopixelBarComponent({
         };
       }),
     [filteredStreams],
+  );
+
+  log(
+    "[NopixelBar] chatroomsLower",
+    chatroomsLower,
+    filteredStreams
+      .filter((stream) => stream.channelName === "Ramee")
+      .map((stream) => [
+        stream.channelName,
+        stream.faction,
+        chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction,
+      ])[0],
   );
 
   // 18+(42+12)*15-12

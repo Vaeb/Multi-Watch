@@ -56,6 +56,7 @@ export interface RemoteReceivedTwitch {
 
 export interface RemoteReceived extends RemoteReceivedTwitch {
   needsKickLiveStreams: boolean; // Is the server's cache of kick streams outdated so it needs the next requesting client (this client) to fetch the kick streams itself and pass them back to the server to update its cache?
+  chatrooms: Record<string, ChatroomsInfo>; // Chatrooms data from server, updated periodically
 }
 
 interface RemoteKickSubCategory {

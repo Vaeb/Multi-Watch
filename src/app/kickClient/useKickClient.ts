@@ -107,7 +107,10 @@ export const useKickClient = (
 
   const channelLower = channel.toLowerCase();
   const chatroomId = useKickStore(
-    useCallback((state) => state.chatrooms[channelLower]?.id, [channelLower]),
+    useCallback(
+      (state) => state.chatroomsLower[channelLower]?.id,
+      [channelLower],
+    ),
   );
 
   useEffect(() => {

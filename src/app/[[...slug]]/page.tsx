@@ -1,7 +1,6 @@
 import { Manager } from "../_components/manager";
 import { Streams } from "../_components/streams";
-import { promises as fs } from "fs";
-import { type ChatroomsInfo, type PageParams } from "~/types";
+import { type PageParams } from "~/types";
 import { UpdateModalServerWrapper } from "../_components/modals/updateModalServerWrapper";
 import { RootBar } from "../_components/leftBar/rootBar";
 import { NopixelBarWrapper } from "../_components/leftBar/nopixelBarWrapper";
@@ -16,18 +15,6 @@ export default async function Page({ params }: PageParams) {
     return null;
   }
 
-  const chatroomsJson = await fs.readFile(
-    process.cwd() + "/src/app/data/chatroomsJson.json",
-    "utf8",
-  );
-  const chatrooms = JSON.parse(chatroomsJson) as Record<string, ChatroomsInfo>;
-  const chatroomsLower = Object.fromEntries(
-    Object.entries(chatrooms).map(([channel, data]) => [
-      channel.toLowerCase(),
-      data,
-    ]),
-  );
-
   params
     .then(({ slug }) => {
       log("[Page] Re-rendered", slug?.join(", "));
@@ -36,10 +23,10 @@ export default async function Page({ params }: PageParams) {
 
   return (
     <>
-      <Manager chatrooms={chatroomsLower} />
+      <Manager />
       <main className="flex min-h-screen bg-black text-white">
         <RootBar>
-          <NopixelBarWrapper chatrooms={chatrooms} />
+          <NopixelBarWrapper />
         </RootBar>
         <UpdateModalServerWrapper params={params} />
         <SettingsModalWrapper />
