@@ -20,6 +20,11 @@
     "np": true,
     "assumeFaction": "changgang"
   },
+  "MattEU": {
+    "id": 2825518,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "Klutch": {
     "id": 3018324,
     "np": true,
@@ -143,6 +148,11 @@
     "id": 52715994,
     "np": true,
     "assumeFaction": "police"
+  },
+  "dripp": {
+    "id": 972487,
+    "np": true,
+    "assumeFaction": "besties"
   },
   "4HEAD": {
     "id": 2579856,
