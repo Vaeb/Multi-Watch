@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { addStream } from "../../utils/addStream";
 import { useMainStore } from "../../stores/mainStore";
@@ -15,7 +14,6 @@ import {
 import { useKickStore } from "../../stores/kickStore";
 import { BarText } from "./BarText";
 import { LARGE_FACTIONS } from "../../constants";
-import { log } from "~/app/utils/log";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -67,9 +65,13 @@ const StreamIcon = ({
         onClick={onClick}
         aria-label={topText}
       >
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           className="h-[42px] w-[42px] rounded-full"
           src={imageUrl}
+          fetchPriority="low"
+          decoding="async"
+          loading="lazy"
           width={42}
           height={42}
           aria-label={topText}
