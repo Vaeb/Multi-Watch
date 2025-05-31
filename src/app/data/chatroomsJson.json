@@ -20,6 +20,11 @@
     "np": true,
     "assumeFaction": "changgang"
   },
+  "Liiv": {
+    "id": 101886,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "MattEU": {
     "id": 2825518,
     "np": true,
@@ -186,6 +191,16 @@
   },
   "Jack": {
     "id": 65073,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Sukhi_1": {
+    "id": 5192108,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "ChopoNZ": {
+    "id": 1327337,
     "np": true,
     "assumeFaction": "besties"
   },
