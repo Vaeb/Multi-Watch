@@ -120,10 +120,6 @@
     "np": true,
     "assumeFaction": "manor"
   },
-  "omie": {
-    "id": 89446,
-    "np": true
-  },
   "Deansocool": {
     "id": 5579351,
     "np": true,
@@ -153,6 +149,11 @@
     "id": 52715994,
     "np": true,
     "assumeFaction": "police"
+  },
+  "omie": {
+    "id": 89446,
+    "np": true,
+    "assumeFaction": "besties"
   },
   "dripp": {
     "id": 972487,
