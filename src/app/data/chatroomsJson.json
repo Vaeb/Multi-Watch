@@ -150,6 +150,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "poetic": {
+    "id": 112330,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "Manax": {
     "id": 21140232,
     "np": true,
