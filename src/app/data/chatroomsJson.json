@@ -150,6 +150,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "Rissabear": {
+    "id": 50600228,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "poetic": {
     "id": 112330,
     "np": true,
