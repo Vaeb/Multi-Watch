@@ -20,6 +20,11 @@
     "np": true,
     "assumeFaction": "changgang"
   },
+  "JonLaw": {
+    "id": 1836564,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "Liiv": {
     "id": 101886,
     "np": true,
