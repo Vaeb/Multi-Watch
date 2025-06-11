@@ -155,6 +155,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "Harmless": {
+    "id": 47854692,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "Rissabear": {
     "id": 50600228,
     "np": true,
