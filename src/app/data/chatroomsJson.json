@@ -164,6 +164,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "thatguygp": {
+    "id": 114584,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "Julian": {
     "id": 65978,
     "np": true,
