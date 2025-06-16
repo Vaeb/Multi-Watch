@@ -164,6 +164,16 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "Julian": {
+    "id": 65978,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "a2guapo": {
+    "id": 38521095,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "Harmless": {
     "id": 47854692,
     "np": true,
