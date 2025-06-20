@@ -15,10 +15,29 @@
     "id": 50840382,
     "np": true
   },
+  "Nikez": {
+    "id": 2402594,
+    "np": true
+  },
   "Ramee": {
     "id": 129914,
     "np": true,
     "assumeFaction": "changgang"
+  },
+  "MachoSL": {
+    "id": 61119548,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "JonLaw": {
+    "id": 1836564,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "Liiv": {
+    "id": 101886,
+    "np": true,
+    "assumeFaction": "manor"
   },
   "MattEU": {
     "id": 2825518,
@@ -115,10 +134,6 @@
     "np": true,
     "assumeFaction": "manor"
   },
-  "omie": {
-    "id": 89446,
-    "np": true
-  },
   "Deansocool": {
     "id": 5579351,
     "np": true,
@@ -148,6 +163,46 @@
     "id": 52715994,
     "np": true,
     "assumeFaction": "police"
+  },
+  "thatguygp": {
+    "id": 114584,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Julian": {
+    "id": 65978,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "a2guapo": {
+    "id": 38521095,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Harmless": {
+    "id": 47854692,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Rissabear": {
+    "id": 50600228,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "poetic": {
+    "id": 112330,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Manax": {
+    "id": 21140232,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "omie": {
+    "id": 89446,
+    "np": true,
+    "assumeFaction": "besties"
   },
   "dripp": {
     "id": 972487,
@@ -186,6 +241,16 @@
   },
   "Jack": {
     "id": 65073,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "Sukhi_1": {
+    "id": 5192108,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "ChopoNZ": {
+    "id": 1327337,
     "np": true,
     "assumeFaction": "besties"
   },
@@ -292,6 +357,26 @@
     "id": 50496895,
     "np": true,
     "assumeFaction": "ssb"
+  },
+  "Nathankb": {
+    "id": 63431167,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "moussy": {
+    "id": 2714975,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "either": {
+    "id": 55936,
+    "np": true,
+    "assumeFaction": "hydragang"
+  },
+  "CrazyHeartsz": {
+    "id": 62806290,
+    "np": true,
+    "assumeFaction": "hydragang"
   },
   "Boogie": {
     "id": 2427744,
