@@ -22,11 +22,15 @@ const fromNewChannels = <T extends Record<string, any>>(
     })),
   ) as T;
 
-interface KickPlayer {
-  setChannel: (c: string) => void;
+export interface KickPlayer {
+  setChannel: (c: string, options?: { muted: boolean }) => void;
 }
 
-type AnyPlayer = TwitchPlayerInstance | KickPlayer;
+type AnyPlayer =
+  | (Omit<TwitchPlayerInstance, "setChannel"> & {
+      setChannel: (channel: string, options?: { muted: boolean }) => void;
+    })
+  | KickPlayer;
 
 type ContainerSize = { width: number; height: number };
 
@@ -361,13 +365,14 @@ export const useMainStore = create<MainState>()(
         },
 
         reloadAllStreams: () => {
-          const { streamPlayer, streams } = get();
+          const { streamPlayer, streams, streamPositions } = get();
           log("[MainStore] Reloading all streams");
           streams.forEach((stream) => {
             const player = streamPlayer[stream.value];
             if (player && "setChannel" in player) {
-              log("[MainStore] Reloading stream:", stream.value);
-              player.setChannel(stream.value);
+              const muted = streamPositions[stream.value] !== 0;
+              log("[MainStore] Reloading stream:", stream.value, { muted });
+              player.setChannel(stream.value, { muted });
             }
           });
         },

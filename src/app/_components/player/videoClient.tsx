@@ -9,7 +9,7 @@ import {
   type IframeHTMLAttributes,
 } from "react";
 import { useStableCallback } from "../../hooks/useStableCallback";
-import { useMainStore } from "../../stores/mainStore";
+import { useMainStore, type KickPlayer } from "../../stores/mainStore";
 import { TwitchPlayer, type TwitchPlayerInstance } from "react-twitch-embed";
 import { checkShowChat } from "../../utils/checkShowChat";
 import { usePersistStore } from "../../stores/persistStore";
@@ -63,6 +63,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   const [seed, setSeed] = useState(0);
   const mountTimeRef = useRef<number | null>(null);
   const skeletonRef = useRef<SkeletonHandle | null>(null);
+  const forcedMutedStateRef = useRef<boolean | undefined>();
 
   // Intentionally non-reactive
   const { streamPositions } = useMainStore.getState();
@@ -83,7 +84,13 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   const streamAutoplay =
     autoplay === "all" || (autoplay === "one" && !!recentPriority) || seed > 0;
 
-  const streamMuted = autoplay === "all" ? !recentPriority : false;
+  let streamMuted: boolean;
+  if (forcedMutedStateRef.current !== undefined) {
+    streamMuted = forcedMutedStateRef.current;
+    forcedMutedStateRef.current = undefined;
+  } else {
+    streamMuted = autoplay === "all" ? !recentPriority : false;
+  }
 
   useEffect(() => {
     log("[Player] Mounted:", channel);
@@ -120,10 +127,13 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
     )._iframe?.addEventListener("load", handleIframeLoad); */
 
     const oldSetChannel = player.setChannel;
-    player.setChannel = (newChannel) => {
+    player.setChannel = (newChannel: string, options?: { muted: boolean }) => {
       if (newChannel !== channel) {
         oldSetChannel.call(player, newChannel);
       } else {
+        if (options !== undefined) {
+          forcedMutedStateRef.current = options.muted;
+        }
         skeletonRef.current?.show();
         setSeed(+new Date());
       }
@@ -169,12 +179,13 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
   useEffect(() => {
     if (type === "kick") {
       useMainStore.getState().actions.setStreamPlayer(channel, {
-        setChannel(_c) {
+        setChannel: (_c: string, options?: { muted: boolean }) => {
           if (!ref.current) return;
           skeletonRef.current?.show();
-          ref.current.src = `${getSrc(type, channel, false)}&autoplay=true`;
+          const muted = options?.muted ?? true;
+          ref.current.src = `${getSrc(type, channel, muted)}&autoplay=true`;
         },
-      } as TwitchPlayerInstance);
+      } as KickPlayer);
     }
   }, [type, channel]);
 
