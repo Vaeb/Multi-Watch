@@ -134,7 +134,7 @@ function SettingsModal() {
           cb={setGridMode}
         /> */}
         <SettingsOption
-          setting="Hide sidebar - Only show when hovered"
+          setting="Hide sidebar - Only show sidebar when hovered"
           values={["true", "false"]}
           mapper={["Yes", "No"]}
           current={String(hideLeftBar)}

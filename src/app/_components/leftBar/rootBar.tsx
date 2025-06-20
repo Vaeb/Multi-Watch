@@ -5,6 +5,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useCallback,
   type PropsWithChildren,
 } from "react";
 import { useMainStore } from "../../stores/mainStore";
@@ -12,6 +13,11 @@ import { useShallow } from "zustand/shallow";
 import { MainBar } from "./mainBar";
 import { usePersistStore } from "../../stores/persistStore";
 import { log } from "~/app/utils/log";
+
+// Smooth easing function for better visual appeal
+const easeInCubic = (t: number): number => {
+  return t * t * t;
+};
 
 export function RootBar({ children }: PropsWithChildren) {
   const [hasStreams, oneStreamWithNpBar, showTopHole] = useMainStore(
@@ -32,6 +38,9 @@ export function RootBar({ children }: PropsWithChildren) {
 
   const prevHideBar = useRef(hideBar);
   const hideBarChangeTime = useRef(0);
+  const rootBarRef = useRef<HTMLDivElement>(null);
+  const [proximityOpacity, setProximityOpacity] = useState(0);
+  const animationFrameRef = useRef<number>();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setTick] = useState(0);
 
@@ -44,6 +53,62 @@ export function RootBar({ children }: PropsWithChildren) {
   // Use long transition for 300ms after hideBar becomes true
   const shouldUseLongTransition = +new Date() - hideBarChangeTime.current < 500;
 
+  // Throttled mouse position calculation for smoother performance
+  const calculateProximity = useCallback(
+    (mouseX: number) => {
+      if (!rootBarRef.current || !hideBar) {
+        setProximityOpacity(1);
+        return;
+      }
+
+      const rect = rootBarRef.current.getBoundingClientRect();
+      const barRightEdge = rect.right;
+
+      // Only calculate opacity when mouse is to the right of the bar
+      if (mouseX < barRightEdge) {
+        setProximityOpacity(1);
+        return;
+      }
+
+      const distanceFromBar = mouseX - barRightEdge;
+      const maxDistance = oneStreamWithNpBar ? 1 : 200;
+
+      if (distanceFromBar > maxDistance) {
+        setProximityOpacity(0);
+      } else {
+        // Use easing function for smoother interpolation
+        const normalizedDistance = distanceFromBar / maxDistance;
+        const easedProgress = easeInCubic(1 - normalizedDistance);
+        setProximityOpacity(Math.max(0, Math.min(1, easedProgress)));
+      }
+    },
+    [hideBar, oneStreamWithNpBar],
+  );
+
+  // Mouse position tracking with requestAnimationFrame for smooth updates
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Cancel previous animation frame to prevent stacking
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+
+      // Use requestAnimationFrame for smooth updates
+      animationFrameRef.current = requestAnimationFrame(() => {
+        calculateProximity(e.clientX);
+      });
+    };
+
+    document.addEventListener("mousemove", handleMouseMove, { passive: true });
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [calculateProximity]);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setTick((tick) => tick + 1);
@@ -51,10 +116,14 @@ export function RootBar({ children }: PropsWithChildren) {
     return () => clearTimeout(timeout);
   }, [hideBar]);
 
+  const finalOpacity = hideBar ? proximityOpacity : 1;
+
   return (
     <div
-      style={
-        oneStreamWithNpBar
+      ref={rootBarRef}
+      style={{
+        opacity: finalOpacity,
+        ...(oneStreamWithNpBar
           ? {
               clipPath: `polygon(
           /* top-left */            0%   0%,
@@ -87,9 +156,9 @@ export function RootBar({ children }: PropsWithChildren) {
           /* bottom-left */         0%   100%
         )`,
             }
-          : {}
-      }
-      className={`group absolute z-10 box-content flex w-[42px] overflow-hidden rounded-lg pl-[2px] pr-[4px] transition-all hover:w-[228px] hover:bg-[rgba(0,0,0,0.8)] ${shouldUseLongTransition ? "duration-300" : "duration-75"} ${hideBar ? "opacity-0 hover:opacity-100" : ""}`}
+          : {}),
+      }}
+      className={`group absolute z-10 box-content flex w-[42px] overflow-hidden rounded-lg pl-[2px] pr-[4px] hover:w-[228px] hover:bg-[rgba(0,0,0,0.8)] hover:transition-all ${shouldUseLongTransition ? "duration-300" : "hover:duration-75"} ${hideBar ? "transition-opacity duration-150 ease-out" : `transition-all ${!shouldUseLongTransition ? "duration-75" : ""}`}`}
     >
       {children}
       <MainBar />
