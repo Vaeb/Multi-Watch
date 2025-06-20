@@ -9,12 +9,14 @@ export interface PersistState {
   gridMode: GridMode;
   autoplay: Autoplay;
   chatWidth: number;
+  hideLeftBar: boolean;
 
   actions: {
     resetDefaults: () => void;
     setGridMode: (gridMode: GridMode) => void;
     setAutoplay: (autoplay: Autoplay) => void;
     setChatWidth: (value: number) => void;
+    setHideLeftBar: (value: boolean) => void;
   };
 }
 
@@ -22,6 +24,7 @@ export const persistDefaults = {
   gridMode: "normal",
   autoplay: "all",
   chatWidth: 470,
+  hideLeftBar: false,
 } as const satisfies Partial<PersistState>;
 
 export const usePersistStore = create<PersistState>()(
@@ -42,6 +45,7 @@ export const usePersistStore = create<PersistState>()(
                   ? Number(chatWidth)
                   : state.chatWidth,
             })),
+          setHideLeftBar: (hideLeftBar) => set({ hideLeftBar }),
         },
       })),
       {

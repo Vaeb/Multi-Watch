@@ -85,10 +85,19 @@ function SettingsModal() {
     focusHeight,
   } = useMainStore(useShallow(selectorMain));
 
-  const [{ resetDefaults, setAutoplay, setChatWidth }, autoplay, chatWidth] =
-    usePersistStore(
-      useShallow((state) => [state.actions, state.autoplay, state.chatWidth]),
-    );
+  const [
+    { resetDefaults, setAutoplay, setChatWidth, setHideLeftBar },
+    autoplay,
+    chatWidth,
+    hideLeftBar,
+  ] = usePersistStore(
+    useShallow((state) => [
+      state.actions,
+      state.autoplay,
+      state.chatWidth,
+      state.hideLeftBar,
+    ]),
+  );
 
   const [seed, setSeed] = useState(-1);
 
@@ -96,6 +105,10 @@ function SettingsModal() {
     resetDefaults();
     setSeed(Math.random());
   };
+
+  const setHideLeftBarCb = useStableCallback((val: string) => {
+    setHideLeftBar(val === "true");
+  });
 
   return (
     <div
@@ -120,6 +133,13 @@ function SettingsModal() {
           current={gridMode}
           cb={setGridMode}
         /> */}
+        <SettingsOption
+          setting="Hide sidebar - Only show when hovered"
+          values={["true", "false"]}
+          mapper={["Yes", "No"]}
+          current={String(hideLeftBar)}
+          cb={setHideLeftBarCb}
+        />
         <SettingsOption
           setting="Focused stream height"
           values={makeNumsInterval(10, 90, 1)}
