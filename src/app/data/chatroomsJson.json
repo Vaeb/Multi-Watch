@@ -169,6 +169,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "Simpless": {
+    "id": 2907820,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "thatguygp": {
     "id": 114584,
     "np": true,
