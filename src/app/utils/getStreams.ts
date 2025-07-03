@@ -8,21 +8,11 @@ import {
   type RemoteStream,
   type RemoteKickLivestream,
   type ChatroomsInfo,
+  type GlobalData,
+  type CachedStreams,
 } from "../../types";
 import { IS_LOCALHOST, NOPIXEL_DATA_INTERVAL } from "../constants";
 import { log } from "./log";
-
-interface CachedStreams {
-  cachedTwitch: RemoteParsed;
-  cachedTwitchTime: number;
-}
-
-type GlobalData = typeof global &
-  Partial<CachedStreams> & {
-    cachedKickStreams: RemoteKickLivestream[];
-    cachedKickTime: number;
-    connected: number;
-  };
 
 const globalData = global as GlobalData;
 

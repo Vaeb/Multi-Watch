@@ -19,6 +19,7 @@ export interface KickState {
   chatrooms: Record<string, ChatroomsInfo>;
   chatroomsLower: Record<string, ChatroomsInfo>;
   chatMethods: Record<string, ChatMethods>;
+  isChatroomsReady: boolean;
 
   actions: {
     setChatrooms: (chatrooms: KickState["chatrooms"]) => void;
@@ -33,6 +34,7 @@ export const useKickStore = create<KickState>()(
       chatrooms: {},
       chatroomsLower: {},
       chatMethods: {},
+      isChatroomsReady: false,
 
       actions: {
         setChatrooms: (chatrooms) =>
@@ -44,6 +46,7 @@ export const useKickStore = create<KickState>()(
                 data,
               ]),
             ),
+            isChatroomsReady: true,
           }),
 
         setChatMethods: (channel, chatMethods) =>

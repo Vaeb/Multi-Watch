@@ -18,6 +18,7 @@ const selector = (state: MainState) => ({
   streamPositions: state.streamPositions,
   viewMode: state.viewMode,
   chatShown: state.chatShown,
+  wasChatShown: state.wasChatShown,
   actions: state.actions,
 });
 
@@ -27,6 +28,7 @@ function StreamsComponent() {
     streamPositions,
     viewMode,
     chatShown,
+    wasChatShown,
     actions: { setContainerSize, setStreamCells },
   } = useMainStore(useShallow(selector));
   const focusHeight = useMainStore((state) => state.focusHeight);
@@ -102,17 +104,19 @@ function StreamsComponent() {
             <VerticalResizer top={Number(focusHeight)} />
           )}
         </div>
-        <ChatsContainer show={chatShown}>
-          {streams.map((stream) => {
-            return (
-              <ChatWrapper
-                key={`chat-${stream.value}-${stream.type}`}
-                channel={stream.value}
-                type={stream.type}
-              />
-            );
-          })}
-        </ChatsContainer>
+        {wasChatShown ? (
+          <ChatsContainer show={chatShown}>
+            {streams.map((stream) => {
+              return (
+                <ChatWrapper
+                  key={`chat-${stream.value}-${stream.type}`}
+                  channel={stream.value}
+                  type={stream.type}
+                />
+              );
+            })}
+          </ChatsContainer>
+        ) : null}
       </div>
     </>
   );

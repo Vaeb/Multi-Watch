@@ -1,28 +1,32 @@
-interface BarTextProps {
+interface BarHeaderProps {
   message: string;
   shortMessage?: string;
   shortWrap?: boolean;
   maxLines?: number;
   shortMaxLines?: number;
+  isFirst?: boolean;
+  hideHover?: boolean;
   style?: React.CSSProperties;
 }
 
-export const BarText = ({
+export const BarHeader = ({
   message,
   shortMessage = message,
   shortWrap,
   maxLines = 1,
   shortMaxLines = maxLines,
+  isFirst = false,
+  hideHover = false,
   style,
-}: BarTextProps) => {
+}: BarHeaderProps) => {
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
       <div
-        className="flex w-full text-left text-[13px] text-gray-500 group-hover:pl-4"
+        className={`mb-2 flex w-full pl-4 text-[13px] font-semibold uppercase tracking-wider text-gray-500 ${isFirst ? "mt-0" : "mt-5"}`}
         style={style}
       >
         <p
-          className={`${shortWrap ? "break-word whitespace-pre-line" : "whitespace-nowrap"} absolute w-full text-center opacity-65 group-hover:opacity-0`}
+          className={`${shortWrap ? "break-word whitespace-pre-line" : "whitespace-nowrap"} absolute group-hover:opacity-0 ${hideHover ? "opacity-0" : "opacity-65"}`}
         >
           {shortMessage}
         </p>

@@ -76,8 +76,21 @@ export interface RemoteKickLivestream {
   session_title: string;
   created_at: string;
   viewers: number;
+  playback_url: string;
   category: RemoteKickSubCategory;
   thumbnail: RemoteKickThumbnail;
 }
 
 export type RemoteKickLivestreamData = RemoteKickLivestream | null;
+
+export interface CachedStreams {
+  cachedTwitch: RemoteParsed;
+  cachedTwitchTime: number;
+}
+
+export type GlobalData = typeof global &
+  Partial<CachedStreams> & {
+    cachedKickStreams: RemoteKickLivestream[];
+    cachedKickTime: number;
+    connected: number;
+  };

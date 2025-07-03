@@ -28,13 +28,11 @@ function NopixelBarWithDataComponent({
     [_chatrooms, receivedData.chatrooms],
   );
 
-  const timeFormatted = new Date(hydrateTime)
-    .toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    })
-    .replace(" ", "\n");
+  const timeFormatted = new Date(hydrateTime).toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
 
   /**
    * All clients periodically get kick streams from server.

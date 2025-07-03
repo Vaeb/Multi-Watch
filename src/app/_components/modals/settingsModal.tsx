@@ -13,12 +13,19 @@ import { makeNumsInterval } from "../../utils/makeNumsInterval";
 interface ModalButtonProps {
   text: string;
   onClick?: () => void;
+  variant?: "default" | "primary";
 }
 
-function ModalButton({ text, onClick }: ModalButtonProps) {
+function ModalButton({ text, onClick, variant = "default" }: ModalButtonProps) {
+  const isPrimary = variant === "primary";
+
   return (
     <button
-      className="flex-1 rounded-sm bg-slate-300 px-2 py-1 text-center text-sm"
+      className={`group/btn flex-1 rounded-lg px-4 py-2.5 text-center text-sm font-medium transition-all duration-150 ${
+        isPrimary
+          ? "bg-[#6B46C1] text-white hover:bg-[#6246af] hover:shadow-lg"
+          : "bg-[#2A2A2A] text-[#ddd] hover:bg-[#2d2d2d] hover:shadow-md"
+      }`}
       onClick={onClick}
     >
       <p>{text}</p>
@@ -50,11 +57,11 @@ const SettingsOption = ({
   const [value, setValue] = useState(current);
 
   return (
-    <div className="flex" key={setting}>
-      <p className="flex flex-1 rounded-sm p-1 text-sm">{setting}</p>
-      <div className="ml-2 flex text-sm">
+    <div className="flex items-center gap-4" key={setting}>
+      <p className="flex-1 text-sm font-medium text-[#ddd]">{setting}</p>
+      <div className="flex">
         <select
-          className="bg-slate-200"
+          className="rounded-md border border-[#3a3a3a] bg-[#2a2a2a] px-3 py-1.5 text-sm text-[#ddd] transition-all duration-150 hover:border-[#6B46C1] focus:border-[#6B46C1] focus:outline-none focus:ring-1 focus:ring-[#6B46C1]"
           name="platform"
           value={value}
           onChange={(e) => {
@@ -65,7 +72,11 @@ const SettingsOption = ({
           }}
         >
           {values.map((value, i) => (
-            <option key={`${setting}-${value}`} value={value}>
+            <option
+              key={`${setting}-${value}`}
+              value={value}
+              className="bg-[#2a2a2a] text-[#ddd]"
+            >
               {mapper
                 ? typeof mapper === "function"
                   ? mapper(value)
@@ -111,55 +122,81 @@ function SettingsModal() {
   });
 
   return (
-    <div
-      className="border-1 absolute z-10 ml-[64px] mt-[10px]"
-      onClick={noprop}
-    >
+    <div className="absolute z-10 ml-[280px] mt-[13px]" onClick={noprop}>
       <div
         key={`settings-${seed}`}
-        className="flex w-[320px] max-w-[80%] flex-col gap-2 rounded-sm bg-slate-200 p-2 text-black opacity-100"
+        className="flex w-[370px] max-w-[90vw] flex-col gap-6 rounded-lg bg-[#1f1f1f] p-6 shadow-xl backdrop-blur-sm"
       >
-        <SettingsOption
-          setting="Autoplay"
-          values={["all", "none", "one"] as Autoplay[]}
-          mapper={["All", "None", "One"]}
-          current={autoplay}
-          cb={setAutoplay}
-        />
-        {/* <SettingsOption
-          setting="Grid mode"
-          values={["normal", "horiz"] as GridMode[]}
-          mapper={["Vertical", "Horizontal"]}
-          current={gridMode}
-          cb={setGridMode}
-        /> */}
-        <SettingsOption
-          setting="Hide sidebar - Only show sidebar when hovered"
-          values={["true", "false"]}
-          mapper={["Yes", "No"]}
-          current={String(hideLeftBar)}
-          cb={setHideLeftBarCb}
-        />
-        <SettingsOption
-          setting="Focused stream height"
-          values={makeNumsInterval(10, 90, 1)}
-          mapper={(val) => (val as number) - 9}
-          current={Math.round(focusHeight)}
-          cb={setFocusHeight}
-        />
-        <SettingsOption
-          setting="Chat width"
-          values={makeNumsInterval(120, 870, 50)}
-          mapper={(val) => ((val as number) - 20) / 50 - 1}
-          current={Math.max(
-            120,
-            Math.min(120 + Math.round((chatWidth - 120) / 50) * 50, 870),
-          )}
-          cb={setChatWidth}
-        />
-        <div className="flex gap-2">
-          <ModalButton text="Use defaults" onClick={resetDefaultsCb} />
-          <ModalButton text="Close" onClick={toggleSettingsShown} />
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">Settings</h2>
+          <button
+            onClick={toggleSettingsShown}
+            className="rounded-md p-1.5 text-gray-400 transition-all duration-150 hover:bg-[#2a2a2a] hover:text-white"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 5L5 15M5 5l10 10"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Settings Options */}
+        <div className="flex flex-col gap-4">
+          <SettingsOption
+            setting="Autoplay"
+            values={["all", "none", "one"] as Autoplay[]}
+            mapper={["All", "None", "One"]}
+            current={autoplay}
+            cb={setAutoplay}
+          />
+
+          <SettingsOption
+            setting="Hide sidebar - Only show sidebar when hovered"
+            values={["true", "false"]}
+            mapper={["Yes", "No"]}
+            current={String(hideLeftBar)}
+            cb={setHideLeftBarCb}
+          />
+
+          <SettingsOption
+            setting="Focused stream height"
+            values={makeNumsInterval(10, 90, 1)}
+            mapper={(val) => (val as number) - 9}
+            current={Math.round(focusHeight)}
+            cb={setFocusHeight}
+          />
+
+          <SettingsOption
+            setting="Chat width"
+            values={makeNumsInterval(120, 870, 50)}
+            mapper={(val) => ((val as number) - 20) / 50 - 1}
+            current={Math.max(
+              120,
+              Math.min(120 + Math.round((chatWidth - 120) / 50) * 50, 870),
+            )}
+            cb={setChatWidth}
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-3 border-t border-[#3a3a3a] pt-2">
+          <ModalButton text="Reset to defaults" onClick={resetDefaultsCb} />
+          <ModalButton
+            text="Save"
+            onClick={toggleSettingsShown}
+            variant="primary"
+          />
         </div>
       </div>
     </div>

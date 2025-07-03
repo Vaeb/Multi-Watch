@@ -2,7 +2,6 @@
 
 import {
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   useCallback,
@@ -20,19 +19,27 @@ const easeInCubic = (t: number): number => {
 };
 
 export function RootBar({ children }: PropsWithChildren) {
-  const [hasStreams, oneStreamWithNpBar, showTopHole] = useMainStore(
+  const [
+    hasStreams,
+    nopixelShown,
+    oneStreamWithNpBar,
+    showTopHole,
+    modalShown,
+  ] = useMainStore(
     useShallow((state) => [
       state.streams.length > 0,
+      state.nopixelShown,
       state.nopixelShown && state.streams.length > 0,
       state.viewMode === "focused" &&
         state.streams.length > 1 &&
         state.streamsOrdered[0]?.type === "twitch",
+      state.settingsShown || state.updateShown,
     ]),
   );
   const focusHeight = useMainStore((state) => state.focusHeight);
   const hideLeftBar = usePersistStore((state) => state.hideLeftBar);
 
-  const hideBar = hideLeftBar && hasStreams;
+  const hideBar = hideLeftBar && hasStreams && !modalShown;
 
   const showBottomHole = oneStreamWithNpBar;
 
@@ -71,7 +78,7 @@ export function RootBar({ children }: PropsWithChildren) {
       }
 
       const distanceFromBar = mouseX - barRightEdge;
-      const maxDistance = oneStreamWithNpBar ? 1 : 200;
+      const maxDistance = oneStreamWithNpBar ? 1 : 300;
 
       if (distanceFromBar > maxDistance) {
         setProximityOpacity(0);
@@ -99,15 +106,21 @@ export function RootBar({ children }: PropsWithChildren) {
       });
     };
 
-    document.addEventListener("mousemove", handleMouseMove, { passive: true });
+    if (hideBar) {
+      document.addEventListener("mousemove", handleMouseMove, {
+        passive: true,
+      });
+    }
 
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
+      if (hideBar) {
+        document.removeEventListener("mousemove", handleMouseMove);
+      }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [calculateProximity]);
+  }, [hideBar, calculateProximity]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -120,12 +133,24 @@ export function RootBar({ children }: PropsWithChildren) {
 
   return (
     <div
-      ref={rootBarRef}
+      className={`group absolute z-[11] box-content flex w-[58px] rounded-lg pl-3 pt-3 transition-all duration-100 ${nopixelShown ? "hover:w-[272px] hover:pl-0" : "hover:w-[260px] hover:pl-3"}`}
       style={{
-        opacity: finalOpacity,
-        ...(oneStreamWithNpBar
-          ? {
-              clipPath: `polygon(
+        ...(modalShown ? { width: 260 } : {}),
+        ...(nopixelShown
+          ? { paddingLeft: "0px", left: "0px", right: "auto" }
+          : {}),
+      }}
+    >
+      <div
+        ref={rootBarRef}
+        style={{
+          opacity: finalOpacity,
+          boxShadow: "0 1px 6px rgba(255,255,255,0.3)",
+          ...(modalShown ? { backgroundColor: "#1f1f1f" } : {}),
+          // ...(nopixelShown ? { transform: "translateX(12px)" } : {}),
+          ...(oneStreamWithNpBar
+            ? {
+                clipPath: `polygon(
           /* top-left */            0%   0%,
           /* top-right */           100% 0%,
           ${
@@ -155,13 +180,14 @@ export function RootBar({ children }: PropsWithChildren) {
           /* bottom-right */        100% 100%,
           /* bottom-left */         0%   100%
         )`,
-            }
-          : {}),
-      }}
-      className={`group absolute z-10 box-content flex w-[42px] overflow-hidden rounded-lg pl-[2px] pr-[4px] hover:w-[228px] hover:bg-[rgba(0,0,0,0.8)] hover:transition-all ${shouldUseLongTransition ? "duration-300" : "hover:duration-75"} ${hideBar ? "transition-opacity duration-150 ease-out" : `transition-all ${!shouldUseLongTransition ? "duration-75" : ""}`}`}
-    >
-      {children}
-      <MainBar />
+              }
+            : {}),
+        }}
+        className={`group/bar ${nopixelShown ? "group-hover:pl-3" : ""} box-content flex w-full overflow-hidden rounded-lg transition-[padding,opacity,background-color] duration-150 ease-out group-hover:bg-[#1f1f1f] group-hover:backdrop-blur-sm group-hover:transition-all ${shouldUseLongTransition ? "duration-300" : "group-hover:duration-100"} ${hideBar ? "transition-opacity duration-150 ease-out" : `transition-all ${!shouldUseLongTransition ? "duration-75" : ""}`}`}
+      >
+        {children}
+        <MainBar />
+      </div>
     </div>
   );
 }

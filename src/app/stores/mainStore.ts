@@ -59,6 +59,7 @@ export interface MainState {
   settingsShown: boolean;
   nopixelShown: boolean;
   chatShown: boolean;
+  wasChatShown: boolean;
   isResizing: boolean;
   isChatResizing: boolean;
 
@@ -69,6 +70,8 @@ export interface MainState {
   dragStartY: number;
   dragCurrentX: number;
   dragCurrentY: number;
+
+  hoveredChannel: string | null;
 
   actions: {
     markInitialised: () => void;
@@ -116,6 +119,8 @@ export interface MainState {
       >,
     ) => void;
 
+    setHoveredChannel: (channel: string | null) => void;
+
     // New action to trigger fullscreen for a specific player
     forcePlayerFullscreen: (channel: string) => void;
 
@@ -150,7 +155,8 @@ export const useMainStore = create<MainState>()(
       updateShown: false,
       settingsShown: false,
       nopixelShown: false,
-      chatShown: true,
+      chatShown: false,
+      wasChatShown: false,
       isResizing: false,
       isChatResizing: false,
 
@@ -161,6 +167,8 @@ export const useMainStore = create<MainState>()(
       dragStartY: 0,
       dragCurrentX: 0,
       dragCurrentY: 0,
+
+      hoveredChannel: null,
 
       actions: {
         markInitialised: () => set({ initialised: true }),
@@ -323,15 +331,26 @@ export const useMainStore = create<MainState>()(
         toggleNopixel: () =>
           set((state) => ({ nopixelShown: !state.nopixelShown })),
 
-        setChat: (chatShown) => set({ chatShown }),
+        setChat: (chatShown) =>
+          set((state) => ({
+            chatShown,
+            wasChatShown: state.wasChatShown || chatShown,
+          })),
 
-        toggleChat: () => set((state) => ({ chatShown: !state.chatShown })),
+        toggleChat: () =>
+          set((state) => ({
+            chatShown: !state.chatShown,
+            wasChatShown: state.wasChatShown || !state.chatShown,
+          })),
 
         setIsResizing: (isResizing) => set({ isResizing }),
 
         setIsChatResizing: (isChatResizing) => set({ isChatResizing }),
 
         setDragState: (newState) => set(newState),
+
+        setHoveredChannel: (channel: string | null) =>
+          set({ hoveredChannel: channel }),
 
         forcePlayerFullscreen: (channel: string) => {
           const { streamPlayer } = get();

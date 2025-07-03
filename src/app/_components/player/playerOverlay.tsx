@@ -15,6 +15,7 @@ import RefreshIcon from "../icons/refreshIcon";
 import clsx from "clsx";
 import { useDrag } from "./dragContext";
 import { useStableCallback } from "~/app/hooks/useStableCallback";
+import Image from "next/image";
 
 interface PlayerOverlayProps extends PlayerProps {}
 
@@ -184,9 +185,13 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
         // "active:cursor-grabbing active:bg-white/5",
         isDraggingThis ? "cursor-grabbing" : "cursor-grab",
       )}
-      style={{
-        clipPath: "inset(0 0 -9999px 20%)",
-      }}
+      style={
+        type === "twitch"
+          ? {
+              clipPath: "inset(0 0 -9999px 20%)",
+            }
+          : {}
+      }
       onMouseDown={onMouseDown}
       onDoubleClick={onDoubleClick}
     >
@@ -194,8 +199,21 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
         {/* New wrapper for opacity control */}
         <div className="flex flex-col items-center opacity-0 transition-opacity duration-100 group-hover:opacity-80">
           {/* Channel Name */}
-          <div className="mb-1 text-center text-sm font-medium text-white">
+          <div className="mb-1 flex items-center gap-1 text-center text-sm font-medium text-white">
             {channel}
+            <a
+              href={`https://${type === "kick" ? "kick.com" : "twitch.tv"}/${channel}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                src={`/${type === "kick" ? "kick2_32.png" : "twitch3.png"}`}
+                className="opacity-90"
+                width={18}
+                height={15}
+                alt="Go to channel"
+              />
+            </a>
           </div>
           {/* New Hint Text */}
           <div className="relative mb-2 h-4 w-full text-center text-xs text-gray-300/95">

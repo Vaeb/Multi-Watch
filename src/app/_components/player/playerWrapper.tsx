@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useRef, useEffect, useState } from "react";
+import { memo, useRef } from "react";
 import { PlayerOverlay } from "./playerOverlay";
 import { type Platform } from "~/types";
 import { log } from "../../utils/log";
@@ -11,6 +11,7 @@ import React from "react";
 import { type Rect } from "~/app/utils/layoutCells";
 import { areEqualObj } from "~/app/utils/areEqualObj";
 import { Player } from "./videoClient";
+import { useShallow } from "zustand/shallow";
 
 interface PlayerWrapperProps {
   channel: string;
@@ -18,59 +19,42 @@ interface PlayerWrapperProps {
   cell: Rect | undefined;
 }
 
+const mainStoreSelector = (
+  state: ReturnType<typeof useMainStore.getState>,
+  channel: string,
+) => {
+  const isDraggingThis = state.isDragging && state.dragChannel === channel;
+  return {
+    isResizing: state.isResizing,
+    isDragging: state.isDragging,
+    isDraggingThis,
+    isPotentialDropTarget: state.isDragging && !isDraggingThis,
+    isHovered: state.hoveredChannel === channel,
+    dragStartX: isDraggingThis ? state.dragStartX : 0,
+    dragStartY: isDraggingThis ? state.dragStartY : 0,
+    dragCurrentX: isDraggingThis ? state.dragCurrentX : 0,
+    dragCurrentY: isDraggingThis ? state.dragCurrentY : 0,
+  };
+};
+
 function PlayerWrapperComponent({ channel, type, cell }: PlayerWrapperProps) {
-  const isResizing = useMainStore((state) => state.isResizing);
-  const isDragging = useMainStore((state) => state.isDragging);
-  const dragChannel = useMainStore((state) => state.dragChannel);
-  const dragStartX = useMainStore((state) => state.dragStartX);
-  const dragStartY = useMainStore((state) => state.dragStartY);
-  const dragCurrentX = useMainStore((state) => state.dragCurrentX);
-  const dragCurrentY = useMainStore((state) => state.dragCurrentY);
-  const setStreamCell = useMainStore((state) => state.actions.setStreamCell);
+  const {
+    isResizing,
+    isDragging,
+    isDraggingThis,
+    isPotentialDropTarget,
+    isHovered,
+    dragStartX,
+    dragStartY,
+    dragCurrentX,
+    dragCurrentY,
+  } = useMainStore(useShallow((state) => mainStoreSelector(state, channel)));
 
-  const isDraggingThis = isDragging && dragChannel === channel;
-  const isPotentialDropTarget = isDragging && !isDraggingThis;
-
-  // Calculate if cursor is over this player (potential drop target)
-  const [isHovered, setIsHovered] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null); // Ref to get the element directly
-
-  useEffect(() => {
-    // Only set up listener if this component is a potential drop target
-    if (!isPotentialDropTarget) {
-      setIsHovered(false); // Ensure hover state is reset
-      return; // Exit if not a potential target
-    }
-
-    const handleMouseMove = (event: MouseEvent) => {
-      if (wrapperRef.current) {
-        const rect = wrapperRef.current.getBoundingClientRect();
-        const hovered =
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom;
-        setIsHovered(hovered);
-      } else {
-        setIsHovered(false);
-      }
-    };
-
-    // Add listener when this component becomes a potential drop target
-    window.addEventListener("mousemove", handleMouseMove);
-
-    // Cleanup function to remove listener and cancel animation frame
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      setIsHovered(false); // Reset hover state on cleanup
-    };
-    // Dependencies: Only run when dragging starts/stops or the dragged item changes
-  }, [isPotentialDropTarget, channel]); // Removed coordinate dependencies
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   if (!cell) return null;
   const { height, width, y: top, x: left } = cell;
 
-  // Calculate drag offset for moving the element during drag
   const dragOffsetX = isDraggingThis ? dragCurrentX - dragStartX : 0;
   const dragOffsetY = isDraggingThis ? dragCurrentY - dragStartY : 0;
 
@@ -78,17 +62,16 @@ function PlayerWrapperComponent({ channel, type, cell }: PlayerWrapperProps) {
 
   return (
     <div
-      ref={wrapperRef} // Assign ref here
+      ref={wrapperRef}
       data-player-wrapper={channel}
       className={clsx(
         "absolute flex flex-col items-center",
         !isResizing && !isDragging && "duration-50 transition ease-linear",
         isDraggingThis &&
           "z-50 before:absolute before:inset-0 before:bg-blue-500/5 before:content-['']",
-        isPotentialDropTarget && "z-40", // Use the new variable
+        isPotentialDropTarget && "z-40",
         isHovered &&
-          isPotentialDropTarget &&
-          "outline outline-[3px] outline-offset-[-3px] outline-blue-500/70", // Replaced ring with outline
+          "outline outline-[3px] outline-offset-[-3px] outline-blue-500/70",
         "h-[var(--height)] w-[var(--width)] translate-x-[var(--left)] translate-y-[var(--top)]",
       )}
       style={

@@ -34,14 +34,20 @@ const dragStoreSelector = (
   state: ReturnType<typeof useMainStore.getState>,
 ) => ({
   isDragging: state.isDragging,
+  hoveredChannel: state.hoveredChannel,
   setDragState: state.actions.setDragState, // We'll add this action to mainStore
   setStreamPositions: state.actions.setStreamPositions,
+  setHoveredChannel: state.actions.setHoveredChannel,
 });
 
 export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
-  const { isDragging, setDragState, setStreamPositions } = useMainStore(
-    useShallow(dragStoreSelector),
-  );
+  const {
+    isDragging,
+    hoveredChannel,
+    setDragState,
+    setStreamPositions,
+    setHoveredChannel,
+  } = useMainStore(useShallow(dragStoreSelector));
 
   const dragChannelRef = useRef<string | null>(null); // Ref to track current drag channel
 
@@ -51,63 +57,30 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
 
   // --- Internal Drag Logic ---
 
-  // Function to update coordinates in the store
-  const updateDrag = useStableCallback((x: number, y: number) => {
-    setDragState({
-      dragCurrentX: x,
-      dragCurrentY: y,
-    });
-  });
-
   // Function to handle drag end logic
   const endDrag = useStableCallback(() => {
     if (!dragChannelRef.current) return;
 
-    // Read necessary state directly via getState() inside the handler
-    // to avoid stale closures if streamPositions change during drag
+    // Read necessary state directly via getState() to avoid stale closures
     const latestStreamPositions = useMainStore.getState().streamPositions;
-    const latestDragCurrentX = useMainStore.getState().dragCurrentX;
-    const latestDragCurrentY = useMainStore.getState().dragCurrentY;
-    const currentDragChannel = dragChannelRef.current; // Get channel from ref
+    const latestHoveredChannel = useMainStore.getState().hoveredChannel;
+    const currentDragChannel = dragChannelRef.current;
 
     if (
       currentDragChannel &&
-      latestStreamPositions[currentDragChannel] !== undefined
+      latestHoveredChannel &&
+      latestStreamPositions[currentDragChannel] !== undefined &&
+      latestStreamPositions[latestHoveredChannel] !== undefined
     ) {
-      const players = document.querySelectorAll("[data-player-wrapper]");
       const draggedPos = latestStreamPositions[currentDragChannel];
-      let targetChannel: string | null = null;
-      let targetPos = -1;
+      const targetPos = latestStreamPositions[latestHoveredChannel];
 
-      players.forEach((player) => {
-        const rect = player.getBoundingClientRect();
-        if (
-          latestDragCurrentX >= rect.left &&
-          latestDragCurrentX <= rect.right &&
-          latestDragCurrentY >= rect.top &&
-          latestDragCurrentY <= rect.bottom
-        ) {
-          const channelAttr = player.getAttribute("data-player-wrapper");
-          if (
-            channelAttr &&
-            channelAttr !== currentDragChannel &&
-            channelAttr in latestStreamPositions &&
-            latestStreamPositions[channelAttr] !== undefined
-          ) {
-            targetChannel = channelAttr;
-            targetPos = latestStreamPositions[channelAttr]!;
-          }
-        }
-      });
-
-      if (targetChannel && targetPos !== -1) {
-        const newStreamPositions: Record<string, number> = {
-          ...latestStreamPositions,
-        };
-        newStreamPositions[currentDragChannel] = targetPos;
-        newStreamPositions[targetChannel] = draggedPos;
-        setStreamPositions(newStreamPositions); // Update positions in store
-      }
+      const newStreamPositions: Record<string, number> = {
+        ...latestStreamPositions,
+      };
+      newStreamPositions[currentDragChannel] = targetPos;
+      newStreamPositions[latestHoveredChannel] = draggedPos;
+      setStreamPositions(newStreamPositions); // Update positions in store
     }
 
     // Reset drag state in store
@@ -115,6 +88,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
       isDragging: false,
       dragChannel: null,
     });
+    setHoveredChannel(null); // Clear hovered channel
     dragChannelRef.current = null; // Clear ref
   });
 
@@ -192,9 +166,45 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
   useEffect(() => {
     if (!isDragging) return;
 
+    const currentDragChannel = dragChannelRef.current;
+
+    // All player wrapper elements
+    const players = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-player-wrapper]"),
+    );
+
+    // Cache rects for performance
+    const playerRects = new Map<string, DOMRect>();
+    players.forEach((p) => {
+      const channel = p.dataset.playerWrapper;
+      if (channel) {
+        playerRects.set(channel, p.getBoundingClientRect());
+      }
+    });
+
     // Handle mouse move during drag
     const handleMouseMove = (e: MouseEvent) => {
-      updateDrag(e.clientX, e.clientY);
+      // Update drag coordinates
+      setDragState({ dragCurrentX: e.clientX, dragCurrentY: e.clientY });
+
+      // Check for hovered channel
+      let newHoveredChannel: string | null = null;
+      for (const [channel, rect] of playerRects.entries()) {
+        if (
+          channel !== currentDragChannel &&
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom
+        ) {
+          newHoveredChannel = channel;
+          break;
+        }
+      }
+
+      if (newHoveredChannel !== hoveredChannel) {
+        setHoveredChannel(newHoveredChannel);
+      }
     };
 
     // Handle mouse up after drag
@@ -203,13 +213,12 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp, { once: true }); // endDrag only needs to fire once
+    window.addEventListener("mouseup", handleMouseUp, { once: true });
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      // not needed to remove handleMouseUp because it's a one-time listener
     };
-  }, [endDrag, updateDrag, isDragging]); // Runs only when isDragging changes
+  }, [isDragging, endDrag, setDragState, setHoveredChannel, hoveredChannel]); // Runs only when isDragging changes
 
   // --- Provide Context ---
 

@@ -1,20 +1,14 @@
 "use client";
 
-import {
-  memo,
-  useEffect,
-  useRef,
-  useState,
-  type DetailedHTMLProps,
-  type IframeHTMLAttributes,
-} from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useStableCallback } from "../../hooks/useStableCallback";
-import { useMainStore, type KickPlayer } from "../../stores/mainStore";
-import { TwitchPlayer, type TwitchPlayerInstance } from "react-twitch-embed";
+import { useMainStore } from "../../stores/mainStore";
 import { checkShowChat } from "../../utils/checkShowChat";
 import { usePersistStore } from "../../stores/persistStore";
 import { log } from "../../utils/log";
 import { Skeleton, type SkeletonHandle } from "./skeleton";
+import { KickClient } from "./kickClient";
+import { TwitchClient } from "./twitchClient";
 
 type Platform = "twitch" | "kick";
 
@@ -23,47 +17,18 @@ export interface PlayerProps {
   channel: string;
 }
 
-const iframePlayerProps: Record<
-  Platform,
-  DetailedHTMLProps<IframeHTMLAttributes<HTMLIFrameElement>, HTMLIFrameElement>
-> = {
-  twitch: {
-    title: "Twitch",
-    sandbox:
-      "allow-modals allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation",
-  },
-  kick: { title: "Twitch" },
-};
-
-const getSrc = (type: Platform, channel: string, muted = false) => {
-  if (type === "twitch")
-    return `https://player.twitch.tv/?channel=${channel}&parent=localhost&parent=multi.vaeb.io&parent=vaeb.io&muted=${muted}`;
-  if (type === "kick")
-    // return `https://player.kick.com/${channel}?muted=true&autoplay=true`;
-    return `https://player.kick.com/${channel}?muted=${muted}`;
-};
-
 const THRESHOLD_RECENT_PLAYER_ADDED_DELTA = 1000 * 90;
-
-// let totalPlayers = 0;
 let hasAddedPlayers = false;
-
-// const getId = () => `tframe-${++totalPlayers}`; // playerNum
-
 let lastPlayerAddedTick = 0;
 
 function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
-  // const selfMute = useMainStore(
-  //   useCallback((state) => !!state.manuallyMuted[channel], [channel]),
-  // );
-
-  const [id] = useState(`${type}-${channel}`);
-  const playerRef = useRef<TwitchPlayerInstance | null>(null);
-  const ref = useRef<HTMLIFrameElement | null>(null);
   const [seed, setSeed] = useState(0);
+
   const mountTimeRef = useRef<number | null>(null);
   const skeletonRef = useRef<SkeletonHandle | null>(null);
   const forcedMutedStateRef = useRef<boolean | undefined>();
+  const streamMutedRef = useRef<boolean | undefined>();
+  const streamAutoplayRef = useRef<boolean | undefined>();
 
   // Intentionally non-reactive
   const { streamPositions } = useMainStore.getState();
@@ -82,7 +47,7 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
       playerAddedDelta > THRESHOLD_RECENT_PLAYER_ADDED_DELTA);
 
   const streamAutoplay =
-    autoplay === "all" || (autoplay === "one" && !!recentPriority) || seed > 0;
+    autoplay === "all" || (autoplay === "one" && !!recentPriority);
 
   let streamMuted: boolean;
   if (forcedMutedStateRef.current !== undefined) {
@@ -92,11 +57,8 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
     streamMuted = autoplay === "all" ? !recentPriority : false;
   }
 
-  useEffect(() => {
-    log("[Player] Mounted:", channel);
-    mountTimeRef.current = performance.now();
-    hasAddedPlayers = true;
-  }, []);
+  streamMutedRef.current = streamMuted;
+  streamAutoplayRef.current = streamAutoplay;
 
   log(
     "[Player] Re-rendered:",
@@ -118,111 +80,51 @@ function PlayerComponent({ type = "twitch", channel }: PlayerProps) {
     }
   });
 
-  const handleReady = useStableCallback((player: TwitchPlayerInstance) => {
+  const showSkeleton = useCallback(() => skeletonRef.current?.show(), []);
+  const hideSkeleton = useCallback(() => skeletonRef.current?.hide(), []);
+
+  const refresh = useCallback((options?: { muted: boolean }) => {
+    if (options !== undefined) {
+      forcedMutedStateRef.current = options.muted;
+    }
+    setSeed(+new Date());
+  }, []);
+
+  const onPlayerReady = useStableCallback(() => {
     recordReadyTime();
-    skeletonRef.current?.hide();
-
-    /* (
-      player as typeof player & { _iframe: HTMLIFrameElement | undefined }
-    )._iframe?.addEventListener("load", handleIframeLoad); */
-
-    const oldSetChannel = player.setChannel;
-    player.setChannel = (newChannel: string, options?: { muted: boolean }) => {
-      if (newChannel !== channel) {
-        oldSetChannel.call(player, newChannel);
-      } else {
-        if (options !== undefined) {
-          forcedMutedStateRef.current = options.muted;
-        }
-        skeletonRef.current?.show();
-        setSeed(+new Date());
-      }
-    };
-    playerRef.current = player;
-    player.setVolume(0.75);
-    log("[Player] Creating twitch player:", channel, player);
-    useMainStore.getState().actions.setStreamPlayer(channel, player);
-  });
-
-  const handleIframeLoad = useStableCallback(() => {
-    recordReadyTime();
-    log("[Player] Iframe loaded:", channel);
-    skeletonRef.current?.hide();
-  });
-
-  // TODO: Temp remove DragHandle for interaction?
-  const handlePlaybackBlocked = useStableCallback(() => {
-    log("[Player] Playback blocked:", channel);
-  });
-
-  const handleOffline = useStableCallback(() => {
-    log("[Player] Offline:", channel);
-  });
-
-  const handlePause = useStableCallback(() => {
-    log("[Player] Paused:", channel);
-  });
-
-  const handleEnded = useStableCallback(() => {
-    log("[Player] Ended:", channel);
-  });
-
-  const handlePlaying = useStableCallback(() => {
-    skeletonRef.current?.hide();
-    log("[Player] Playing:", channel);
-  });
-
-  const handlePlay = useStableCallback(() => {
-    log("[Player] Play:", channel);
+    hideSkeleton();
   });
 
   useEffect(() => {
-    if (type === "kick") {
-      useMainStore.getState().actions.setStreamPlayer(channel, {
-        setChannel: (_c: string, options?: { muted: boolean }) => {
-          if (!ref.current) return;
-          skeletonRef.current?.show();
-          const muted = options?.muted ?? true;
-          ref.current.src = `${getSrc(type, channel, muted)}&autoplay=true`;
-        },
-      } as KickPlayer);
-    }
-  }, [type, channel]);
+    log("[Player] Mounted:", channel);
+    mountTimeRef.current = performance.now();
+    hasAddedPlayers = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
       {type === "twitch" ? (
-        <TwitchPlayer
-          key={`${id}_${seed}`}
-          className="border-none"
-          id={id}
-          height="100%"
-          width="100%"
+        <TwitchClient
           channel={channel}
-          autoplay={streamAutoplay}
-          muted={streamMuted}
-          onReady={handleReady}
-          onPlaybackBlocked={handlePlaybackBlocked}
-          onOffline={handleOffline}
-          onPause={handlePause}
-          onEnded={handleEnded}
-          onPlaying={handlePlaying}
-          onPlay={handlePlay}
+          startMuted={streamMuted}
+          startAutoplay={streamAutoplay}
+          seed={seed}
+          onPlayerReady={onPlayerReady}
+          showSkeleton={showSkeleton}
+          hideSkeleton={hideSkeleton}
+          refresh={refresh}
         />
       ) : (
-        <div className="flex h-full w-full justify-center">
-          <iframe
-            ref={ref}
-            className="aspect-video h-full max-h-full max-w-full border-none"
-            src={`${getSrc(type, channel, streamMuted)}&autoplay=${streamAutoplay ? "true" : "false"}`}
-            allowFullScreen={true}
-            scrolling="no"
-            frameBorder="0"
-            allow="autoplay; fullscreen"
-            onLoad={handleIframeLoad}
-            {...iframePlayerProps[type]}
-          ></iframe>
-        </div>
+        <KickClient
+          key={`kick-${channel}-${seed}`}
+          channel={channel}
+          startMuted={streamMuted}
+          startAutoplay={streamAutoplay}
+          seed={seed}
+          onPlayerReady={onPlayerReady}
+          refresh={refresh}
+        />
       )}
       <Skeleton ref={skeletonRef} channel={channel} type={type} />
     </>
