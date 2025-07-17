@@ -476,6 +476,16 @@
     "np": true,
     "assumeFaction": "hydragang"
   },
+  "masonshortland": {
+    "id": 4460788,
+    "np": true,
+    "assumeFaction": "southcypress"
+  },
+  "novazfov": {
+    "id": 118594,
+    "np": true,
+    "assumeFaction": "southcypress"
+  },
   "Sayeed": {
     "id": 125993,
     "np": true,
