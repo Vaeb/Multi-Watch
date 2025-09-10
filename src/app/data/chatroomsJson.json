@@ -31,18 +31,6 @@
     "id": 62909184,
     "np": true
   },
-  "sanityybro": {
-    "id": 8494640,
-    "np": true
-  },
-  "MKelley": {
-    "id": 121853,
-    "np": true
-  },
-  "KermShiesty": {
-    "id": 126096,
-    "np": true
-  },
   "Ramee": {
     "id": 129914,
     "np": true,
@@ -202,6 +190,21 @@
     "id": 52715994,
     "np": true,
     "assumeFaction": "police"
+  },
+  "Stormskii": {
+    "id": 75081,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "MKelley": {
+    "id": 121853,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "KermShiesty": {
+    "id": 126096,
+    "np": true,
+    "assumeFaction": "besties"
   },
   "Simpless": {
     "id": 2907820,
