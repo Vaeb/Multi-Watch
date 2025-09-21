@@ -33,9 +33,9 @@ setInterval(() => {
   expiredKeys.forEach((key) => m3u8Cache.delete(key));
 
   if (expiredKeys.length > 0) {
-    log(
-      `[API:m3u8] Cleaned up ${expiredKeys.length} expired m3u8 cache entries`,
-    );
+    // log(
+    //   `[API:m3u8] Cleaned up ${expiredKeys.length} expired m3u8 cache entries`,
+    // );
   }
 }, CLEANUP_INTERVAL_MS);
 
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
       channelName: channel,
     } as RemoteKickLivestream;
 
-    log(`[API:m3u8] Stored playback_url for ${channel}`);
+    // log(`[API:m3u8] Stored playback_url for ${channel}`);
     return new Response("done", {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
 export async function GET(_request: Request, { params }: PageParams) {
   const channelWithSuffix = (await params).channel.toLowerCase();
 
-  log("[API:m3u8] tempCachedKickStreams:", tempCachedKickStreams);
+  // log("[API:m3u8] tempCachedKickStreams:", tempCachedKickStreams);
 
   if (!channelWithSuffix.endsWith(".m3u8")) {
     return new Response(
@@ -108,9 +108,9 @@ export async function GET(_request: Request, { params }: PageParams) {
   const now = Date.now();
 
   if (cached && now - cached.timestamp < CACHE_DURATION_MS) {
-    log(
-      `[API:m3u8] Serving cached m3u8 for ${channel} (age: ${now - cached.timestamp}ms)`,
-    );
+    // log(
+    //   `[API:m3u8] Serving cached m3u8 for ${channel} (age: ${now - cached.timestamp}ms)`,
+    // );
     return new Response(cached.content, {
       headers: cached.headers,
     });
@@ -153,7 +153,7 @@ export async function GET(_request: Request, { params }: PageParams) {
       headers: responseHeaders,
     });
 
-    log(`[API:m3u8] Cached fresh m3u8 for ${channel}`);
+    // log(`[API:m3u8] Cached fresh m3u8 for ${channel}`);
 
     return new Response(m3u8Body, {
       headers: responseHeaders,
