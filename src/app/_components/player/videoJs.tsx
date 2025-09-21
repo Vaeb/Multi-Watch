@@ -168,15 +168,18 @@ const VideoJSComponent = ({ channel, options, onReady }: VideoJSProps) => {
 
   // Dispose the Video.js player when the functional component unmounts
   useEffect(() => {
-    const player = playerRef.current;
+    const refEl = videoRef.current;
 
     return () => {
-      if (player && !player.isDisposed()) {
-        player.dispose();
+      if (playerRef.current && !playerRef.current.isDisposed()) {
+        playerRef.current.dispose();
         playerRef.current = null;
       }
+      if (refEl) {
+        refEl.innerHTML = "";
+      }
     };
-  }, [playerRef]);
+  }, [playerRef, videoRef]);
 
   return (
     <div data-vjs-player className="flex h-full w-full">

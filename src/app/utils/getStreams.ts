@@ -27,7 +27,9 @@ const getTwitchData = async () => {
       ? "https://vaeb.io:3030/live"
       : "http://localhost:3029/live";
 
-    // log("Fetching NoPixel data from", url);
+    if (IS_LOCALHOST) {
+      log("Fetching NoPixel data from", url);
+    }
 
     const dataRaw = await fetch(url);
     const data = (await dataRaw.json()) as RemoteLive;

@@ -13,7 +13,6 @@ function HorizontalResizerComponent({ width }: { width: number }) {
   const setIsChatResizing = useMainStore(
     (state) => state.actions.setIsChatResizing,
   );
-  const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
@@ -87,7 +86,6 @@ function HorizontalResizerComponent({ width }: { width: number }) {
 
   return (
     <div
-      ref={containerRef}
       className="absolute left-0 top-0 z-10 h-full w-1 cursor-ew-resize touch-none bg-transparent px-[4px] hover:bg-blue-500/50"
       style={{ transform: "translateX(-50%)" }} // Center the grab handle on the edge
       onPointerDown={handlePointerDown}
