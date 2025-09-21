@@ -11,12 +11,24 @@
     "id": 875062,
     "np": false
   },
+  "MaximusBlack": {
+    "id": 163127,
+    "np": true
+  },
   "IrishGT": {
     "id": 50840382,
     "np": true
   },
   "Nikez": {
     "id": 2402594,
+    "np": true
+  },
+  "Peppo": {
+    "id": 25518774,
+    "np": true
+  },
+  "Capped": {
+    "id": 62909184,
     "np": true
   },
   "Ramee": {
@@ -139,6 +151,16 @@
     "np": true,
     "assumeFaction": "manor"
   },
+  "Saphirici": {
+    "id": 2448474,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "52chains": {
+    "id": 101941,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "Deansocool": {
     "id": 5579351,
     "np": true,
@@ -169,13 +191,58 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "Stormskii": {
+    "id": 75081,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "MKelley": {
+    "id": 121853,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "KermShiesty": {
+    "id": 126096,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "Simpless": {
     "id": 2907820,
     "np": true,
     "assumeFaction": "besties"
   },
+  "thedoubles": {
+    "id": 336820,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "zuck": {
+    "id": 386790,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "ghotties": {
+    "id": 2911741,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "sanesfx": {
+    "id": 7255776,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "sanityybro": {
+    "id": 8494640,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "thatguygp": {
     "id": 114584,
+    "np": true,
+    "assumeFaction": "besties"
+  },
+  "kyrienolife": {
+    "id": 56850,
     "np": true,
     "assumeFaction": "besties"
   },
@@ -457,6 +524,16 @@
     "id": 5706693,
     "np": true,
     "assumeFaction": "hydragang"
+  },
+  "masonshortland": {
+    "id": 4460788,
+    "np": true,
+    "assumeFaction": "southcypress"
+  },
+  "novazfov": {
+    "id": 118594,
+    "np": true,
+    "assumeFaction": "southcypress"
   },
   "Sayeed": {
     "id": 125993,
