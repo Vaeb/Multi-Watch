@@ -191,6 +191,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "kyle": {
+    "id": 9975231,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "Stormskii": {
     "id": 75081,
     "np": true,
