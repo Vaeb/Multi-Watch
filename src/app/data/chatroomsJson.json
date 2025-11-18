@@ -38,6 +38,10 @@
   },
   "TheEazyLife": {
     "id": 2305821,
+    "np": true
+  },
+  "0axe": {
+    "id": 908467,
     "np": true,
     "assumeFaction": "manor"
   },
@@ -111,7 +115,7 @@
     "np": true,
     "assumeFaction": "manor"
   },
-  "JaksonLIVE": {
+  "Jakson": {
     "id": 1343202,
     "np": true,
     "assumeFaction": "manor"
