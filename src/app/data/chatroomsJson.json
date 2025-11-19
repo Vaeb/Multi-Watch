@@ -203,6 +203,11 @@
   "kyle": {
     "id": 9975231,
     "np": true,
+    "assumeFaction": "police"
+  },
+  "MDRAKOO": {
+    "id": 62441136,
+    "np": true,
     "assumeFaction": "besties"
   },
   "Stormskii": {
