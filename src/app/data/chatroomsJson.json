@@ -195,6 +195,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "KylieBitkin": {
+    "id": 2733273,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "GlitterGlock19": {
     "id": 2483677,
     "np": true,
