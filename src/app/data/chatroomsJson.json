@@ -155,6 +155,16 @@
     "np": true,
     "assumeFaction": "manor"
   },
+  "Biotox": {
+    "id": 243173,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "uhsnow": {
+    "id": 7645377,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "Saphirici": {
     "id": 2448474,
     "np": true,
@@ -429,6 +439,11 @@
     "id": 52088287,
     "np": true,
     "assumeFaction": "hades"
+  },
+  "MalcolmGlass": {
+    "id": 2649757,
+    "np": true,
+    "assumeFaction": "police"
   },
   "Xiceman": {
     "id": 1767118,
