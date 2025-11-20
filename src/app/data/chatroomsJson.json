@@ -40,6 +40,11 @@
     "id": 2305821,
     "np": true
   },
+  "Zetark": {
+    "id": 7716147,
+    "np": true,
+    "assumeFaction": "northcypress"
+  },
   "0axe": {
     "id": 908467,
     "np": true,
