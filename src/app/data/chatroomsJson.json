@@ -168,6 +168,11 @@
     "np": true,
     "assumeFaction": "manor"
   },
+  "burn": {
+    "id": 82713773,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "Biotox": {
     "id": 243173,
     "np": true,
