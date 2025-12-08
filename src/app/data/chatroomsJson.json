@@ -31,6 +31,18 @@
     "id": 62909184,
     "np": true
   },
+  "Barky": {
+    "id": 4234650,
+    "np": true
+  },
+  "grmps": {
+    "id": 126636,
+    "np": true
+  },
+  "Gioso": {
+    "id": 1275063,
+    "np": true
+  },
   "Ramee": {
     "id": 129914,
     "np": true,
@@ -38,6 +50,15 @@
   },
   "TheEazyLife": {
     "id": 2305821,
+    "np": true
+  },
+  "Zetark": {
+    "id": 7716147,
+    "np": true,
+    "assumeFaction": "northcypress"
+  },
+  "0axe": {
+    "id": 908467,
     "np": true,
     "assumeFaction": "manor"
   },
@@ -111,7 +132,7 @@
     "np": true,
     "assumeFaction": "manor"
   },
-  "JaksonLIVE": {
+  "Jakson": {
     "id": 1343202,
     "np": true,
     "assumeFaction": "manor"
@@ -151,6 +172,21 @@
     "np": true,
     "assumeFaction": "manor"
   },
+  "burn": {
+    "id": 82713773,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "Biotox": {
+    "id": 243173,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "uhsnow": {
+    "id": 7645377,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "Saphirici": {
     "id": 2448474,
     "np": true,
@@ -168,6 +204,11 @@
   },
   "Hurnani": {
     "id": 2848971,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "Myles_Away": {
+    "id": 7863831,
     "np": true,
     "assumeFaction": "police"
   },
@@ -190,6 +231,26 @@
     "id": 52715994,
     "np": true,
     "assumeFaction": "police"
+  },
+  "KylieBitkin": {
+    "id": 2733273,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "GlitterGlock19": {
+    "id": 2483677,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "kyle": {
+    "id": 9975231,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "MDRAKOO": {
+    "id": 62441136,
+    "np": true,
+    "assumeFaction": "besties"
   },
   "Stormskii": {
     "id": 75081,
@@ -376,6 +437,11 @@
     "np": true,
     "assumeFaction": "hades"
   },
+  "RayC": {
+    "id": 118956,
+    "np": true,
+    "assumeFaction": "hades"
+  },
   "zandr400": {
     "id": 50013656,
     "np": true,
@@ -405,6 +471,11 @@
     "id": 52088287,
     "np": true,
     "assumeFaction": "hades"
+  },
+  "MalcolmGlass": {
+    "id": 2649757,
+    "np": true,
+    "assumeFaction": "police"
   },
   "Xiceman": {
     "id": 1767118,
