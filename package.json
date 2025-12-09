@@ -18,6 +18,7 @@
     "hook": "bun src/webhooks.js"
   },
   "dependencies": {
+    "@next/third-parties": "^15.3.6",
     "@types/video.js": "^7.3.58",
     "@virtuoso.dev/message-list": "1.9.9",
     "amazon-ivs-player": "^1.41.0",

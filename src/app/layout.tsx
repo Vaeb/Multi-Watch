@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "MultiWatch",
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className="overflow-hidden" suppressHydrationWarning={true}>
         {children}
       </body>
+      <GoogleAnalytics gaId="G-7TN622F9NN" />
     </html>
   );
 }
