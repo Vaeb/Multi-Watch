@@ -19,6 +19,10 @@
     "id": 50840382,
     "np": true
   },
+  "ChrisTombstone": {
+    "id": 1874404,
+    "np": true
+  },
   "Nikez": {
     "id": 2402594,
     "np": true
@@ -29,6 +33,10 @@
   },
   "Capped": {
     "id": 62909184,
+    "np": true
+  },
+  "heyimzed": {
+    "id": 91168,
     "np": true
   },
   "Barky": {
@@ -54,6 +62,11 @@
   },
   "Zetark": {
     "id": 7716147,
+    "np": true,
+    "assumeFaction": "northcypress"
+  },
+  "tjnv": {
+    "id": 63701083,
     "np": true,
     "assumeFaction": "northcypress"
   },
