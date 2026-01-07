@@ -21,15 +21,18 @@
   },
   "SkiMaskDaniel": {
     "id": 2697388,
-    "np": true
+    "np": true,
+    "assumeFaction": "hounds"
   },
   "IrishGT": {
     "id": 50840382,
-    "np": true
+    "np": true,
+    "assumeFaction": "hounds"
   },
   "ChrisTombstone": {
     "id": 1874404,
-    "np": true
+    "np": true,
+    "assumeFaction": "hounds"
   },
   "Nikez": {
     "id": 2402594,
@@ -41,15 +44,18 @@
   },
   "Capped": {
     "id": 62909184,
-    "np": true
+    "np": true,
+    "assumeFaction": "faceless"
   },
   "heyimzed": {
     "id": 91168,
-    "np": true
+    "np": true,
+    "assumeFaction": "admc"
   },
   "Barky": {
     "id": 4234650,
-    "np": true
+    "np": true,
+    "assumeFaction": "admc"
   },
   "grmps": {
     "id": 126636,
@@ -66,7 +72,8 @@
   },
   "TheEazyLife": {
     "id": 2305821,
-    "np": true
+    "np": true,
+    "assumeFaction": "faceless"
   },
   "Zetark": {
     "id": 7716147,
@@ -101,7 +108,7 @@
   "MattEU": {
     "id": 2825518,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "police"
   },
   "Klutch": {
     "id": 3018324,
@@ -126,12 +133,12 @@
   "kieron": {
     "id": 78555,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "habibis"
   },
   "Zixtah": {
     "id": 3494647,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "faceless"
   },
   "DEFAC3D": {
     "id": 1187734,
@@ -141,7 +148,7 @@
   "JustKiku": {
     "id": 3307962,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "hounds"
   },
   "Txylorz": {
     "id": 63567,
@@ -161,12 +168,12 @@
   "Louuis": {
     "id": 2504848,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "faceless"
   },
   "STE_Eire": {
     "id": 2718894,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "faceless"
   },
   "Cheez": {
     "id": 60822788,
@@ -175,8 +182,7 @@
   },
   "AbbottJake": {
     "id": 4818996,
-    "np": true,
-    "assumeFaction": "manor"
+    "np": true
   },
   "Frank_Ladd": {
     "id": 59874256,
@@ -201,7 +207,7 @@
   "Biotox": {
     "id": 243173,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": "newbabylon"
   },
   "uhsnow": {
     "id": 7645377,
