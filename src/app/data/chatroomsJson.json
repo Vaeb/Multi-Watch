@@ -71,12 +71,12 @@
   "Zetark": {
     "id": 7716147,
     "np": true,
-    "assumeFaction": "northcypress"
+    "assumeFaction": "newbabylon"
   },
   "tjnv": {
     "id": 63701083,
     "np": true,
-    "assumeFaction": "northcypress"
+    "assumeFaction": "newbabylon"
   },
   "0axe": {
     "id": 908467,
@@ -246,7 +246,7 @@
   "travpiper": {
     "id": 43042315,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": "besties"
   },
   "ClaytonERP": {
     "id": 52715994,
@@ -426,7 +426,7 @@
   "AcezProduction": {
     "id": 1669680,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": "habibis"
   },
   "bibo": {
     "id": 126472,
@@ -461,7 +461,7 @@
   "RayC": {
     "id": 118956,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": "habibis"
   },
   "zandr400": {
     "id": 50013656,
@@ -486,7 +486,7 @@
   "slimeoz": {
     "id": 52830647,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": "newbabylon"
   },
   "NismoDOMA": {
     "id": 52088287,
@@ -630,32 +630,32 @@
   "masonshortland": {
     "id": 4460788,
     "np": true,
-    "assumeFaction": "southcypress"
+    "assumeFaction": "newbabylon"
   },
   "novazfov": {
     "id": 118594,
     "np": true,
-    "assumeFaction": "southcypress"
+    "assumeFaction": "newbabylon"
   },
   "Sayeed": {
     "id": 125993,
     "np": true,
-    "assumeFaction": "southcypress"
+    "assumeFaction": "newbabylon"
   },
   "Buddha": {
     "id": 32806,
     "np": true,
-    "assumeFaction": "northcypress"
+    "assumeFaction": "newbabylon"
   },
   "AnthonyZ": {
     "id": 1822781,
     "np": true,
-    "assumeFaction": "northcypress"
+    "assumeFaction": "newbabylon"
   },
   "Saab": {
     "id": 984265,
     "np": true,
-    "assumeFaction": "northcypress"
+    "assumeFaction": "newbabylon"
   },
   "roshtein": {
     "id": 4598
