@@ -114,11 +114,6 @@
     "np": true,
     "assumeFaction": "manor"
   },
-  "MattEU": {
-    "id": 2825518,
-    "np": true,
-    "assumeFaction": "police"
-  },
   "Klutch": {
     "id": 3018324,
     "np": true,
@@ -208,15 +203,25 @@
     "np": true,
     "assumeFaction": "manor"
   },
-  "burn": {
-    "id": 82713773,
-    "np": true,
-    "assumeFaction": "police"
-  },
   "Biotox": {
     "id": 243173,
     "np": true,
     "assumeFaction": "newbabylon"
+  },
+  "Lt_Custard": {
+    "id": 2570847,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "MattEU": {
+    "id": 2825518,
+    "np": true,
+    "assumeFaction": "police"
+  },
+  "burn": {
+    "id": 82713773,
+    "np": true,
+    "assumeFaction": "police"
   },
   "uhsnow": {
     "id": 7645377,
