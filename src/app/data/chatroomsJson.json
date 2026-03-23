@@ -29,23 +29,28 @@
   },
   "hotted89": {
     "id": 5873957,
-    "np": true
+    "np": true,
+    "assumeFaction": "kc"
   },
   "TinySpark": {
     "id": 2372231,
-    "np": true
+    "np": true,
+    "assumeFaction": "kc"
   },
   "Cathie": {
     "id": 62455237,
-    "np": true
+    "np": true,
+    "assumeFaction": "kc"
   },
   "AidenNortha": {
     "id": 30370799,
-    "np": true
+    "np": true,
+    "assumeFaction": "kc"
   },
   "Chidori-Senpai": {
     "id": 5873957,
-    "np": true
+    "np": true,
+    "assumeFaction": "kc"
   },
   "itsginger": {
     "id": 1645049,
