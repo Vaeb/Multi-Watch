@@ -587,6 +587,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "ash": {
+    "id": 2719973,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "CLEErp": {
     "id": 49051259,
     "np": true
