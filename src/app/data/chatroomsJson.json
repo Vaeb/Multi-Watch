@@ -247,6 +247,11 @@
     "np": true,
     "assumeFaction": "newbabylon"
   },
+  "CathFawr": {
+    "id": 70865728,
+    "np": true,
+    "assumeFaction": "police"
+  },
   "Lt_Custard": {
     "id": 2570847,
     "np": true,
