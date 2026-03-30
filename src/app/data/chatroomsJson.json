@@ -128,6 +128,11 @@
     "np": true,
     "assumeFaction": "newbabylon"
   },
+  "iateabattery": {
+    "id": 2634803,
+    "np": true,
+    "assumeFaction": "manor"
+  },
   "0axe": {
     "id": 908467,
     "np": true,
