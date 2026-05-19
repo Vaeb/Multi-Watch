@@ -113,6 +113,10 @@
     "id": 1275063,
     "np": true
   },
+  "Chatterbox": {
+    "id": 2478088,
+    "np": true
+  },
   "Ramee": {
     "id": 129914,
     "np": true,
@@ -125,6 +129,11 @@
   },
   "Zetark": {
     "id": 7716147,
+    "np": true,
+    "assumeFaction": "newbabylon"
+  },
+  "Harry": {
+    "id": 1218150,
     "np": true,
     "assumeFaction": "newbabylon"
   },
