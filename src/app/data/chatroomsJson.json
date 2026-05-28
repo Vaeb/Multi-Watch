@@ -187,6 +187,16 @@
     "np": true,
     "assumeFaction": "manor"
   },
+  "fatboislimrp": {
+    "id": 92282790,
+    "np": true,
+    "assumeFaction": "manor"
+  },
+  "StrikingContact": {
+    "id": 2860619,
+    "np": true,
+    "assumeFaction": "habibis"
+  },
   "kieron": {
     "id": 78555,
     "np": true,
