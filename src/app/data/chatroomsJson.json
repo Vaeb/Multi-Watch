@@ -339,6 +339,11 @@
   "travpiper": {
     "id": 43042315,
     "np": true,
+    "assumeFaction": "police"
+  },
+  "DougTheGiant": {
+    "id": 129696,
+    "np": true,
     "assumeFaction": "besties"
   },
   "ClaytonERP": {
