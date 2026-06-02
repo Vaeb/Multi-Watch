@@ -341,6 +341,11 @@
     "np": true,
     "assumeFaction": "police"
   },
+  "leonarwho": {
+    "id": 2417280,
+    "np": true,
+    "assumeFaction": "besties"
+  },
   "DougTheGiant": {
     "id": 129696,
     "np": true,
