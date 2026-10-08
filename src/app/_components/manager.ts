@@ -17,8 +17,6 @@ export function Manager() {
 
   const pathname = usePathname();
 
-  const slugs = pathname.split("/").filter(Boolean);
-
   useLayoutEffect(() => {
     if (
       useMainStore.getState().streams.length > 0 ||

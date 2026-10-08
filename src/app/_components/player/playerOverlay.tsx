@@ -86,53 +86,9 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
     actions.setStreamPositions(newStreamPositions);
   }, [channel]);
 
-  const moveStream = useCallback(
-    (direction: -1 | 1) => {
-      const { streams, streamPositions, viewMode, actions } =
-        useMainStore.getState();
-      const currentPosition = streamPositions[channel];
-      const streamCount = streams.length;
-
-      // Ensure currentPosition is valid and move is possible
-      if (typeof currentPosition !== "number" || streamCount <= 1) {
-        return;
-      }
-
-      if (viewMode === "focused" && currentPosition === 0)
-        direction = -direction as 1 | -1;
-      let targetPosition = (currentPosition + direction) % streamCount;
-      if (targetPosition < 0) targetPosition = streamCount + targetPosition;
-      const channelToSwapWith = Object.entries(streamPositions).find(
-        ([, pos]) => pos === targetPosition,
-      )?.[0];
-
-      if (!channelToSwapWith) return; // Should not happen if logic is correct
-
-      const newStreamPositions = { ...streamPositions };
-      newStreamPositions[channel] = targetPosition;
-      newStreamPositions[channelToSwapWith] = currentPosition;
-
-      actions.setStreamPositions(newStreamPositions);
-    },
-    [channel],
-  );
-
-  // Memoized versions for onClick handlers
-  const moveLeft = useCallback(() => moveStream(-1), [moveStream]);
-  const moveRight = useCallback(() => moveStream(1), [moveStream]);
-
   // Get necessary state directly from mainStore for rendering logic
-  const {
-    streamCount,
-    currentPosition,
-    viewFocused,
-    streamFocused,
-    isDragging,
-    dragChannel,
-  } = useMainStore(
+  const { viewFocused, streamFocused, isDragging, dragChannel } = useMainStore(
     useShallow((state) => ({
-      streamCount: state.streams.length,
-      currentPosition: state.streamPositions[channel],
       viewFocused: state.viewMode === "focused",
       streamFocused:
         state.streams.length <= 1 || state.streamPositions[channel] === 0,
@@ -152,20 +108,6 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   });
 
   const isDraggingThis = isDragging && dragChannel === channel;
-
-  // Check if position is defined and valid for moving
-  const canMoveLeft =
-    typeof currentPosition === "number" &&
-    streamCount > 1 &&
-    (!viewFocused ||
-      (currentPosition !== 0 && // personal pref: should have arrows on focused or not?
-        (currentPosition > 1 || currentPosition === 0)));
-  const canMoveRight =
-    typeof currentPosition === "number" &&
-    streamCount > 1 &&
-    (!viewFocused ||
-      (currentPosition !== 0 && // personal pref: should have arrows on focused or not?
-        (currentPosition < streamCount - 1 || currentPosition === 0)));
 
   // Handler for double-click to go fullscreen
   const onDoubleClick = useStableCallback((e: React.MouseEvent) => {

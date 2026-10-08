@@ -13,7 +13,7 @@ export const addStream = (channel: string, type: Platform = "twitch") => {
   // Check if stream already exists (case insensitive)
   const channelLower = channel.toLowerCase();
   const existingStream = streamsMap[channelLower];
-  if (existingStream && existingStream.type === type) {
+  if (existingStream?.type === type) {
     // If it exists, just update newest and selected stream
     setNewestStream(channel);
     setSelectedChat(channel);

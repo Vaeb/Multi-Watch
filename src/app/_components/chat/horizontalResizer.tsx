@@ -81,7 +81,7 @@ function HorizontalResizerComponent({ width }: { width: number }) {
 
       document.body.style.cursor = "";
     },
-    [setIsChatResizing, updateWidth, setChatWidth],
+    [setIsChatResizing, setChatWidth],
   );
 
   return (

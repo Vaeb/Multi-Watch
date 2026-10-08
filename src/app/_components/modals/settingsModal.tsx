@@ -4,7 +4,7 @@ import { useShallow } from "zustand/shallow";
 import { type MainState, useMainStore } from "../../stores/mainStore";
 import { useState } from "react";
 import { usePersistStore } from "../../stores/persistStore";
-import { type Autoplay, type GridMode } from "../../stores/storeTypes";
+import { type Autoplay } from "../../stores/storeTypes";
 import { useStableCallback } from "../../hooks/useStableCallback";
 import { noprop } from "../../utils/noprop";
 import { log } from "../../utils/log";

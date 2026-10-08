@@ -19,8 +19,8 @@ const getSingleRowRects = (
   rowWidth: number,
   rowHeight: number,
   topOffsetPerc: number,
-  containerWidth: number,
-  containerHeight: number,
+  _containerWidth: number,
+  _containerHeight: number,
 ): Rect[] => {
   const s = Math.min(rowWidth / (16 * numCells), rowHeight / 9);
   const tileW = 16 * s;

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { type MainState, useMainStore } from "../../stores/mainStore";
 import { memo, useCallback, useState } from "react";
-import { type PersistState } from "../../stores/persistStore";
 import { addStream } from "../../utils/addStream";
 import { type Platform } from "../../../types";
 import { BarHeader } from "./BarHeader";

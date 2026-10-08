@@ -18,6 +18,7 @@ const ArrowIcon: React.FC<ArrowIconProps> = ({
       height={size}
       viewBox="0 0 18 18"
       className={className}
+      aria-label={alt || undefined}
     >
       <path
         d="M9 1a1 1 0 0 0-1 1v10.586L4.707 9.293a1 1 0 1 0-1.414 1.414l5 5a1 1 0 0 0 1.414 0l5-5a1 1 0 0 0-1.414-1.414L10 12.586V2a1 1 0 0 0-1-1Z"
