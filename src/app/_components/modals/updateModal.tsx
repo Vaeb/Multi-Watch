@@ -94,10 +94,6 @@ function UpdateModal() {
     setUpdateShown(false);
   }, [setUpdateShown]);
 
-  const clearClick = useCallback(() => {
-    setChannels([]);
-  }, []);
-
   const submitClick = useCallback(() => {
     // Identify original (unordered) `streams` indexes
     const streamsBaseOrder = Object.assign(
@@ -235,13 +231,11 @@ export function UpdateModalWrapper({ isLanding }: { isLanding: boolean }) {
   const updateShown = useMainStore(selector2);
   const hasRenderedRef = useRef(false);
 
-  const onLanding = isLanding && hasRenderedRef.current === false;
-
   useLayoutEffect(() => {
     if (!hasRenderedRef.current && isLanding) {
       useMainStore.getState().actions.setUpdateShown(true);
     }
-  }, []);
+  }, [isLanding]);
 
   useEffect(() => {
     hasRenderedRef.current = true;

@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useStableCallback } from "~/app/hooks/useStableCallback";
 import { useMainStore } from "~/app/stores/mainStore";
-import { Platform } from "~/types";
+import { type Platform } from "~/types";
 
 type SkeletonProps = { channel: string; type: Platform };
 

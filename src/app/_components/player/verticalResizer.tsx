@@ -95,7 +95,7 @@ function VerticalResizerComponent({ top }: VerticalResizerProps) {
       // Reset cursor style
       document.body.style.cursor = "";
     },
-    [setIsResizing, updateHeight, setFocusHeight],
+    [setIsResizing, setFocusHeight],
   );
 
   const handleDoubleClick = useStableCallback(() => {

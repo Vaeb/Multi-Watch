@@ -88,7 +88,7 @@ export const useKickClient = (
 ) => {
   log(`[useKickClient] Re-rendered kick chat client for ${channel}`);
 
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages] = useState<Message[]>([
     // {
     //   author: "AA",
     //   authorColor: "#f00",

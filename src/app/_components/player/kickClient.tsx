@@ -198,7 +198,7 @@ function KickClientComponent({
       }
     });
 
-    useMainStore.getState().actions.setStreamPlayer(channel, {
+    const player: KickPlayer = {
       setChannel: (_newChannel: string, options?: { muted: boolean }) => {
         log(`[KickClient] setChannel called for ${channel}`, { options });
         if (options) {
@@ -208,7 +208,8 @@ function KickClientComponent({
           refresh();
         }
       },
-    } as KickPlayer);
+    };
+    useMainStore.getState().actions.setStreamPlayer(channel, player);
   });
 
   return (

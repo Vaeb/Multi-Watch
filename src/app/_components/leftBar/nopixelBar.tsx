@@ -11,7 +11,6 @@ import {
   type ChatroomsInfo,
 } from "../../../types";
 import { useKickStore } from "../../stores/kickStore";
-import { BarText } from "./BarText";
 import { BarHeader } from "./BarHeader";
 import { LARGE_FACTIONS } from "../../constants";
 
@@ -297,7 +296,7 @@ const parseLookup = (text: string, retainCase = false) => {
 
 function NopixelBarComponent({
   receivedData,
-  timeFormatted,
+  timeFormatted: _timeFormatted,
 }: {
   receivedData: RemoteReceived;
   timeFormatted: string;
@@ -361,6 +360,9 @@ function NopixelBarComponent({
   const filteredStreamsAdditional = useMemo(
     () =>
       filteredStreams.map((stream) => {
+        const platform: Platform =
+          stream.faction === "Kick" ? "kick" : "twitch";
+
         return {
           tagText: stream.tagText
             .replace(/^\? *| *\?$|[《]/g, "")
@@ -369,7 +371,7 @@ function NopixelBarComponent({
             .replace("〉", "》")
             .replace("Peacekeeper", "Deputy")
             .trim(),
-          platform: (stream.faction === "Kick" ? "kick" : "twitch") as Platform,
+          platform,
           channelTop:
             stream.noOthersInclude === false ||
             stream.faction === "Kick" ||

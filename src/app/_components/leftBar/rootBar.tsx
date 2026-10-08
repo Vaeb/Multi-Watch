@@ -11,7 +11,6 @@ import { useMainStore } from "../../stores/mainStore";
 import { useShallow } from "zustand/shallow";
 import { MainBar } from "./mainBar";
 import { usePersistStore } from "../../stores/persistStore";
-import { log } from "~/app/utils/log";
 
 // Smooth easing function for better visual appeal
 const easeInCubic = (t: number): number => {

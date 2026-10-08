@@ -10,6 +10,12 @@ import path from 'path';
 import express from 'express';
 import treeKill from 'tree-kill';
 
+/**
+ * @typedef {'backend'} CwdType
+ * @typedef {import('child_process').ChildProcess} ChildProcess
+ * @typedef {import('child_process').SpawnOptions} SpawnOptions
+ */
+
 // if (!fs.existsSync('./scripts')) {
 //     console.error('Cannot find directory ./scripts, not running with correct working directory?');
 //     process.exit(1);
@@ -29,12 +35,15 @@ export const getDateString = (date = new Date()) => {
   return `${iso.substr(0, 10)} ${iso.substr(11, 8)}`;
 };
 
+/**
+ * @param {...unknown} messages
+ */
 export const makeLogMessage = (...messages) => {
   let logMessage = messages.map(msg => util.format(msg)).join(' ');
 
   const dateString = getDateString();
-  if (logMessage[0] === '\n') {
-    const startingLines = (logMessage.match(/^\n+/) || [])[0];
+  if (logMessage.startsWith('\n')) {
+    const startingLines = /^\n+/.exec(logMessage)?.[0] ?? '';
     logMessage = `${startingLines}> ${dateString} | ${logMessage.substring(startingLines.length)}`;
   } else {
     logMessage = `> ${dateString} | ${logMessage}`;
@@ -43,6 +52,9 @@ export const makeLogMessage = (...messages) => {
   return logMessage;
 };
 
+/**
+ * @param {...unknown} messages
+ */
 export const log = (...messages) => {
   console.log(makeLogMessage(...messages));
 };
@@ -54,19 +66,21 @@ app.use(express.json());
 /** @type {cp.ChildProcess[]} */
 let processes = [];
 
+/** @type {Record<CwdType, string>} */
 const cwds = {
   backend: backCwd,
 };
 
 /**
+ * @param {CwdType} cwdType
  * @param {string} cmd
- * @param {string[]} [args]
- * @param {cp.SpawnOptions} [options]
- * @returns {cp.ChildProcess}
+ * @param {string[]} args
+ * @param {SpawnOptions} [options]
+ * @returns {ChildProcess}
 
  */
 function spawn(cwdType, cmd, args, options = {}) {
-  const proc = cp.spawn(cmd, args, { cwd: cwds[cwdType], stdio: 'inherit', ...options });
+  const proc = /** @type {ChildProcess} */ (cp.spawn(cmd, args, { cwd: cwds[cwdType], stdio: 'inherit', ...options }));
   processes.push(proc);
   const rem = () => {
     processes = processes.filter(p => p !== proc);
@@ -78,10 +92,11 @@ function spawn(cwdType, cmd, args, options = {}) {
 }
 
 /**
+ * @param {CwdType} cwdType
  * @param {string} cmd
- * @param {string[]} [args]
- * @param {cp.SpawnOptions} [options]
- * @returns {Promise<cp.ChildProcess>}
+ * @param {string[]} args
+ * @param {SpawnOptions} [options]
+ * @returns {Promise<void>}
 
  */
 function spawnSync(cwdType, cmd, args, options = {}) {
@@ -92,7 +107,7 @@ function spawnSync(cwdType, cmd, args, options = {}) {
         resolve();
         return;
       }
-      setImmediate(() => reject());
+      setImmediate(() => reject(new Error(`Command failed with exit code ${code}`)));
     });
     proc.on('error', reject);
   });
@@ -100,11 +115,15 @@ function spawnSync(cwdType, cmd, args, options = {}) {
 
 async function kill() {
   log(`-> Killing ${processes.length} spawned processes...`);
-  processes.forEach(p => treeKill(p.pid, 'SIGTERM'));
+  processes.forEach(p => {
+    if (p.pid !== undefined) treeKill(p.pid, 'SIGTERM');
+  });
   if (processes.length) await new Promise(r => setTimeout(r, 2000));
   if (processes.length) {
     log(`-> Killing ${processes.length} spawned processes forcefully...`);
-    processes.forEach(p => treeKill(p.pid, 'SIGKILL'));
+    processes.forEach(p => {
+      if (p.pid !== undefined) treeKill(p.pid, 'SIGKILL');
+    });
   }
   processes = [];
 }
@@ -147,7 +166,7 @@ async function update() {
  * @param {Payload} payload
  */
 async function acceptPayload(payload) {
-  const { ref, deleted, after } = payload;
+  const { ref, deleted } = payload;
   log(`>>>>>>>>>>>>>> Detected a push: ${ref} <<<<<<<<<<<<<<`);
   if (ref !== 'refs/heads/master') return;
   if (deleted) {
@@ -163,7 +182,7 @@ async function acceptPayload(payload) {
 app.get('/', (req, res) => {
   const lines = ['Running processes:'];
   for (const proc of processes) {
-    lines.push(`- (PID ${proc.pid}) ${proc.spawnfile} [${proc.spawnargs.map(v => JSON.stringify(v))}]`);
+    lines.push(`- (PID ${proc.pid}) ${proc.spawnfile} [${proc.spawnargs.map(v => JSON.stringify(v)).join(',')}]`);
   }
   res.status(200).send(lines.join('\n'));
 });

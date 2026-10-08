@@ -7,7 +7,6 @@ import { useShallow } from "zustand/shallow";
 import { ChatWrapper } from "./chat/chatWrapper";
 import { PlayerWrapper } from "./player/playerWrapper";
 import { VerticalResizer } from "./player/verticalResizer";
-import { DragProvider } from "./player/dragContext";
 import { log } from "../utils/log";
 import { layoutCells } from "../utils/layoutCells";
 import { SizeManager } from "./sizeManager";
