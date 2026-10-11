@@ -71,9 +71,10 @@ Partner/enemy/ally/affiliation/property fields are ignored, as are parenthetical
 
 ## Who counts as a member
 When unsure, `members`, `kick` and `twitch` assume someone is a member. They only leave out clearly non-member
-infobox groups/roles/fields: Associates, Hangarounds, Contractors, Friends, Allies, Affiliates, Partners, Contacts,
+infobox groups/roles/fields: Associates, Contractors, Friends, Allies, Affiliates, Partners, Contacts,
 Clients/Customers, Supporters, and explicit Former Members / Ex-Members (`former_members`, `ex_members`).
 Anything ambiguous is kept, e.g. `f_leader` (role "f leader") and `overseen_by`; check `role` if it matters.
+Hangarounds count as members.
 
 E.g. `nopixel members "Brick Bois"` returns 5: its 4 founders plus Jean Paul (f leader), not its Associates.
 If you need the excluded people, read the faction page itself (`url`).
