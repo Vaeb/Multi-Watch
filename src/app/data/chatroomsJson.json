@@ -124,7 +124,7 @@
   "Chatterbox": {
     "id": 2478088,
     "np": true,
-    "assumeFaction": ["burgershot", "clowncil"]
+    "assumeFaction": ["burgershot", "clowns"]
   },
   "ksinz": {
     "id": 26600346,
@@ -953,7 +953,7 @@
   "youuney": {
     "id": 78747180,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "clowncil", "gruppe6"]
+    "assumeFaction": ["sinnerpawn", "clowns", "gruppe6"]
   },
   "Hazan": {
     "id": 83133,
@@ -1023,42 +1023,42 @@
   "bigbam": {
     "id": 1695907,
     "np": true,
-    "assumeFaction": ["clowncil", "doc"]
+    "assumeFaction": ["clowns", "doc"]
   },
   "Bodocc": {
     "id": 100331092,
     "np": true,
-    "assumeFaction": ["clowncil"]
+    "assumeFaction": ["clowns"]
   },
   "FirecrackThat": {
     "id": 1333171,
     "np": true,
-    "assumeFaction": ["clowncil", "police"]
+    "assumeFaction": ["clowns", "police"]
   },
   "JustTeetaa": {
     "id": 18398333,
     "np": true,
-    "assumeFaction": ["clowncil"]
+    "assumeFaction": ["clowns"]
   },
   "mikfoolery": {
     "id": 89146418,
     "np": true,
-    "assumeFaction": ["clowncil", "gruppe6", "police"]
+    "assumeFaction": ["clowns", "gruppe6", "police"]
   },
   "NinjaJessica": {
     "id": 84208198,
     "np": true,
-    "assumeFaction": ["clowncil", "doj"]
+    "assumeFaction": ["clowns", "doj"]
   },
   "Thio": {
     "id": 2477819,
     "np": true,
-    "assumeFaction": ["clowncil", "police"]
+    "assumeFaction": ["clowns", "police"]
   },
   "TotallyNotBelltower": {
     "id": 18864175,
     "np": true,
-    "assumeFaction": ["clowncil", "police"]
+    "assumeFaction": ["clowns", "police"]
   },
   "afro": {
     "id": 727386,
