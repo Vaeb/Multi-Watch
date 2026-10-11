@@ -65,8 +65,11 @@ PSec), so check `unresolved` and its candidates.
 ## How roles are read
 Faction infoboxes vary. Members come from fields like `owner`, `founder`, `leader`, `f_leader`, `key_people`,
 `members` and `custom_group_<Group>` (inside a group, `label=X` lines set the role, e.g. Staff -> Employee/Runner).
-Department infoboxes (PD, EMS, DOJ, Mayor) fall back to rank fields (`ems_chief`, `captains`, `high_command_1` + its `_role`).
-Partner/enemy/ally/affiliation/property fields are ignored, as are parenthetical links like `([[The Locksmiths]])`.
+Any other infobox field with people links also counts unless it's clearly not a membership field, e.g. `owner_founder`,
+`investor`, `signed_artists`, `coo`, and department rank fields (`ems_chief`, `captains`, `high_command_1` + its `_role`).
+Partner/enemy/ally/affiliation fields, former-owner/employee fields (`former_*`, `formerly_*`), and place or
+subsidiary fields (location, HQ, property, territory, `seat`, `jurisdiction*`, `subsidiaries`, parent, division) are
+ignored, as are parenthetical links like `([[The Locksmiths]])`.
 `role` is the field or label name, lightly humanised (e.g. "key people", "f leader" = former leader).
 
 ## Who counts as a member
@@ -77,6 +80,7 @@ Anything ambiguous is kept, e.g. `f_leader` (role "f leader") and `overseen_by`;
 Hangarounds count as members.
 
 E.g. `nopixel members "Brick Bois"` returns 5: its 4 founders plus Jean Paul (f leader), not its Associates.
+`nopixel kick "Street Sweepers"` includes Benji Ramos (role "owner founder", kick `lysium`).
 If you need the excluded people, read the faction page itself (`url`).
 
 ## Limits

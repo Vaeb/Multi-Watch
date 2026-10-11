@@ -149,9 +149,9 @@ def parse_members(text):
                 for l in links(s): members.append(dict(l, role=role, group=group, field=k))
         else:
             for l in links(v): members.append(dict(l, role=humanise(k), group=None, field=k))
-    if not members:  # generic fallback for department/rank infoboxes (PD, EMS, DOJ, Mayor...)
-        for k, v in fields.items():
-            if NOT_MEMBER.search(k) or k.endswith("_role"): continue
+    # Prefer inclusion: any other link-bearing field that isn't clearly non-member (owner_founder, rank fields, ...)
+    for k, v in fields.items():
+            if MEMBER_FIELD.match(k) or NOT_MEMBER.search(k) or k.endswith("_role"): continue
             role = plain(fields.get(k + "_role")) or humanise(k)
             for l in links(v): members.append(dict(l, role=role, group=None, field=k))
     members = [m for m in members if not _non_member(m)]
@@ -170,7 +170,7 @@ def _non_member(m):
 
 NOT_MEMBER = re.compile(r"(?i)(partner|enem|all(y|ies)|affiliat|location|headquarters|^hq$|propert|territor|predecessor|successor|"
                         r"related|victim|image|caption|lofi|name|title|status|type|formed|founded|address|aliases|motto|rival|competitor|"
-                        r"subsidiar|parent|division|unit|website|colou?r)")
+                        r"subsid|parent|division|unit|website|colou?r|^seat$|^mission$|jurisdiction|^former|formerly)")
 
 def extlink(v):
     if not v: return None, None
