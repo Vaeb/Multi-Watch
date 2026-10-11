@@ -18,15 +18,15 @@ const chatroomsLower = {
   },
   singlekick: {
     id: 2,
-    assumeFaction: "alpha",
+    assumeFaction: ["alpha"],
   },
   independentkick: {
     id: 3,
   },
 } satisfies Record<string, ChatroomsInfo>;
 
-void test("normalizes single and multiple assumed factions", () => {
-  assert.deepEqual(getAssumeFactions("alpha"), ["alpha"]);
+void test("normalizes optional and multiple assumed factions", () => {
+  assert.deepEqual(getAssumeFactions(["alpha"]), ["alpha"]);
   assert.deepEqual(getAssumeFactions(["alpha", "beta"]), ["alpha", "beta"]);
   assert.deepEqual(getAssumeFactions(undefined), []);
 });

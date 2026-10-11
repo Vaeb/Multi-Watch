@@ -1,9 +1,7 @@
-export type AssumeFaction = string | string[];
-
 export interface ChatroomsInfo {
   id: number;
   np?: boolean;
-  assumeFaction?: AssumeFaction; // Faction slug(s) that the Kick streamer belongs to
+  assumeFaction?: string[]; // Faction slug(s) that the Kick streamer belongs to
 }
 
 export interface PageParams {

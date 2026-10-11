@@ -2,10 +2,7 @@ import { type ChatroomsInfo } from "../../types";
 
 export const getAssumeFactions = (
   assumeFaction: ChatroomsInfo["assumeFaction"] | undefined,
-) => {
-  if (!assumeFaction) return [];
-  return Array.isArray(assumeFaction) ? assumeFaction : [assumeFaction];
-};
+) => assumeFaction ?? [];
 
 export const hasAssumeFaction = (
   chatroom: ChatroomsInfo | undefined,
