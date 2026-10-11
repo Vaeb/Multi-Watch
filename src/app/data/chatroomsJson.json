@@ -93,7 +93,7 @@
   "Capped": {
     "id": 62909184,
     "np": true,
-    "assumeFaction": ["faceless", "brickbois", "the404", "nest"]
+    "assumeFaction": ["faceless", "nest"]
   },
   "4hBunger": {
     "id": 16120140,
@@ -156,7 +156,7 @@
   "tjnv": {
     "id": 63701083,
     "np": true,
-    "assumeFaction": ["newbabylon", "casino", "doc"]
+    "assumeFaction": ["newbabylon", "casino", "doc", "pissboiz"]
   },
   "iateabattery": {
     "id": 2634803,
@@ -313,7 +313,7 @@
   "burn": {
     "id": 82713773,
     "np": true,
-    "assumeFaction": ["brickbois", "casino"]
+    "assumeFaction": ["casino"]
   },
   "uhsnow": {
     "id": 7645377,
@@ -388,7 +388,8 @@
   },
   "kyle": {
     "id": 9975231,
-    "np": true
+    "np": true,
+    "assumeFaction": ["police", "slim"]
   },
   "MDRAKOO": {
     "id": 62441136,
@@ -551,7 +552,7 @@
   "Jack": {
     "id": 65073,
     "np": true,
-    "assumeFaction": ["besties", "brickbois", "slim"]
+    "assumeFaction": ["besties", "slim"]
   },
   "Sukhi_1": {
     "id": 5192108,
@@ -602,7 +603,7 @@
   "Lysium": {
     "id": 64021,
     "np": true,
-    "assumeFaction": ["hades", "burgershot", "slim"]
+    "assumeFaction": ["hades", "burgershot"]
   },
   "kongfue": {
     "id": 1984882,
@@ -803,7 +804,7 @@
   "Sayeed": {
     "id": 125993,
     "np": true,
-    "assumeFaction": ["newbabylon", "brickbois", "brickhouse", "pissboiz"]
+    "assumeFaction": ["newbabylon", "brickbois", "brickhouse"]
   },
   "Buddha": {
     "id": 32806,
@@ -873,13 +874,12 @@
   },
   "AlyssaJean": {
     "id": 1344143,
-    "np": true,
-    "assumeFaction": ["brickbois"]
+    "np": true
   },
   "crystalst": {
     "id": 99687,
     "np": true,
-    "assumeFaction": ["brickbois", "brickhouse", "the404", "sweepers", "casino", "gruppe6", "police"]
+    "assumeFaction": ["brickhouse", "sweepers", "casino", "gruppe6", "police"]
   },
   "6ixThree": {
     "id": 289188,
@@ -1039,7 +1039,7 @@
   "bigbam": {
     "id": 1695907,
     "np": true,
-    "assumeFaction": ["clowns", "doc"]
+    "assumeFaction": ["doc"]
   },
   "Bodocc": {
     "id": 100331092,
@@ -1059,7 +1059,7 @@
   "mikfoolery": {
     "id": 89146418,
     "np": true,
-    "assumeFaction": ["clowns", "gruppe6", "police"]
+    "assumeFaction": ["gruppe6", "police"]
   },
   "NinjaJessica": {
     "id": 84208198,
@@ -1405,5 +1405,10 @@
     "id": 4080193,
     "np": true,
     "assumeFaction": ["order"]
+  },
+  "crocc": {
+    "id": 7717007,
+    "np": true,
+    "assumeFaction": ["hkpawn", "oldcountry"]
   }
 }
