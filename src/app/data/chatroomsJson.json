@@ -356,7 +356,7 @@
   "leonarwho": {
     "id": 2417280,
     "np": true,
-    "assumeFaction": ["besties", "police"]
+    "assumeFaction": ["police"]
   },
   "DougTheGiant": {
     "id": 129696,
@@ -380,8 +380,7 @@
   },
   "kyle": {
     "id": 9975231,
-    "np": true,
-    "assumeFaction": ["police", "slim"]
+    "np": true
   },
   "MDRAKOO": {
     "id": 62441136,
@@ -803,7 +802,7 @@
   "Saab": {
     "id": 984265,
     "np": true,
-    "assumeFaction": ["besties", "police"]
+    "assumeFaction": ["police"]
   },
   "roshtein": {
     "id": 4598
