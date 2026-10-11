@@ -13,6 +13,7 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
+    "test": "tsx --test src/app/utils/*.test.ts",
     "watch": "nodemon --exec \"echo 1\" --verbose --watch 'src/**/*' -e tsx,ts",
     "typecheck": "tsc --noEmit",
     "hook": "bun src/webhooks.js"
@@ -51,6 +52,7 @@
     "prettier": "^3.5.1",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.3",
     "watch": "^1.0.2"
   },

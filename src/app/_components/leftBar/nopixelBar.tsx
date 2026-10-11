@@ -12,6 +12,7 @@ import {
 import { BarHeader } from "./BarHeader";
 import { LARGE_FACTIONS } from "../../constants";
 import { parseLookup } from "../../utils/parseLookup";
+import { filterNoPixelStreamsByFaction } from "../../utils/nopixelFilter";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -113,24 +114,6 @@ const StreamIcon = ({
       </div>
     </button>
   );
-};
-
-const isStreamAllowed = (factionFilter: string, stream: RemoteStream) => {
-  let allowStream = false;
-
-  if (factionFilter === "nponly") {
-    allowStream = stream.rpServer === "NP";
-  } else if (factionFilter === "publicnp") {
-    allowStream = stream.tagFactionSecondary === "publicnp";
-  } else if (factionFilter === "international") {
-    allowStream = stream.tagFactionSecondary === "international";
-  } else if (stream.factionsMap[factionFilter]) {
-    allowStream = true;
-  } else if (factionFilter === "independent" && stream.factionsMap.othernp) {
-    allowStream = true;
-  }
-
-  return allowStream;
 };
 
 const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
@@ -318,10 +301,10 @@ function NopixelBarComponent({
           stream.title.toLowerCase().includes(searchFilterTrimmed),
       );
     } else {
-      _filteredStreams =
-        factionFilter === "allnopixel"
-          ? _filteredStreams
-          : _filteredStreams.filter(isStreamAllowed.bind(null, factionFilter));
+      _filteredStreams = filterNoPixelStreamsByFaction(
+        _filteredStreams,
+        factionFilter,
+      );
     }
 
     return _filteredStreams;

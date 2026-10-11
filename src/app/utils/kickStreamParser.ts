@@ -6,6 +6,7 @@ import {
   type RemoteTnoCharacter,
   type RemoteTnoData,
 } from "../../types";
+import { getAssumeFactions } from "./assumeFaction";
 import { parseLookup } from "./parseLookup";
 
 // Guesses the NoPixel character of a Kick stream from its title, mirroring how TNO-Backend parses Twitch streams
@@ -430,19 +431,18 @@ export const createKickStreamParser = (
     }
 
     // Nothing in the title identifies the character, so fall back to the streamer's known faction/characters
+    const assumeFactions = getAssumeFactions(chatroom?.assumeFaction).filter(
+      isKnownFaction,
+    );
     let possibleCharacter = nowCharacter;
     if (!nowCharacter && !factionNames.length) {
-      const assumeFaction =
-        chatroom?.assumeFaction && isKnownFaction(chatroom.assumeFaction)
-          ? chatroom.assumeFaction
-          : undefined;
-      const assumeFactionCharacter = assumeFaction
-        ? characters.find((char) => char.factionsObj[assumeFaction])
-        : undefined;
+      const assumeFactionCharacter = characters.find((char) =>
+        assumeFactions.some((faction) => char.factionsObj[faction]),
+      );
       if (assumeFactionCharacter) {
         possibleCharacter = assumeFactionCharacter;
-      } else if (assumeFaction) {
-        factionNames = [assumeFaction];
+      } else if (assumeFactions.length) {
+        factionNames = [...assumeFactions];
       } else if (streamer?.assumeChar) {
         nowCharacter = streamer.assumeChar;
         possibleCharacter = nowCharacter;
@@ -484,6 +484,14 @@ export const createKickStreamParser = (
       tagText = "Kick";
     }
 
+    // A guessed label shouldn't hide the stream from the other factions the streamer belongs to
+    if (!nowCharacter) {
+      activeFactions.push(
+        ...assumeFactions.filter(
+          (faction) => !activeFactions.includes(faction),
+        ),
+      );
+    }
     if (newCharFactionSpotted) activeFactions.push("guessed");
     if (onNpWhitelist) activeFactions.push("whitelistnp");
 

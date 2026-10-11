@@ -3,7 +3,7 @@ import { type KickStreamParser } from "./app/utils/kickStreamParser";
 export interface ChatroomsInfo {
   id: number;
   np?: boolean;
-  assumeFaction?: string; // The faction slug that the Kick streamer belongs to
+  assumeFaction?: string[]; // Faction slug(s) that the Kick streamer belongs to
   twitch?: string; // The streamer's Twitch channel, if its name differs, used to look up their NoPixel characters
 }
 
