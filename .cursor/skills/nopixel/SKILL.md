@@ -69,6 +69,16 @@ Department infoboxes (PD, EMS, DOJ, Mayor) fall back to rank fields (`ems_chief`
 Partner/enemy/ally/affiliation/property fields are ignored, as are parenthetical links like `([[The Locksmiths]])`.
 `role` is the field or label name, lightly humanised (e.g. "key people", "f leader" = former leader).
 
+## Who counts as a member
+When unsure, `members`, `kick` and `twitch` assume someone is a member. They only leave out clearly non-member
+infobox groups/roles/fields: Associates, Contractors, Friends, Allies, Affiliates, Partners, Contacts,
+Clients/Customers, Supporters, and explicit Former Members / Ex-Members (`former_members`, `ex_members`).
+Anything ambiguous is kept, e.g. `f_leader` (role "f leader") and `overseen_by`; check `role` if it matters.
+Hangarounds count as members.
+
+E.g. `nopixel members "Brick Bois"` returns 5: its 4 founders plus Jean Paul (f leader), not its Associates.
+If you need the excluded people, read the faction page itself (`url`).
+
 ## Limits
 - First `factions`/`resolve`/`kick`/`twitch` run on a VM reads ~28 category requests (~30 s, ~1000 titles incl.
   2.0/3.0-era and some person categories like Police/Business Owners). Cached for 6 h after that, so repeats take ~0 requests.
