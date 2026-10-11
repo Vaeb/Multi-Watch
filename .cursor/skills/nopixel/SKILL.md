@@ -63,21 +63,20 @@ no name resolves does it stop (exit 6) before fetching any pages. Factions get r
 PSec), so check `unresolved` and its candidates.
 
 ## How roles are read
-Faction infoboxes vary. Members come from fields like `owner`, `founder`, `leader`, `key_people`,
+Faction infoboxes vary. Members come from fields like `owner`, `founder`, `leader`, `f_leader`, `key_people`,
 `members` and `custom_group_<Group>` (inside a group, `label=X` lines set the role, e.g. Staff -> Employee/Runner).
 Department infoboxes (PD, EMS, DOJ, Mayor) fall back to rank fields (`ems_chief`, `captains`, `high_command_1` + its `_role`).
 Partner/enemy/ally/affiliation/property fields are ignored, as are parenthetical links like `([[The Locksmiths]])`.
-`role` is the field or label name, lightly humanised (e.g. "key people", "co leader").
+`role` is the field or label name, lightly humanised (e.g. "key people", "f leader" = former leader).
 
 ## Who counts as a member
-`members`, `kick` and `twitch` return current members only. They leave out:
-- infobox groups (or roles) for non-members: Associates, Hangarounds, Contractors, Friends, Allies, Affiliates,
-  Partners, Contacts, Clients/Customers and Supporters, plus Former/Ex/Past/Retired/Inactive/Alumni groups;
-- former members: `f_leader` and other `f_*`, `former_*`, `ex_*`, `past_*` fields;
-- `overseen_by` and `jurisdiction*` fields.
+When unsure, `members`, `kick` and `twitch` assume someone is a member. They only leave out clearly non-member
+infobox groups/roles/fields: Associates, Hangarounds, Contractors, Friends, Allies, Affiliates, Partners, Contacts,
+Clients/Customers, Supporters, and explicit Former Members / Ex-Members (`former_members`, `ex_members`).
+Anything ambiguous is kept, e.g. `f_leader` (role "f leader") and `overseen_by`; check `role` if it matters.
 
-E.g. `nopixel members "Brick Bois"` returns only its 4 founders, not its Associates or former leader Jean Paul.
-If you need those people, read the faction page itself (`url`).
+E.g. `nopixel members "Brick Bois"` returns 5: its 4 founders plus Jean Paul (f leader), not its Associates.
+If you need the excluded people, read the faction page itself (`url`).
 
 ## Limits
 - First `factions`/`resolve`/`kick`/`twitch` run on a VM reads ~28 category requests (~30 s, ~1000 titles incl.

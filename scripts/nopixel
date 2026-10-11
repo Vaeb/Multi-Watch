@@ -157,9 +157,10 @@ def parse_members(text):
     members = [m for m in members if not _non_member(m)]
     return tname, members
 
+# Only clear non-member labels are excluded; anything ambiguous is kept as a member.
 NON_MEMBER_GROUP = re.compile(r"(?i)^(associates?|hangarounds?|contractors?|friends?|allies|ally|affiliates?|partners?|contacts?|"
-                              r"clients?|customers?|supporters?|former( .*)?|ex( .*)?|past .*|retired|inactive|alumni)$")
-NON_MEMBER_FIELD = re.compile(r"(?i)^(f_.*|former_.*|ex_.*|past_.*|overseen_by|jurisdiction.*)$")
+                              r"clients?|customers?|supporters?|former members?|ex[- ]members?)$")
+NON_MEMBER_FIELD = re.compile(r"(?i)^(former_members?|ex_members?|associates?|hangarounds?|allies|affiliates?|partners?)$")
 def _non_member(m):
     g = (m.get("group") or "").strip(); r = (m.get("role") or "").strip()
     if g and NON_MEMBER_GROUP.match(g): return True
