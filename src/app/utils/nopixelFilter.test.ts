@@ -1,29 +1,25 @@
 import { strict as assert } from "node:assert";
 import test from "node:test";
-import { type ChatroomsInfo, type RemoteStream } from "../../types";
-import { getAssumeFactionColorSlug, getAssumeFactions } from "./assumeFaction";
+import { type RemoteStream } from "../../types";
+import { getAssumeFactions } from "./assumeFaction";
 import { filterNoPixelStreamsByFaction } from "./nopixelFilter";
 
-const kickStream = (channelName: string) =>
+const stream = (
+  channelName: string,
+  factions: string[],
+  extra: Partial<RemoteStream> = {},
+) =>
   ({
     channelName,
-    faction: "Kick",
-    factionsMap: {},
+    rpServer: "NP",
+    faction: factions[0],
+    factions,
+    factionsMap: Object.fromEntries(factions.map((faction) => [faction, true])),
+    ...extra,
   }) as RemoteStream;
 
-const chatroomsLower = {
-  multikick: {
-    id: 1,
-    assumeFaction: ["alpha", "beta"],
-  },
-  singlekick: {
-    id: 2,
-    assumeFaction: ["alpha"],
-  },
-  independentkick: {
-    id: 3,
-  },
-} satisfies Record<string, ChatroomsInfo>;
+const names = (streams: RemoteStream[]) =>
+  streams.map((stream) => stream.channelName);
 
 void test("normalizes optional and multiple assumed factions", () => {
   assert.deepEqual(getAssumeFactions(["alpha"]), ["alpha"]);
@@ -31,48 +27,51 @@ void test("normalizes optional and multiple assumed factions", () => {
   assert.deepEqual(getAssumeFactions(undefined), []);
 });
 
-void test("filters Kick streams by any assumed faction", () => {
+void test("filters streams by any of their factions", () => {
   const streams = [
-    kickStream("MultiKick"),
-    kickStream("SingleKick"),
-    kickStream("IndependentKick"),
+    stream("Multi", ["alpha", "guessed", "beta"]),
+    stream("Single", ["alpha", "guessed"]),
+    stream("Unknown", ["othernp"]),
   ];
 
-  assert.deepEqual(
-    filterNoPixelStreamsByFaction(streams, "alpha", chatroomsLower).map(
-      (stream) => stream.channelName,
-    ),
-    ["MultiKick", "SingleKick"],
-  );
-  assert.deepEqual(
-    filterNoPixelStreamsByFaction(streams, "beta", chatroomsLower).map(
-      (stream) => stream.channelName,
-    ),
-    ["MultiKick"],
-  );
+  assert.deepEqual(names(filterNoPixelStreamsByFaction(streams, "alpha")), [
+    "Multi",
+    "Single",
+  ]);
+  assert.deepEqual(names(filterNoPixelStreamsByFaction(streams, "beta")), [
+    "Multi",
+  ]);
 });
 
 void test("keeps unfiltered streams singular and independent streams separate", () => {
-  const streams = [kickStream("MultiKick"), kickStream("IndependentKick")];
+  const streams = [
+    stream("Multi", ["alpha", "beta"]),
+    stream("Unknown", ["othernp"]),
+    stream("Indie", ["independent"]),
+  ];
 
-  assert.equal(
-    filterNoPixelStreamsByFaction(streams, "allnopixel", chatroomsLower).filter(
-      (stream) => stream.channelName === "MultiKick",
-    ).length,
-    1,
+  assert.deepEqual(
+    names(filterNoPixelStreamsByFaction(streams, "allnopixel")),
+    ["Multi", "Unknown", "Indie"],
   );
   assert.deepEqual(
-    filterNoPixelStreamsByFaction(streams, "independent", chatroomsLower).map(
-      (stream) => stream.channelName,
-    ),
-    ["IndependentKick"],
+    names(filterNoPixelStreamsByFaction(streams, "independent")),
+    ["Unknown", "Indie"],
   );
 });
 
-void test("uses the active matched faction as the color slug when present", () => {
-  assert.equal(
-    getAssumeFactionColorSlug(chatroomsLower.multikick, "beta"),
-    "beta",
-  );
-  assert.equal(getAssumeFactionColorSlug(chatroomsLower.multikick), "alpha");
+void test("filters by server", () => {
+  const streams = [
+    stream("Whitelist", ["alpha"]),
+    stream("Public", ["alpha"], { tagFactionSecondary: "publicnp" }),
+    stream("Other", ["other"], { rpServer: "PurpleRP" }),
+  ];
+
+  assert.deepEqual(names(filterNoPixelStreamsByFaction(streams, "nponly")), [
+    "Whitelist",
+    "Public",
+  ]);
+  assert.deepEqual(names(filterNoPixelStreamsByFaction(streams, "publicnp")), [
+    "Public",
+  ]);
 });

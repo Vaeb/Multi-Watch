@@ -9,10 +9,9 @@ import {
   type RemoteReceived,
   type RemoteStream,
 } from "../../../types";
-import { useKickStore } from "../../stores/kickStore";
 import { BarHeader } from "./BarHeader";
 import { LARGE_FACTIONS } from "../../constants";
-import { getAssumeFactionColorSlug } from "../../utils/assumeFaction";
+import { parseLookup } from "../../utils/parseLookup";
 import { filterNoPixelStreamsByFaction } from "../../utils/nopixelFilter";
 
 interface NopixelBarButtonProps {
@@ -251,12 +250,6 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
   );
 });
 
-const parseLookup = (text: string, retainCase = false) => {
-  text = text.replace(/^\W+|\W+$|[^\w\s]+/g, " ").replace(/\s+/g, " ");
-  if (!retainCase) text = text.toLowerCase();
-  return text.trim();
-};
-
 function NopixelBarComponent({
   receivedData,
   timeFormatted: _timeFormatted,
@@ -265,7 +258,6 @@ function NopixelBarComponent({
   timeFormatted: string;
 }) {
   const nopixelShown = useMainStore((state) => state.nopixelShown);
-  const chatroomsLower = useKickStore((state) => state.chatroomsLower);
   const { toggleNopixel } = useMainStore.getState().actions;
 
   const { parsed } = receivedData;
@@ -312,18 +304,16 @@ function NopixelBarComponent({
       _filteredStreams = filterNoPixelStreamsByFaction(
         _filteredStreams,
         factionFilter,
-        chatroomsLower,
       );
     }
 
     return _filteredStreams;
-  }, [streams, searchFilter, factionFilter, chatroomsLower]);
+  }, [streams, searchFilter, factionFilter]);
 
   const filteredStreamsAdditional = useMemo(
     () =>
       filteredStreams.map((stream) => {
-        const platform: Platform =
-          stream.faction === "Kick" ? "kick" : "twitch";
+        const platform: Platform = stream.platform ?? "twitch";
 
         return {
           tagText: stream.tagText
@@ -335,9 +325,7 @@ function NopixelBarComponent({
             .trim(),
           platform,
           channelTop:
-            stream.noOthersInclude === false ||
-            stream.faction === "Kick" ||
-            stream.characterName === null,
+            stream.noOthersInclude === false || stream.characterName === null,
         };
       }),
     [filteredStreams],
@@ -395,16 +383,7 @@ function NopixelBarComponent({
                 ? filteredStreamsAdditional[i]!.tagText
                 : stream.channelName
             }
-            color={
-              useColorsDark?.[
-                stream.faction === "Kick"
-                  ? (getAssumeFactionColorSlug(
-                      chatroomsLower[stream.channelName.toLowerCase()],
-                      factionFilter,
-                    ) ?? "")
-                  : stream.faction
-              ] ?? "#FFF"
-            }
+            color={useColorsDark?.[stream.faction] ?? "#FFF"}
             onClick={() => {
               addStream(
                 stream.channelName,

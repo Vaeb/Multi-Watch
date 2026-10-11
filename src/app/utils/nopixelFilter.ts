@@ -1,50 +1,21 @@
-import { type ChatroomsInfo, type RemoteStream } from "../../types";
-import { hasAnyAssumeFaction, hasAssumeFaction } from "./assumeFaction";
+import { type RemoteStream } from "../../types";
 
 export const isNoPixelStreamAllowed = (
   factionFilter: string,
-  chatroomsLower: Record<string, ChatroomsInfo>,
   stream: RemoteStream,
 ) => {
-  let allowStream = false;
-
-  if (factionFilter === "nponly") {
-    allowStream = !stream.rpServer || stream.rpServer === "NP";
-  } else {
-    if (stream.faction === "Kick") {
-      const chatroom = chatroomsLower[stream.channelName.toLowerCase()];
-      allowStream =
-        factionFilter !== "independent"
-          ? hasAssumeFaction(chatroom, factionFilter)
-          : !hasAnyAssumeFaction(chatroom);
-    } else {
-      if (factionFilter === "publicnp") {
-        allowStream = stream.tagFactionSecondary === "publicnp";
-      } else if (factionFilter === "international") {
-        allowStream = stream.tagFactionSecondary === "international";
-      } else {
-        if (stream.factionsMap[factionFilter]) {
-          allowStream = true;
-        } else if (
-          factionFilter === "independent" &&
-          stream.factionsMap.othernp
-        ) {
-          allowStream = true;
-        }
-      }
-    }
+  if (factionFilter === "nponly") return stream.rpServer === "NP";
+  if (factionFilter === "publicnp" || factionFilter === "international") {
+    return stream.tagFactionSecondary === factionFilter;
   }
-
-  return allowStream;
+  if (stream.factionsMap[factionFilter]) return true;
+  return factionFilter === "independent" && !!stream.factionsMap.othernp;
 };
 
 export const filterNoPixelStreamsByFaction = (
   streams: RemoteStream[],
   factionFilter: string,
-  chatroomsLower: Record<string, ChatroomsInfo>,
 ) =>
   factionFilter === "allnopixel"
     ? streams
-    : streams.filter((stream) =>
-        isNoPixelStreamAllowed(factionFilter, chatroomsLower, stream),
-      );
+    : streams.filter((stream) => isNoPixelStreamAllowed(factionFilter, stream));
