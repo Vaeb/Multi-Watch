@@ -1,0 +1,305 @@
+#!/usr/bin/env python3
+"""nopixel - read-only CLI for the NoPixel Fandom wiki (MediaWiki API, no auth).
+Content is CC BY-SA from nopixel.fandom.com; credit and link pages when quoting."""
+import argparse, json, os, sys, time, re, gzip, hashlib, difflib, urllib.request, urllib.parse, urllib.error
+
+API = "https://nopixel.fandom.com/api.php"
+WIKI = "https://nopixel.fandom.com/wiki/"
+UA = "mwclient/0.11"  # honest library UA; never spoof a browser, never add 'bot'
+ROOT = "Category:Factions (Gangs/Departments/Businesses)"
+CACHE = os.path.expanduser("~/.cache/nopixel"); TTL = 6 * 3600
+LICENSE = "Content from nopixel.fandom.com, CC BY-SA. Credit and link the page."
+FRESH = False; STATS = {"requests": 0, "cacheHits": 0}; _last = [0.0]
+
+def die(error, status=None, hint=None, code=1):
+    sys.stderr.write(json.dumps({"error": error, "status": status, "hint": hint}) + "\n"); sys.exit(code)
+
+def url_of(t): return WIKI + urllib.parse.quote(t.replace(" ", "_"), safe="/:()'!,*&")
+
+def api(params):
+    params = dict(params, format="json", formatversion="2")
+    q = urllib.parse.urlencode(sorted(params.items()))
+    cf = os.path.join(CACHE, hashlib.sha256(q.encode()).hexdigest() + ".json")
+    if not FRESH and os.path.exists(cf) and time.time() - os.path.getmtime(cf) < TTL:
+        STATS["cacheHits"] += 1
+        with open(cf) as f: return json.load(f)
+    wait = 1.0 - (time.time() - _last[0])
+    if wait > 0: time.sleep(wait)
+    req = urllib.request.Request(API + "?" + q, headers={"User-Agent": UA, "Accept-Encoding": "gzip"})
+    try:
+        STATS["requests"] += 1
+        with urllib.request.urlopen(req, timeout=30) as r:
+            raw = r.read()
+            if r.headers.get("Content-Encoding") == "gzip": raw = gzip.decompress(raw)
+    except urllib.error.HTTPError as e:
+        hint = ("Fandom blocked the request; do not work around it, tell Bridge" if e.code in (402, 403, 429) else None)
+        die(f"HTTP {e.code} from Fandom API", e.code, hint, 3)
+    except urllib.error.URLError as e:
+        die(f"network error: {e.reason}", None, None, 4)
+    finally: _last[0] = time.time()
+    try: d = json.loads(raw)
+    except ValueError: die("non-JSON response from Fandom API", None, "API may have changed; tell Bridge", 5)
+    if "error" in d: die("API error: " + json.dumps(d["error"])[:300], None, None, 5)
+    os.makedirs(CACHE, exist_ok=True)
+    with open(cf + ".tmp", "w") as f: json.dump(d, f)
+    os.replace(cf + ".tmp", cf)
+    return d
+
+def category_members(cat):
+    out, cont = [], {}
+    while True:
+        d = api(dict(action="query", list="categorymembers", cmtitle=cat, cmlimit="500", cmprop="title|ns", **cont))
+        out += d.get("query", {}).get("categorymembers", [])
+        if "continue" not in d: return out
+        cont = {k: v for k, v in d["continue"].items()}
+
+_fcache = {}
+def factions(recurse=True):
+    if recurse in _fcache: return _fcache[recurse]
+    seen_c, pages, todo = set(), {}, [ROOT]
+    while todo:
+        c = todo.pop(0)
+        if c in seen_c: continue
+        seen_c.add(c)
+        for m in category_members(c):
+            if m["ns"] == 14:
+                if recurse: todo.append(m["title"])
+            elif m["ns"] == 0: pages.setdefault(m["title"], c)
+    res = [{"title": t, "url": url_of(t), "category": c} for t, c in sorted(pages.items(), key=lambda x: x[0].lower())]
+    _fcache[recurse] = (res, sorted(seen_c))
+    return _fcache[recurse]
+
+def read_pages(titles):
+    """Batch-read wikitext, 50 per request, following redirects. Returns {requested: {title, content|None}}."""
+    out = {}
+    titles = list(dict.fromkeys(t for t in titles if t))
+    for i in range(0, len(titles), 50):
+        chunk = titles[i:i + 50]
+        d = api(dict(action="query", prop="revisions", rvprop="content", rvslots="main", redirects="1", titles="|".join(chunk)))
+        q = d.get("query", {}); m = {}
+        for n in q.get("normalized", []): m[n["from"]] = n["to"]
+        rd = {r["from"]: r["to"] for r in q.get("redirects", [])}
+        byt = {}
+        for p in q.get("pages", []):
+            c = None if p.get("missing") or p.get("invalid") else p["revisions"][0]["slots"]["main"]["content"]
+            byt[p["title"]] = c
+        for t in chunk:
+            f = m.get(t, t); f = rd.get(f, f)
+            out[t] = {"title": f, "content": byt.get(f)}
+    return out
+
+# ---- wikitext parsing ----
+def infobox(text, want=None):
+    """Return (template_name, {field: value}) for the first infobox-like template."""
+    if not text: return None, {}
+    for mt in re.finditer(r"\{\{\s*([^|{}\n]+)", text):
+        name = mt.group(1).strip()
+        if want and not re.search(want, name, re.I): continue
+        if not want and not re.search(r"infobox|5\.0character|character", name, re.I): continue
+        i, depth, start = mt.start(), 0, mt.start()
+        parts, buf, j = [], [], start + 2
+        depth_t, depth_l = 1, 0
+        while j < len(text) and depth_t:
+            two = text[j:j + 2]
+            if two == "{{": depth_t += 1; buf.append(two); j += 2; continue
+            if two == "}}":
+                depth_t -= 1
+                if depth_t: buf.append(two)
+                j += 2; continue
+            if two == "[[": depth_l += 1; buf.append(two); j += 2; continue
+            if two == "]]": depth_l = max(0, depth_l - 1); buf.append(two); j += 2; continue
+            ch = text[j]
+            if ch == "|" and depth_t == 1 and depth_l == 0: parts.append("".join(buf)); buf = []
+            else: buf.append(ch)
+            j += 1
+        parts.append("".join(buf))
+        fields = {}
+        for p in parts[1:]:
+            if "=" in p:
+                k, v = p.split("=", 1); fields[k.strip()] = v.strip()
+        return name, fields
+    return None, {}
+
+LINK = re.compile(r"\[\[([^\[\]|#]+)(?:#[^\[\]|]*)?(?:\|([^\[\]]*))?\]\]")
+def links(v):
+    v = re.sub(r"\([^()]*\[\[[^()]*\)", "", v)  # drop parenthetical affiliations e.g. ([[The Locksmiths]])
+    out = []
+    for m in LINK.finditer(v):
+        t = m.group(1).strip()
+        if re.match(r"(?i)(file|image|category):", t): continue
+        tail = v[m.end():m.end() + 4]
+        out.append({"character": t[0].upper() + t[1:], "display": (m.group(2) or t).strip(), "deceased": "†" in tail})
+    return out
+
+MEMBER_FIELD = re.compile(r"(?i)^(owner|owners|co_?owner|founder|founders|leader|leaders|f_leader|co_?leader|boss|head|chief|"
+                          r"key_people|members?|core_members|employees?|staff|management|manager|ceo|president|director|.*_leader|.*rank.*members?|custom_group_.+)$")
+def humanise(f): return f.replace("custom_group_", "").replace("_", " ").strip()
+
+def parse_members(text):
+    tname, fields = infobox(text)
+    members = []
+    for k, v in fields.items():
+        if not MEMBER_FIELD.match(k): continue
+        if k.lower().startswith("custom_group_"):
+            group, role = humanise(k), humanise(k)
+            for seg in re.split(r",(?![^\[]*\]\])", v):
+                s = seg.strip()
+                lm = re.match(r"(?i)label\s*=\s*(.*)", s)
+                if lm: role = lm.group(1).strip() or group; continue
+                for l in links(s): members.append(dict(l, role=role, group=group, field=k))
+        else:
+            for l in links(v): members.append(dict(l, role=humanise(k), group=None, field=k))
+    if not members:  # generic fallback for department/rank infoboxes (PD, EMS, DOJ, Mayor...)
+        for k, v in fields.items():
+            if NOT_MEMBER.search(k) or k.endswith("_role"): continue
+            role = plain(fields.get(k + "_role")) or humanise(k)
+            for l in links(v): members.append(dict(l, role=role, group=None, field=k))
+    return tname, members
+
+NOT_MEMBER = re.compile(r"(?i)(partner|enem|all(y|ies)|affiliat|location|headquarters|^hq$|propert|territor|predecessor|successor|"
+                        r"related|victim|image|caption|lofi|name|title|status|type|formed|founded|address|aliases|motto|rival|competitor|"
+                        r"subsidiar|parent|division|unit|website|colou?r)")
+
+def extlink(v):
+    if not v: return None, None
+    m = re.search(r"\[(\S+)\s*([^\]]*)\]", v)
+    return (m.group(1), m.group(2).strip() or None) if m else (v.strip() if v.strip().startswith("http") else None, None)
+
+def handle(v, host):
+    if not v or not v.strip(): return None
+    url, label = extlink(v)
+    if url:
+        m = re.search(host + r"/(?:@)?([A-Za-z0-9_.\-]+)", url, re.I)
+        if m: return m.group(1)
+    s = re.sub(r"<[^>]+>|\[\[|\]\]|'''?", "", label or v).strip().strip("/")
+    s = s.split("/")[-1].lstrip("@")
+    return s if re.fullmatch(r"[A-Za-z0-9_.\-]+", s or "") else None
+
+def plain(v):
+    if not v: return None
+    v = LINK.sub(lambda m: (m.group(2) or m.group(1)), v)
+    v = re.sub(r"\[https?://\S+\s+([^\]]+)\]", r"\1", v); v = re.sub(r"\[https?://[^\]\s]+\]", "", v)
+    v = re.sub(r"<br\s*/?>", "; ", v); v = re.sub(r"<[^>]+>|\{\{[^}]*\}\}|'''?", "", v)
+    v = re.sub(r"\s*\n\s*\*?\s*", "; ", v).strip(" *;")
+    return v or None
+
+def parse_character(title, content):
+    if content is None: return {"name": title, "url": url_of(title), "exists": False, "playedBy": None, "kick": None,
+                                "kickUrl": None, "twitch": None, "status": None, "faction": None, "rank": None}
+    tname, f = infobox(content)
+    kurl, _ = extlink(f.get("kick")); turl, _ = extlink(f.get("twitch"))
+    return {"name": title, "url": url_of(title), "exists": True, "template": tname,
+            "playedBy": plain(f.get("PlayedBy") or f.get("playedby") or f.get("played_by")),
+            "kick": handle(f.get("kick"), r"kick\.com"), "kickUrl": kurl,
+            "twitch": handle(f.get("twitch"), r"twitch\.tv"), "twitchUrl": turl,
+            "status": plain(f.get("status")), "faction": plain(f.get("gangAffiliation")), "rank": plain(f.get("gangRank"))}
+
+# ---- resolve ----
+def norm(s):
+    s = s.lower().strip(); s = re.sub(r"^the\s+", "", s); s = re.sub(r"[^a-z0-9]+", "", s); return s
+
+def resolve(names):
+    flist, _ = factions(True); titles = [f["title"] for f in flist]
+    lower = {}; nmap = {}
+    for t in titles: lower.setdefault(t.lower(), []).append(t); nmap.setdefault(norm(t), []).append(t)
+    out = []
+    for n in names:
+        r = {"query": n, "match": None, "how": None, "candidates": []}
+        if n.lower() in lower and len(lower[n.lower()]) == 1: r.update(match=lower[n.lower()][0], how="exact")
+        elif len(nmap.get(norm(n), [])) == 1: r.update(match=nmap[norm(n)][0], how="normalized")
+        elif len(nmap.get(norm(n), [])) > 1: r.update(how="ambiguous", candidates=nmap[norm(n)])
+        else:
+            sug = difflib.get_close_matches(norm(n), list(nmap), n=5, cutoff=0.6)
+            sub = [k for k in nmap if norm(n) and (norm(n) in k)][:5]
+            c = list(dict.fromkeys(nmap[k][0] for k in sub + sug))
+            r.update(how="no_match", candidates=c)
+        if r["match"]: r["url"] = url_of(r["match"])
+        out.append(r)
+    return out
+
+def members_of(titles):
+    pages = read_pages(titles); out = []
+    for t in titles:
+        p = pages[t]; tname, mem = parse_members(p["content"]) if p["content"] else (None, [])
+        out.append({"title": p["title"], "url": url_of(p["title"]), "exists": p["content"] is not None,
+                    "infobox": tname, "parsed": bool(mem),
+                    "members": [{"character": m["character"], "display": m["display"], "role": m["role"], "group": m["group"],
+                                 "deceased": m["deceased"], "url": url_of(m["character"])} for m in mem]})
+    return out
+
+# ---- stdin chaining ----
+def names_from(args, keys, deep=()):
+    if args: return args
+    if sys.stdin.isatty(): return []
+    data = sys.stdin.read().strip()
+    if not data: return []
+    try: j = json.loads(data)
+    except ValueError: return [l.strip() for l in data.splitlines() if l.strip()]
+    found = []
+    def walk(x):
+        if isinstance(x, str): found.append(x)
+        elif isinstance(x, list): [walk(i) for i in x]
+        elif isinstance(x, dict):
+            for k in deep:
+                if k in x and isinstance(x[k], list): walk(x[k]); return
+            for k in keys:
+                if k in x and isinstance(x[k], str): found.append(x[k]); return
+            for k in ("results", "factions", "members", "characters", "items"):
+                if k in x: walk(x[k]); return
+    walk(j)
+    return list(dict.fromkeys(found))
+
+def emit(obj):
+    obj["license"] = LICENSE; obj["stats"] = dict(STATS)
+    print(json.dumps(obj, ensure_ascii=False, indent=1))
+
+def main():
+    global FRESH
+    ap = argparse.ArgumentParser(prog="nopixel", description=__doc__)
+    ap.add_argument("--fresh", action="store_true", help="bypass the 6h cache")
+    sp = ap.add_subparsers(dest="cmd", required=True)
+    f = sp.add_parser("factions"); f.add_argument("--no-recurse", action="store_true")
+    for c in ("resolve", "members", "character", "kick", "twitch"):
+        p = sp.add_parser(c); p.add_argument("names", nargs="*")
+        if c == "members": p.add_argument("--resolve", action="store_true", help="resolve loose names to faction titles first")
+    a = ap.parse_args(); FRESH = a.fresh; t0 = time.time()
+    if a.cmd == "factions":
+        fl, cats = factions(not a.no_recurse)
+        return emit({"root": ROOT, "count": len(fl), "categoriesVisited": len(cats), "factions": fl})
+    if a.cmd == "resolve":
+        n = names_from(a.names, ["query", "title", "name"]) or die("no names given", hint="pass names or pipe them in", code=2)
+        r = resolve(n); emit({"results": r}); sys.exit(0 if all(x["match"] for x in r) else 6)
+    if a.cmd == "members":
+        n = names_from(a.names, ["match", "title", "name"]) or die("no faction titles given", code=2)
+        if a.resolve:
+            rr = resolve(n); bad = [x for x in rr if not x["match"]]
+            if bad: die("could not resolve some names", None, json.dumps(bad), 6)
+            n = [x["match"] for x in rr]
+        return emit({"factions": members_of(n)})
+    if a.cmd == "character":
+        n = names_from(a.names, ["character", "name", "title"], deep=("members",)) or die("no character names given", code=2)
+        pages = read_pages(n)
+        return emit({"characters": [parse_character(pages[x]["title"], pages[x]["content"]) for x in n]})
+    if a.cmd in ("kick", "twitch"):
+        plat = a.cmd; Plat = plat.capitalize()
+        n = names_from(a.names, ["match", "title", "query", "name"]) or die("no faction names given", code=2)
+        rr = resolve(n); bad = [x for x in rr if not x["match"]]
+        ok = [x["match"] for x in rr if x["match"]]
+        if not ok: die("could not resolve any faction names; nothing fetched", None, json.dumps(bad), 6)
+        for x in bad: print(json.dumps({"warning": "unresolved faction skipped", "query": x.get("query"), "how": x.get("how"), "candidates": x.get("candidates")}), file=sys.stderr)
+        fac = members_of(ok)
+        chars = read_pages([m["character"] for f in fac for m in f["members"]])
+        out = []
+        for f in fac:
+            rows = []
+            for m in f["members"]:
+                c = parse_character(chars[m["character"]]["title"], chars[m["character"]]["content"])
+                rows.append({"character": c["name"], "role": m["role"], "group": m["group"], "deceased": m["deceased"],
+                             "hasPage": c["exists"], "playedBy": c["playedBy"], "kick": c["kick"], "twitch": c["twitch"], "url": c["url"]})
+            out.append({"faction": f["title"], "url": f["url"], "infoboxParsed": f["parsed"], "members": rows,
+                        plat + "Usernames": sorted(set(r[plat] for r in rows if r[plat]), key=str.lower),
+                        "missing" + Plat: sorted(set(r["character"] for r in rows if not r[plat]))})
+        STATS["seconds"] = round(time.time() - t0, 2)
+        return emit({"resolved": rr, "unresolved": [{"query": x.get("query"), "how": x.get("how"), "candidates": x.get("candidates")} for x in bad], "factions": out})
+
+if __name__ == "__main__": main()
