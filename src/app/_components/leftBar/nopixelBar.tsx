@@ -8,11 +8,12 @@ import {
   type Platform,
   type RemoteReceived,
   type RemoteStream,
-  type ChatroomsInfo,
 } from "../../../types";
 import { useKickStore } from "../../stores/kickStore";
 import { BarHeader } from "./BarHeader";
 import { LARGE_FACTIONS } from "../../constants";
+import { getAssumeFactionColorSlug } from "../../utils/assumeFaction";
+import { filterNoPixelStreamsByFaction } from "../../utils/nopixelFilter";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -114,44 +115,6 @@ const StreamIcon = ({
       </div>
     </button>
   );
-};
-
-const isStreamAllowed = (
-  factionFilter: string,
-  chatroomsLower: Record<string, ChatroomsInfo>,
-  stream: RemoteStream,
-) => {
-  let allowStream = false;
-
-  if (factionFilter === "nponly") {
-    allowStream = !stream.rpServer || stream.rpServer === "NP";
-  } else {
-    if (stream.faction === "Kick") {
-      const assumeFaction =
-        chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction;
-      allowStream =
-        factionFilter !== "independent"
-          ? assumeFaction === factionFilter
-          : !assumeFaction;
-    } else {
-      if (factionFilter === "publicnp") {
-        allowStream = stream.tagFactionSecondary === "publicnp";
-      } else if (factionFilter === "international") {
-        allowStream = stream.tagFactionSecondary === "international";
-      } else {
-        if (stream.factionsMap[factionFilter]) {
-          allowStream = true;
-        } else if (
-          factionFilter === "independent" &&
-          stream.factionsMap.othernp
-        ) {
-          allowStream = true;
-        }
-      }
-    }
-  }
-
-  return allowStream;
 };
 
 const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
@@ -346,12 +309,11 @@ function NopixelBarComponent({
           stream.title.toLowerCase().includes(searchFilterTrimmed),
       );
     } else {
-      _filteredStreams =
-        factionFilter === "allnopixel"
-          ? _filteredStreams
-          : _filteredStreams.filter(
-              isStreamAllowed.bind(null, factionFilter, chatroomsLower),
-            );
+      _filteredStreams = filterNoPixelStreamsByFaction(
+        _filteredStreams,
+        factionFilter,
+        chatroomsLower,
+      );
     }
 
     return _filteredStreams;
@@ -436,9 +398,10 @@ function NopixelBarComponent({
             color={
               useColorsDark?.[
                 stream.faction === "Kick"
-                  ? // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-                    chatroomsLower[stream.channelName.toLowerCase()]
-                      ?.assumeFaction!
+                  ? (getAssumeFactionColorSlug(
+                      chatroomsLower[stream.channelName.toLowerCase()],
+                      factionFilter,
+                    ) ?? "")
                   : stream.faction
               ] ?? "#FFF"
             }

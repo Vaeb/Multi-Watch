@@ -30,52 +30,52 @@
   "hotted89": {
     "id": 5873957,
     "np": true,
-    "assumeFaction": "kc"
+    "assumeFaction": ["kc"]
   },
   "TinySpark": {
     "id": 2372231,
     "np": true,
-    "assumeFaction": "kc"
+    "assumeFaction": ["kc"]
   },
   "Cathie": {
     "id": 62455237,
     "np": true,
-    "assumeFaction": "kc"
+    "assumeFaction": ["kc"]
   },
   "AidenNortha": {
     "id": 30370799,
     "np": true,
-    "assumeFaction": "kc"
+    "assumeFaction": ["kc"]
   },
   "Chidori-Senpai": {
     "id": 5873957,
     "np": true,
-    "assumeFaction": "kc"
+    "assumeFaction": ["kc"]
   },
   "Reklez": {
     "id": 89297,
     "np": true,
-    "assumeFaction": "vagos"
+    "assumeFaction": ["vagos"]
   },
   "itsginger": {
     "id": 1645049,
     "np": true,
-    "assumeFaction": "hounds"
+    "assumeFaction": ["hounds"]
   },
   "SkiMaskDaniel": {
     "id": 2697388,
     "np": true,
-    "assumeFaction": "hounds"
+    "assumeFaction": ["hounds"]
   },
   "IrishGT": {
     "id": 50840382,
     "np": true,
-    "assumeFaction": "hounds"
+    "assumeFaction": ["hounds"]
   },
   "ChrisTombstone": {
     "id": 1874404,
     "np": true,
-    "assumeFaction": "hounds"
+    "assumeFaction": ["hounds"]
   },
   "Nikez": {
     "id": 2402594,
@@ -88,27 +88,27 @@
   "Capped": {
     "id": 62909184,
     "np": true,
-    "assumeFaction": "faceless"
+    "assumeFaction": ["faceless"]
   },
   "4hBunger": {
     "id": 16120140,
     "np": true,
-    "assumeFaction": "faceless"
+    "assumeFaction": ["faceless"]
   },
   "heyimzed": {
     "id": 91168,
     "np": true,
-    "assumeFaction": "admc"
+    "assumeFaction": ["admc"]
   },
   "Barky": {
     "id": 4234650,
     "np": true,
-    "assumeFaction": "admc"
+    "assumeFaction": ["admc"]
   },
   "ItzDeanyy": {
     "id": 61283658,
     "np": true,
-    "assumeFaction": "sypress"
+    "assumeFaction": ["sypress"]
   },
   "grmps": {
     "id": 126636,
@@ -129,132 +129,132 @@
   "Ramee": {
     "id": 129914,
     "np": true,
-    "assumeFaction": "changgang"
+    "assumeFaction": ["changgang"]
   },
   "TheEazyLife": {
     "id": 2305821,
     "np": true,
-    "assumeFaction": "faceless"
+    "assumeFaction": ["faceless"]
   },
   "Zetark": {
     "id": 7716147,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "Harry": {
     "id": 1218150,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "tjnv": {
     "id": 63701083,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "iateabattery": {
     "id": 2634803,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "0axe": {
     "id": 908467,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "MachoSL": {
     "id": 61119548,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "JonLaw": {
     "id": 1836564,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "Liiv": {
     "id": 101886,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "Klutch": {
     "id": 3018324,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "xHolty": {
     "id": 5836174,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "PaperStackerJ": {
     "id": 7013092,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "imDEVYN": {
     "id": 133841,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "fatboislimrp": {
     "id": 92282790,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "StrikingContact": {
     "id": 2860619,
     "np": true,
-    "assumeFaction": "habibis"
+    "assumeFaction": ["habibis"]
   },
   "kieron": {
     "id": 78555,
     "np": true,
-    "assumeFaction": "habibis"
+    "assumeFaction": ["habibis"]
   },
   "Zixtah": {
     "id": 3494647,
     "np": true,
-    "assumeFaction": "faceless"
+    "assumeFaction": ["faceless"]
   },
   "DEFAC3D": {
     "id": 1187734,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "JustKiku": {
     "id": 3307962,
     "np": true,
-    "assumeFaction": "habibis"
+    "assumeFaction": ["habibis"]
   },
   "Txylorz": {
     "id": 63567,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "Finlayy": {
     "id": 2746442,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "Jakson": {
     "id": 1343202,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "Louuis": {
     "id": 2504848,
     "np": true,
-    "assumeFaction": "faceless"
+    "assumeFaction": ["faceless"]
   },
   "STE_Eire": {
     "id": 2718894,
     "np": true,
-    "assumeFaction": "faceless"
+    "assumeFaction": ["faceless"]
   },
   "Cheez": {
     "id": 60822788,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "AbbottJake": {
     "id": 4818996,
@@ -263,417 +263,417 @@
   "Frank_Ladd": {
     "id": 59874256,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "Cashxzy": {
     "id": 60487463,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "Azza0_0": {
     "id": 2020520,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": ["manor"]
   },
   "Biotox": {
     "id": 243173,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "CathFawr": {
     "id": 70865728,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "rerolldota": {
     "id": 70561266,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Lt_Custard": {
     "id": 2570847,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "MattEU": {
     "id": 2825518,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "burn": {
     "id": 82713773,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "uhsnow": {
     "id": 7645377,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Saphirici": {
     "id": 2448474,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "52chains": {
     "id": 101941,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Sock22": {
     "id": 3054141,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Deansocool": {
     "id": 5579351,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Hurnani": {
     "id": 2848971,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Myles_Away": {
     "id": 7863831,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Kam_EU": {
     "id": 55986509,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Aus24": {
     "id": 1215902,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "travpiper": {
     "id": 43042315,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "leonarwho": {
     "id": 2417280,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "DougTheGiant": {
     "id": 129696,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "ClaytonERP": {
     "id": 52715994,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "KylieBitkin": {
     "id": 2733273,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "GlitterGlock19": {
     "id": 2483677,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "kyle": {
     "id": 9975231,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "MDRAKOO": {
     "id": 62441136,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Stormskii": {
     "id": 75081,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "MKelley": {
     "id": 121853,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "KermShiesty": {
     "id": 126096,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Simpless": {
     "id": 2907820,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "thedoubles": {
     "id": 336820,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "zuck": {
     "id": 386790,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "ghotties": {
     "id": 2911741,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "sanesfx": {
     "id": 7255776,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "taza-v": {
     "id": 51182564,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "sanityybro": {
     "id": 8494640,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "thatguygp": {
     "id": 114584,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "kyrienolife": {
     "id": 56850,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Julian": {
     "id": 65978,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "a2guapo": {
     "id": 38521095,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Harmless": {
     "id": 47854692,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Rissabear": {
     "id": 50600228,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "poetic": {
     "id": 112330,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Manax": {
     "id": 21140232,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "omie": {
     "id": 89446,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "dripp": {
     "id": 972487,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "angelina": {
     "id": 2857100,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "oozi": {
     "id": 67398,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "sanes0": {
     "id": 7255776,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "4HEAD": {
     "id": 2579856,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Swizz": {
     "id": 1466067,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Ming": {
     "id": 121898,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Caramel": {
     "id": 1194676,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Chelb": {
     "id": 1415812,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "moesabai": {
     "id": 63413405,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Daisyks": {
     "id": 57646900,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Jack": {
     "id": 65073,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Sukhi_1": {
     "id": 5192108,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "ChopoNZ": {
     "id": 1327337,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "bbeambee": {
     "id": 59439016,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "Tobii": {
     "id": 2424324,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "Simo": {
     "id": 133200,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "AcezProduction": {
     "id": 1669680,
     "np": true,
-    "assumeFaction": "habibis"
+    "assumeFaction": ["habibis"]
   },
   "bibo": {
     "id": 126472,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "e3kay": {
     "id": 62347818,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "KielbasaOP": {
     "id": 108928,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "Lysium": {
     "id": 64021,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "kongfue": {
     "id": 1984882,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "Reina": {
     "id": 74043,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "Arro2k": {
     "id": 10258331,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "RayC": {
     "id": 118956,
     "np": true,
-    "assumeFaction": "habibis"
+    "assumeFaction": ["habibis"]
   },
   "zandr400": {
     "id": 50013656,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "qift": {
     "id": 48105250,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "Boss-Zulu": {
     "id": 2021342,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "Kayn-xo": {
     "id": 50662744,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "slimeoz": {
     "id": 52830647,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "NismoDOMA": {
     "id": 52088287,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": ["hades"]
   },
   "MalcolmGlass": {
     "id": 2649757,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "Xiceman": {
     "id": 1767118,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "dasMEHDI": {
     "id": 2381527,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "traycee": {
     "id": 123740,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "ZPapz": {
     "id": 2513940,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "ash": {
     "id": 2719973,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": ["police"]
   },
   "CLEErp": {
     "id": 49051259,
@@ -682,137 +682,132 @@
   "itsHolmes": {
     "id": 50496895,
     "np": true,
-    "assumeFaction": "ssb"
+    "assumeFaction": ["ssb"]
   },
   "yuukidav": {
     "id": 88541,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "VgsBrendan": {
     "id": 1078703,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "Nathankb": {
     "id": 63431167,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "moussy": {
     "id": 2714975,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "either": {
     "id": 55936,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "CrazyHeartsz": {
     "id": 62806290,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "Boogie": {
     "id": 2427744,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "chillypanda": {
     "id": 66320,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "Kemony": {
     "id": 2733117,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "ChasRP": {
     "id": 1346767,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "Reedy": {
     "id": 1281792,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "Silent": {
     "id": 2738597,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "kioShiMa": {
     "id": 1411791,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "arniev": {
     "id": 3879287,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "Jeimiru": {
     "id": 2752771,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "tylertr": {
     "id": 136656,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "StankXO": {
     "id": 1120711,
     "np": true,
-    "assumeFaction": "hydragang"
-  },
-  "Reedy": {
-    "id": 1281792,
-    "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "JJFried": {
     "id": 1297825,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "Moboking": {
     "id": 5706693,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": ["hydragang"]
   },
   "masonshortland": {
     "id": 4460788,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "novazfov": {
     "id": 118594,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "Sayeed": {
     "id": 125993,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "Buddha": {
     "id": 32806,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "AnthonyZ": {
     "id": 1822781,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": ["newbabylon"]
   },
   "Saab": {
     "id": 984265,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": ["besties"]
   },
   "roshtein": {
     "id": 4598

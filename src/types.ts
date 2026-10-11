@@ -1,7 +1,7 @@
 export interface ChatroomsInfo {
   id: number;
   np?: boolean;
-  assumeFaction?: string; // The faction slug that the Kick streamer belongs to
+  assumeFaction?: string[]; // Faction slug(s) that the Kick streamer belongs to
 }
 
 export interface PageParams {
