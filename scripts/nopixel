@@ -154,7 +154,18 @@ def parse_members(text):
             if NOT_MEMBER.search(k) or k.endswith("_role"): continue
             role = plain(fields.get(k + "_role")) or humanise(k)
             for l in links(v): members.append(dict(l, role=role, group=None, field=k))
+    members = [m for m in members if not _non_member(m)]
     return tname, members
+
+NON_MEMBER_GROUP = re.compile(r"(?i)^(associates?|hangarounds?|contractors?|friends?|allies|ally|affiliates?|partners?|contacts?|"
+                              r"clients?|customers?|supporters?|former( .*)?|ex( .*)?|past .*|retired|inactive|alumni)$")
+NON_MEMBER_FIELD = re.compile(r"(?i)^(f_.*|former_.*|ex_.*|past_.*|overseen_by|jurisdiction.*)$")
+def _non_member(m):
+    g = (m.get("group") or "").strip(); r = (m.get("role") or "").strip()
+    if g and NON_MEMBER_GROUP.match(g): return True
+    if not g and NON_MEMBER_GROUP.match(r): return True
+    if NON_MEMBER_FIELD.match(m.get("field") or ""): return True
+    return False
 
 NOT_MEMBER = re.compile(r"(?i)(partner|enem|all(y|ies)|affiliat|location|headquarters|^hq$|propert|territor|predecessor|successor|"
                         r"related|victim|image|caption|lofi|name|title|status|type|formed|founded|address|aliases|motto|rival|competitor|"
