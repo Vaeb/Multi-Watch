@@ -12,6 +12,7 @@ import {
   type CachedStreams,
 } from "../../types";
 import { IS_LOCALHOST, NOPIXEL_DATA_INTERVAL } from "../constants";
+import { getAssumeFactions } from "./assumeFaction";
 import { log } from "./log";
 
 const globalData = global as GlobalData;
@@ -80,11 +81,12 @@ const mergeKickIntoParsed = async (
   // Collect factions slugs for live Kick streamers
   const liveKickFactions = new Set<string>();
   kickStreams.forEach((stream) => {
-    const factionSlug =
-      chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction;
-    if (factionSlug) {
+    const factionSlugs = getAssumeFactions(
+      chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction,
+    );
+    factionSlugs.forEach((factionSlug) => {
       liveKickFactions.add(factionSlug);
-    }
+    });
   });
 
   // Update filterFactions based on live Kick streamers and maintain order
