@@ -10,22 +10,43 @@ import {
   type ChatroomsInfo,
   type GlobalData,
   type CachedStreams,
+  type RemoteTnoData,
 } from "../../types";
 import { IS_LOCALHOST, NOPIXEL_DATA_INTERVAL } from "../constants";
+import { createKickStreamParser } from "./kickStreamParser";
 import { log } from "./log";
 
 const globalData = global as GlobalData;
+
+const NOPIXEL_API_URL = IS_LOCALHOST
+  ? "https://vaeb.io:3030"
+  : "http://localhost:3029";
+
+// Used until the character data has been fetched
+const fallbackKickStreamParser = createKickStreamParser();
 
 let cacheResolve: (value: CachedStreams | PromiseLike<CachedStreams>) => void;
 const cachePromise = new Promise<CachedStreams>((resolve) => {
   cacheResolve = resolve;
 });
 
+const updateKickStreamParser = async () => {
+  try {
+    const dataRaw = await fetch(`${NOPIXEL_API_URL}/tno_data`);
+    const data = (await dataRaw.json()) as Partial<RemoteTnoData>;
+    if (!data.npCharacters) {
+      throw new Error("Response is missing npCharacters");
+    }
+
+    globalData.kickStreamParser = createKickStreamParser(data);
+  } catch (err) {
+    log("[updateKickStreamParser] error:", err);
+  }
+};
+
 const getTwitchData = async () => {
   try {
-    const url = IS_LOCALHOST
-      ? "https://vaeb.io:3030/live"
-      : "http://localhost:3029/live";
+    const url = `${NOPIXEL_API_URL}/live`;
 
     if (IS_LOCALHOST) {
       log("Fetching NoPixel data from", url);
@@ -65,27 +86,19 @@ const mergeKickIntoParsed = async (
     ]),
   );
 
-  const kickStreams = _kickStreams.map(
-    (_kickStream) =>
-      ({
-        channelName: _kickStream.channelName,
-        viewers: _kickStream.viewers,
-        title: _kickStream.session_title,
-        profileUrl: _kickStream.thumbnail.src,
-        tagText: "Kick",
-        faction: "Kick",
-      }) as RemoteStream,
+  const parseKickStream =
+    globalData.kickStreamParser ?? fallbackKickStreamParser;
+  const kickStreams = _kickStreams.map((kickStream) =>
+    parseKickStream(
+      kickStream,
+      chatroomsLower[kickStream.channelName.toLowerCase()],
+    ),
   );
 
   // Collect factions slugs for live Kick streamers
-  const liveKickFactions = new Set<string>();
-  kickStreams.forEach((stream) => {
-    const factionSlug =
-      chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction;
-    if (factionSlug) {
-      liveKickFactions.add(factionSlug);
-    }
-  });
+  const liveKickFactions = new Set(
+    kickStreams.flatMap((stream) => stream.factions),
+  );
 
   // Update filterFactions based on live Kick streamers and maintain order
   const updatedFilterFactions = parsed.filterFactions.map((factionInfo) => {
@@ -178,6 +191,8 @@ export const init = async () => {
   if (!globalData.cachedKickTime) globalData.cachedKickTime = 0;
   if (!globalData.connected) globalData.connected = 0;
 
+  updateKickStreamParser().catch(console.error);
+
   getParsedTwitchDataCb(async (parsed) => {
     const isFirst = globalData.cachedTwitch === undefined;
     globalData.cachedTwitch = parsed;
@@ -191,6 +206,7 @@ export const init = async () => {
   });
 
   setInterval(() => {
+    updateKickStreamParser().catch(console.error);
     getParsedTwitchDataCb((parsed) => {
       globalData.cachedTwitch = parsed;
       globalData.cachedTwitchTime = +new Date();

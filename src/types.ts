@@ -1,7 +1,10 @@
+import { type KickStreamParser } from "./app/utils/kickStreamParser";
+
 export interface ChatroomsInfo {
   id: number;
   np?: boolean;
   assumeFaction?: string; // The faction slug that the Kick streamer belongs to
+  twitch?: string; // The streamer's Twitch channel, if its name differs, used to look up their NoPixel characters
 }
 
 export interface PageParams {
@@ -27,9 +30,10 @@ export interface RemoteStream {
   title: string;
   viewers: number;
   profileUrl: string;
-  rpServer: string;
-  characterName: string;
-  nicknameLookup: string;
+  platform?: Platform; // Only set for Kick streams
+  rpServer: string | null;
+  characterName: string | null;
+  nicknameLookup: string | null;
   faction: string;
   tagFaction: string;
   tagFactionSecondary?: string;
@@ -83,6 +87,33 @@ export interface RemoteKickLivestream {
 
 export type RemoteKickLivestreamData = RemoteKickLivestream | null;
 
+export type AssumeServer = "whitelist" | "public" | "international";
+
+export interface RemoteTnoCharacter {
+  name: string;
+  factions?: string[];
+  displayName?: number;
+  nicknames?: string[];
+  leader?: boolean;
+  assumeServer?: AssumeServer;
+  assumeChar?: boolean;
+}
+
+// NoPixel character and title-matching data from TNO-Backend's /tno_data (regexes are serialized as their sources)
+export interface RemoteTnoData {
+  npCharacters: Record<string, RemoteTnoCharacter[]>;
+  npFactionsRegex: Record<string, string>;
+  greaterFactions: Record<string, boolean>;
+  lesserFactions: Record<string, boolean>;
+  serverTwoFactions: Record<string, boolean>;
+  useColorsDark: Record<string, string>;
+  regNp: string;
+  regNpPublic: string;
+  regNpWhitelist: string;
+  regNpInternational: string;
+  regOthers: { name: string; reg: string; include: number }[];
+}
+
 export interface CachedStreams {
   cachedTwitch: RemoteParsed;
   cachedTwitchTime: number;
@@ -92,5 +123,6 @@ export type GlobalData = typeof global &
   Partial<CachedStreams> & {
     cachedKickStreams: RemoteKickLivestream[];
     cachedKickTime: number;
+    kickStreamParser?: KickStreamParser;
     connected: number;
   };

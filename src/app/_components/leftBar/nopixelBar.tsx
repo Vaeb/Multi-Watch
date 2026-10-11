@@ -8,11 +8,10 @@ import {
   type Platform,
   type RemoteReceived,
   type RemoteStream,
-  type ChatroomsInfo,
 } from "../../../types";
-import { useKickStore } from "../../stores/kickStore";
 import { BarHeader } from "./BarHeader";
 import { LARGE_FACTIONS } from "../../constants";
+import { parseLookup } from "../../utils/parseLookup";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -116,39 +115,19 @@ const StreamIcon = ({
   );
 };
 
-const isStreamAllowed = (
-  factionFilter: string,
-  chatroomsLower: Record<string, ChatroomsInfo>,
-  stream: RemoteStream,
-) => {
+const isStreamAllowed = (factionFilter: string, stream: RemoteStream) => {
   let allowStream = false;
 
   if (factionFilter === "nponly") {
-    allowStream = !stream.rpServer || stream.rpServer === "NP";
-  } else {
-    if (stream.faction === "Kick") {
-      const assumeFaction =
-        chatroomsLower[stream.channelName.toLowerCase()]?.assumeFaction;
-      allowStream =
-        factionFilter !== "independent"
-          ? assumeFaction === factionFilter
-          : !assumeFaction;
-    } else {
-      if (factionFilter === "publicnp") {
-        allowStream = stream.tagFactionSecondary === "publicnp";
-      } else if (factionFilter === "international") {
-        allowStream = stream.tagFactionSecondary === "international";
-      } else {
-        if (stream.factionsMap[factionFilter]) {
-          allowStream = true;
-        } else if (
-          factionFilter === "independent" &&
-          stream.factionsMap.othernp
-        ) {
-          allowStream = true;
-        }
-      }
-    }
+    allowStream = stream.rpServer === "NP";
+  } else if (factionFilter === "publicnp") {
+    allowStream = stream.tagFactionSecondary === "publicnp";
+  } else if (factionFilter === "international") {
+    allowStream = stream.tagFactionSecondary === "international";
+  } else if (stream.factionsMap[factionFilter]) {
+    allowStream = true;
+  } else if (factionFilter === "independent" && stream.factionsMap.othernp) {
+    allowStream = true;
   }
 
   return allowStream;
@@ -288,12 +267,6 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
   );
 });
 
-const parseLookup = (text: string, retainCase = false) => {
-  text = text.replace(/^\W+|\W+$|[^\w\s]+/g, " ").replace(/\s+/g, " ");
-  if (!retainCase) text = text.toLowerCase();
-  return text.trim();
-};
-
 function NopixelBarComponent({
   receivedData,
   timeFormatted: _timeFormatted,
@@ -302,7 +275,6 @@ function NopixelBarComponent({
   timeFormatted: string;
 }) {
   const nopixelShown = useMainStore((state) => state.nopixelShown);
-  const chatroomsLower = useKickStore((state) => state.chatroomsLower);
   const { toggleNopixel } = useMainStore.getState().actions;
 
   const { parsed } = receivedData;
@@ -349,19 +321,16 @@ function NopixelBarComponent({
       _filteredStreams =
         factionFilter === "allnopixel"
           ? _filteredStreams
-          : _filteredStreams.filter(
-              isStreamAllowed.bind(null, factionFilter, chatroomsLower),
-            );
+          : _filteredStreams.filter(isStreamAllowed.bind(null, factionFilter));
     }
 
     return _filteredStreams;
-  }, [streams, searchFilter, factionFilter, chatroomsLower]);
+  }, [streams, searchFilter, factionFilter]);
 
   const filteredStreamsAdditional = useMemo(
     () =>
       filteredStreams.map((stream) => {
-        const platform: Platform =
-          stream.faction === "Kick" ? "kick" : "twitch";
+        const platform: Platform = stream.platform ?? "twitch";
 
         return {
           tagText: stream.tagText
@@ -373,9 +342,7 @@ function NopixelBarComponent({
             .trim(),
           platform,
           channelTop:
-            stream.noOthersInclude === false ||
-            stream.faction === "Kick" ||
-            stream.characterName === null,
+            stream.noOthersInclude === false || stream.characterName === null,
         };
       }),
     [filteredStreams],
@@ -433,15 +400,7 @@ function NopixelBarComponent({
                 ? filteredStreamsAdditional[i]!.tagText
                 : stream.channelName
             }
-            color={
-              useColorsDark?.[
-                stream.faction === "Kick"
-                  ? // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-                    chatroomsLower[stream.channelName.toLowerCase()]
-                      ?.assumeFaction!
-                  : stream.faction
-              ] ?? "#FFF"
-            }
+            color={useColorsDark?.[stream.faction] ?? "#FFF"}
             onClick={() => {
               addStream(
                 stream.channelName,
