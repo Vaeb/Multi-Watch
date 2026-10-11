@@ -1,11 +1,8 @@
 import { strict as assert } from "node:assert";
 import test from "node:test";
 import { type ChatroomsInfo, type RemoteStream } from "../../types";
-import {
-  getAssumeFactionColorSlug,
-  getAssumeFactions,
-} from "./assumeFaction.ts";
-import { filterNoPixelStreamsByFaction } from "./nopixelFilter.ts";
+import { getAssumeFactionColorSlug, getAssumeFactions } from "./assumeFaction";
+import { filterNoPixelStreamsByFaction } from "./nopixelFilter";
 
 const kickStream = (channelName: string) =>
   ({
@@ -28,13 +25,13 @@ const chatroomsLower = {
   },
 } satisfies Record<string, ChatroomsInfo>;
 
-test("normalizes single and multiple assumed factions", () => {
+void test("normalizes single and multiple assumed factions", () => {
   assert.deepEqual(getAssumeFactions("alpha"), ["alpha"]);
   assert.deepEqual(getAssumeFactions(["alpha", "beta"]), ["alpha", "beta"]);
   assert.deepEqual(getAssumeFactions(undefined), []);
 });
 
-test("filters Kick streams by any assumed faction", () => {
+void test("filters Kick streams by any assumed faction", () => {
   const streams = [
     kickStream("MultiKick"),
     kickStream("SingleKick"),
@@ -55,7 +52,7 @@ test("filters Kick streams by any assumed faction", () => {
   );
 });
 
-test("keeps unfiltered streams singular and independent streams separate", () => {
+void test("keeps unfiltered streams singular and independent streams separate", () => {
   const streams = [kickStream("MultiKick"), kickStream("IndependentKick")];
 
   assert.equal(
@@ -72,7 +69,7 @@ test("keeps unfiltered streams singular and independent streams separate", () =>
   );
 });
 
-test("uses the active matched faction as the color slug when present", () => {
+void test("uses the active matched faction as the color slug when present", () => {
   assert.equal(
     getAssumeFactionColorSlug(chatroomsLower.multikick, "beta"),
     "beta",
