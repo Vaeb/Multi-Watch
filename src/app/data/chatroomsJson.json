@@ -17,7 +17,8 @@
   },
   "MaximusBlack": {
     "id": 163127,
-    "np": true
+    "np": true,
+    "twitch": "LAGTVMaximusBlack"
   },
   "RatedEpicz": {
     "id": 2365013,
@@ -50,7 +51,8 @@
   "Chidori-Senpai": {
     "id": 5873957,
     "np": true,
-    "assumeFaction": "kc"
+    "assumeFaction": "kc",
+    "twitch": "chidori_senpai"
   },
   "Reklez": {
     "id": 89297,
@@ -116,7 +118,8 @@
   },
   "Gioso": {
     "id": 1275063,
-    "np": true
+    "np": true,
+    "twitch": "Giosooo"
   },
   "Chatterbox": {
     "id": 2478088,
@@ -169,7 +172,8 @@
   "JonLaw": {
     "id": 1836564,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "manor",
+    "twitch": "JonLaw_"
   },
   "Liiv": {
     "id": 101886,
@@ -229,12 +233,14 @@
   "Txylorz": {
     "id": 63567,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "manor",
+    "twitch": "Txylorzz"
   },
   "Finlayy": {
     "id": 2746442,
     "np": true,
-    "assumeFaction": "manor"
+    "assumeFaction": "manor",
+    "twitch": "Finlay"
   },
   "Jakson": {
     "id": 1343202,
@@ -278,7 +284,8 @@
   "Biotox": {
     "id": 243173,
     "np": true,
-    "assumeFaction": "newbabylon"
+    "assumeFaction": "newbabylon",
+    "twitch": "Biotoxz_"
   },
   "CathFawr": {
     "id": 70865728,
@@ -343,7 +350,8 @@
   "Kam_EU": {
     "id": 55986509,
     "np": true,
-    "assumeFaction": "police"
+    "assumeFaction": "police",
+    "twitch": "KamEU"
   },
   "Aus24": {
     "id": 1215902,
@@ -408,7 +416,8 @@
   "Simpless": {
     "id": 2907820,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": "besties",
+    "twitch": "SimplessR6"
   },
   "thedoubles": {
     "id": 336820,
@@ -473,7 +482,8 @@
   "poetic": {
     "id": 112330,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": "besties",
+    "twitch": "SlightlyPoetic"
   },
   "Manax": {
     "id": 21140232,
@@ -513,7 +523,8 @@
   "Swizz": {
     "id": 1466067,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": "besties",
+    "twitch": "SwizzMB"
   },
   "Ming": {
     "id": 121898,
@@ -578,7 +589,8 @@
   "bibo": {
     "id": 126472,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": "hades",
+    "twitch": "biboskills"
   },
   "e3kay": {
     "id": 62347818,
@@ -613,7 +625,8 @@
   "RayC": {
     "id": 118956,
     "np": true,
-    "assumeFaction": "habibis"
+    "assumeFaction": "habibis",
+    "twitch": "Ray__C"
   },
   "zandr400": {
     "id": 50013656,
@@ -628,7 +641,8 @@
   "Boss-Zulu": {
     "id": 2021342,
     "np": true,
-    "assumeFaction": "hades"
+    "assumeFaction": "hades",
+    "twitch": "boss_zulu"
   },
   "Kayn-xo": {
     "id": 50662744,
@@ -697,7 +711,8 @@
   "Nathankb": {
     "id": 63431167,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": "hydragang",
+    "twitch": "nathankb_"
   },
   "moussy": {
     "id": 2714975,
@@ -747,7 +762,8 @@
   "kioShiMa": {
     "id": 1411791,
     "np": true,
-    "assumeFaction": "hydragang"
+    "assumeFaction": "hydragang",
+    "twitch": "kioShiMa_ff"
   },
   "arniev": {
     "id": 3879287,
@@ -812,7 +828,8 @@
   "Saab": {
     "id": 984265,
     "np": true,
-    "assumeFaction": "besties"
+    "assumeFaction": "besties",
+    "twitch": "Ssaab"
   },
   "roshtein": {
     "id": 4598
