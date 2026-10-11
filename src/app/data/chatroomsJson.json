@@ -968,7 +968,7 @@
   "WhiskeyMate": {
     "id": 107590764,
     "np": true,
-    "assumeFaction": ["oldcountry", "police"]
+    "assumeFaction": ["police"]
   },
   "Sarkwentv": {
     "id": 3591849,
