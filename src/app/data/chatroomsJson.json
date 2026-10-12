@@ -93,7 +93,7 @@
   "Capped": {
     "id": 62909184,
     "np": true,
-    "assumeFaction": ["faceless", "nest"]
+    "assumeFaction": ["locksmiths", "faceless", "nest"]
   },
   "4hBunger": {
     "id": 16120140,
@@ -313,7 +313,7 @@
   "burn": {
     "id": 82713773,
     "np": true,
-    "assumeFaction": ["casino"]
+    "assumeFaction": ["locksmiths", "casino"]
   },
   "uhsnow": {
     "id": 7645377,
@@ -1410,5 +1410,10 @@
     "id": 7717007,
     "np": true,
     "assumeFaction": ["hkpawn", "oldcountry"]
+  },
+  "kiva": {
+    "id": 71935026,
+    "np": true,
+    "assumeFaction": ["locksmiths"]
   }
 }
