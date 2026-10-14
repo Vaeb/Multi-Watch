@@ -108,7 +108,7 @@
   "Barky": {
     "id": 4234650,
     "np": true,
-    "assumeFaction": ["admc"]
+    "assumeFaction": ["admc", "sinnerpawn"]
   },
   "ItzDeanyy": {
     "id": 61283658,
@@ -327,7 +327,7 @@
   "52chains": {
     "id": 101941,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "doc", "gruppe6"]
+    "assumeFaction": ["pawnaddicts", "gruppe6"]
   },
   "Sock22": {
     "id": 3054141,
@@ -364,7 +364,7 @@
   "leonarwho": {
     "id": 2417280,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "pawnaddicts"]
   },
   "DougTheGiant": {
     "id": 129696,
@@ -470,7 +470,7 @@
   "Harmless": {
     "id": 47854692,
     "np": true,
-    "assumeFaction": ["besties", "police"]
+    "assumeFaction": ["besties", "police", "burgershot", "pawnaddicts"]
   },
   "Rissabear": {
     "id": 50600228,
@@ -506,7 +506,7 @@
   "oozi": {
     "id": 67398,
     "np": true,
-    "assumeFaction": ["besties", "brickhouse"]
+    "assumeFaction": ["besties", "brickhouse", "the404"]
   },
   "sanes0": {
     "id": 7255776,
@@ -552,7 +552,7 @@
   "Jack": {
     "id": 65073,
     "np": true,
-    "assumeFaction": ["besties", "slim"]
+    "assumeFaction": ["besties", "slim", "pawnaddicts"]
   },
   "Sukhi_1": {
     "id": 5192108,
@@ -603,7 +603,7 @@
   "Lysium": {
     "id": 64021,
     "np": true,
-    "assumeFaction": ["hades", "burgershot"]
+    "assumeFaction": ["hades", "burgershot", "sweepers"]
   },
   "kongfue": {
     "id": 1984882,
@@ -850,7 +850,7 @@
   "Kastiann": {
     "id": 61165716,
     "np": true,
-    "assumeFaction": ["pawnaddicts"]
+    "assumeFaction": ["pawnaddicts", "doj"]
   },
   "KokoBananaMan": {
     "id": 6970425,
@@ -999,12 +999,12 @@
   "AngelKnivez": {
     "id": 1989830,
     "np": true,
-    "assumeFaction": ["casino", "gruppe6"]
+    "assumeFaction": ["casino", "gruppe6", "doc"]
   },
   "GEEGA": {
     "id": 7592215,
     "np": true,
-    "assumeFaction": ["casino", "police"]
+    "assumeFaction": ["casino", "police", "sinnerpawn"]
   },
   "ikitty": {
     "id": 960721,
@@ -1059,7 +1059,7 @@
   "mikfoolery": {
     "id": 89146418,
     "np": true,
-    "assumeFaction": ["gruppe6", "police"]
+    "assumeFaction": ["gruppe6", "police", "doj"]
   },
   "NinjaJessica": {
     "id": 84208198,
@@ -1204,7 +1204,7 @@
   "cheever7": {
     "id": 1377373,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "gruppe6", "hkpawn"]
   },
   "Chodie": {
     "id": 1354496,
@@ -1415,5 +1415,30 @@
     "id": 71935026,
     "np": true,
     "assumeFaction": ["locksmiths"]
+  },
+  "zeusy9": {
+    "id": 29449,
+    "np": true,
+    "assumeFaction": ["brickhouse", "the404"]
+  },
+  "versa": {
+    "id": 1390896,
+    "np": true,
+    "assumeFaction": ["hkpawn", "oldcountry"]
+  },
+  "kerazane": {
+    "id": 20851470,
+    "np": true,
+    "assumeFaction": ["sinnerpawn"]
+  },
+  "natettvrp": {
+    "id": 1246540,
+    "np": true,
+    "assumeFaction": ["slim"]
+  },
+  "WackyTally": {
+    "id": 22032417,
+    "np": true,
+    "assumeFaction": ["sweepers"]
   }
 }
