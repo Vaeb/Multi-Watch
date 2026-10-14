@@ -8,7 +8,7 @@ import { log } from "../utils/log";
 // [Client] If channel name not in list of chatrooms, send message to server
 // [Server] Lookup chatroom id for channel (first re-check cache), save it in json, respond to client
 
-const BASE_URL = "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679";
+const BASE_URL = "wss://ws-us2.pusher.com/app/34bf7a0ff419a2a775b9";
 const createWebSocket = (channel: string, chatroomId: number) => {
   const urlParams = new URLSearchParams({
     protocol: "7",
