@@ -603,7 +603,7 @@
   "Lysium": {
     "id": 64021,
     "np": true,
-    "assumeFaction": ["hades", "burgershot", "sweepers"]
+    "assumeFaction": ["hades", "burgershot", "sweepers", "bpm"]
   },
   "kongfue": {
     "id": 1984882,
@@ -1439,7 +1439,7 @@
   "WackyTally": {
     "id": 22032417,
     "np": true,
-    "assumeFaction": ["sweepers"]
+    "assumeFaction": ["sweepers", "bpm"]
   },
   "nutreo": {
     "id": 82530871,
@@ -1449,5 +1449,20 @@
   "0Reed": {
     "id": 2473232,
     "np": true
+  },
+  "ewron": {
+    "id": 90742,
+    "np": true,
+    "assumeFaction": ["bpm"]
+  },
+  "VgZZ": {
+    "id": 35764419,
+    "np": true,
+    "assumeFaction": ["bpm"]
+  },
+  "xn0rth": {
+    "id": 7411898,
+    "np": true,
+    "assumeFaction": ["bpm"]
   }
 }
