@@ -1440,5 +1440,10 @@
     "id": 22032417,
     "np": true,
     "assumeFaction": ["sweepers"]
+  },
+  "nutreo": {
+    "id": 82530871,
+    "np": true,
+    "assumeFaction": ["doc"]
   }
 }
