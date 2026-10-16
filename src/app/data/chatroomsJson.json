@@ -112,8 +112,7 @@
   },
   "ItzDeanyy": {
     "id": 61283658,
-    "np": true,
-    "assumeFaction": ["sypress"]
+    "np": true
   },
   "grmps": {
     "id": 126636,
@@ -146,17 +145,17 @@
   "Zetark": {
     "id": 7716147,
     "np": true,
-    "assumeFaction": ["newbabylon", "hkpawn", "oldcountry"]
+    "assumeFaction": ["hkpawn", "oldcountry"]
   },
   "Harry": {
     "id": 1218150,
     "np": true,
-    "assumeFaction": ["newbabylon", "pissboiz", "casino"]
+    "assumeFaction": ["pissboiz", "casino"]
   },
   "tjnv": {
     "id": 63701083,
     "np": true,
-    "assumeFaction": ["newbabylon", "casino", "doc", "pissboiz"]
+    "assumeFaction": ["casino", "doc", "pissboiz"]
   },
   "iateabattery": {
     "id": 2634803,
@@ -288,7 +287,6 @@
   "Biotox": {
     "id": 243173,
     "np": true,
-    "assumeFaction": ["newbabylon"],
     "twitch": "Biotoxz_"
   },
   "CathFawr": {
@@ -566,18 +564,15 @@
   },
   "bbeambee": {
     "id": 59439016,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "Tobii": {
     "id": 2424324,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "Simo": {
     "id": 133200,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "AcezProduction": {
     "id": 1669680,
@@ -587,38 +582,33 @@
   "bibo": {
     "id": 126472,
     "np": true,
-    "assumeFaction": ["hades"],
     "twitch": "biboskills"
   },
   "e3kay": {
     "id": 62347818,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "KielbasaOP": {
     "id": 108928,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "Lysium": {
     "id": 64021,
     "np": true,
-    "assumeFaction": ["hades", "burgershot", "sweepers", "bpm"]
+    "assumeFaction": ["burgershot", "sweepers", "bpm"]
   },
   "kongfue": {
     "id": 1984882,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "Reina": {
     "id": 74043,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "Arro2k": {
     "id": 10258331,
     "np": true,
-    "assumeFaction": ["hades", "pawnaddicts", "gruppe6"]
+    "assumeFaction": ["pawnaddicts", "gruppe6"]
   },
   "RayC": {
     "id": 118956,
@@ -628,34 +618,29 @@
   },
   "zandr400": {
     "id": 50013656,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "qift": {
     "id": 48105250,
     "np": true,
-    "assumeFaction": ["hades", "burgershot"]
+    "assumeFaction": ["burgershot"]
   },
   "Boss-Zulu": {
     "id": 2021342,
     "np": true,
-    "assumeFaction": ["hades"],
     "twitch": "boss_zulu"
   },
   "Kayn-xo": {
     "id": 50662744,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "slimeoz": {
     "id": 52830647,
-    "np": true,
-    "assumeFaction": ["newbabylon"]
+    "np": true
   },
   "NismoDOMA": {
     "id": 52088287,
-    "np": true,
-    "assumeFaction": ["hades"]
+    "np": true
   },
   "MalcolmGlass": {
     "id": 2649757,
@@ -793,28 +778,26 @@
   },
   "masonshortland": {
     "id": 4460788,
-    "np": true,
-    "assumeFaction": ["newbabylon"]
+    "np": true
   },
   "novazfov": {
     "id": 118594,
-    "np": true,
-    "assumeFaction": ["newbabylon"]
+    "np": true
   },
   "Sayeed": {
     "id": 125993,
     "np": true,
-    "assumeFaction": ["newbabylon", "brickbois", "brickhouse"]
+    "assumeFaction": ["brickbois", "brickhouse"]
   },
   "Buddha": {
     "id": 32806,
     "np": true,
-    "assumeFaction": ["newbabylon", "brickbois", "brickhouse", "pissboiz", "casino"]
+    "assumeFaction": ["brickbois", "brickhouse", "pissboiz", "casino"]
   },
   "AnthonyZ": {
     "id": 1822781,
     "np": true,
-    "assumeFaction": ["newbabylon", "brickbois", "brickhouse"]
+    "assumeFaction": ["brickbois", "brickhouse"]
   },
   "Saab": {
     "id": 984265,

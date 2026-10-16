@@ -51,9 +51,7 @@ const REAL_ASSUMES: AssumeServer[] = ["whitelist", "public", "international"];
 const DISPLAY_NAME_DEFAULT: Record<string, number> = {
   police: 2,
   doj: 2,
-  asrr: 0,
   mersions: 0,
-  dans: 0,
 };
 
 const serverTwoCheck = /(?:[lp]|\b)2\.0\b|\bclassic|classic\b/i;
