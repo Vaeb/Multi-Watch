@@ -206,6 +206,91 @@ def parse_character(title, content):
             "twitch": handle(f.get("twitch"), r"twitch\.tv"), "twitchUrl": turl,
             "status": plain(f.get("status")), "faction": plain(f.get("gangAffiliation")), "rank": plain(f.get("gangRank"))}
 
+
+# ---- channel lookup (infobox -> playedBy URLs -> version tabs -> player pages) ----
+HOST = {"twitch": r"twitch\.tv", "kick": r"kick\.com"}
+def chans(v, plat, urls_only=False):
+    if not v or not v.strip(): return []
+    found = re.findall(r"(?i)https?://(?:www\.|m\.)?" + HOST[plat] + r"/(?:@)?([A-Za-z0-9_.\-]+)", v)
+    if not found and not urls_only and not re.search(r"https?://", v):
+        h = handle(v, HOST[plat]); found = [h] if h else []
+    return list(dict.fromkeys(found))
+
+def version_tabs(title, content):
+    base = title.split("/")[0]; cur = title.split("/")[1] if "/" in title else None
+    _, f = infobox(content or "", r"^tab template$")
+    out = []
+    for k, v in sorted(f.items()):
+        v = plain(v) or ""
+        if re.match(r"(?i)tab\d+$", k) and re.fullmatch(r"\d+(\.\d+)?", v):
+            if v == cur or (cur is None and v == "5.0"): continue
+            out.append(base if v == "5.0" else base + "/" + v)
+    return out
+
+def player_links(pb):
+    return [m.group(1).strip() for m in LINK.finditer(pb or "") if not re.match(r"(?i)(file|image|category):", m.group(1))]
+
+def lofi_hint(f):
+    m = re.search(r"lofi-nopixel\.com/streamers/([A-Za-z0-9_.\-]+)", f.get("lofi") or "")
+    return m.group(1) if m else None
+
+def _pb(f): return f.get("PlayedBy") or f.get("playedby") or f.get("played_by") or ""
+
+def channel_lookup(pages):
+    """pages: {title: content}. Returns {title: {kick, kickSource, kickAll, twitch, ...}} using batched extra reads."""
+    res = {t: {"kick": [], "twitch": [], "players": [], "hint": None} for t in pages}
+    def add(t, plat, hs, src, page):
+        for h in hs:
+            if h.lower() not in [x[0].lower() for x in res[t][plat]]: res[t][plat].append((h, {"type": src, "page": page}))
+    def scan(t, title, content, src):
+        _, f = infobox(content)
+        for p in ("kick", "twitch"):
+            add(t, p, chans(f.get(p), p), src, title)
+            add(t, p, chans(_pb(f), p, True), "playedBy", title)
+        for pl in player_links(_pb(f)):
+            if pl not in res[t]["players"]: res[t]["players"].append(pl)
+        res[t]["hint"] = res[t]["hint"] or lofi_hint(f) or (plain(_pb(f)) if _pb(f) and not re.search(r"\[", _pb(f)) else None)
+        return f
+    vq = {}
+    for t, (title, c) in pages.items():
+        if c is None: continue
+        scan(t, title, c, "infobox")
+        if not res[t]["kick"] or not res[t]["twitch"]:
+            for v in version_tabs(title, c): vq.setdefault(v, []).append(t)
+    if vq:
+        vp = read_pages(list(vq))
+        for v, ts in vq.items():
+            if vp[v]["content"] is None: continue
+            for t in ts: scan(t, vp[v]["title"], vp[v]["content"], "versionTab")
+    pq = {}
+    for t, r in res.items():
+        for pl in r["players"]: pq.setdefault(pl, []).append(t)
+    # still nothing at all: try '<hint> (Player)' pages from the PlayedBy name / lofi slug (read only; never invent a channel)
+    for t, r in res.items():
+        if pages[t][1] is not None and not r["kick"] and not r["twitch"] and not r["players"] and r["hint"]:
+            for g in dict.fromkeys([r["hint"] + " (Player)", r["hint"]]): pq.setdefault(g, []).append(t)
+    if pq:
+        pp = read_pages(list(pq))
+        for pl, ts in pq.items():
+            c = pp[pl]["content"]
+            if c is None: continue
+            _, f = infobox(c, r"^(infobox|player|streamer)")
+            for t in ts:
+                for p in ("kick", "twitch"): add(t, p, chans(f.get(p), p), "playerPage", pp[pl]["title"])
+    RANK = {"infobox": 0, "playedBy": 1, "playerPage": 2, "versionTab": 3}
+    out = {}
+    for t, r in res.items():
+        for p in ("kick", "twitch"):  # main-page fields first, then player page, then older version tabs
+            r[p].sort(key=lambda x: (RANK[x[1]["type"]] if x[1]["page"] == pages[t][0] or x[1]["type"] == "playerPage" else 3))
+        o = {}
+        for p in ("kick", "twitch"):
+            o[p] = r[p][0][0] if r[p] else None
+            o[p + "Source"] = r[p][0][1] if r[p] else None
+            o[p + "All"] = [{"channel": h, "source": s["type"], "page": s["page"]} for h, s in r[p]]
+        o["playerHint"] = r["hint"]
+        out[t] = o
+    return out
+
 # ---- resolve ----
 def norm(s):
     s = s.lower().strip(); s = re.sub(r"^the\s+", "", s); s = re.sub(r"[^a-z0-9]+", "", s); return s
@@ -290,8 +375,8 @@ def main():
         return emit({"factions": members_of(n)})
     if a.cmd == "character":
         n = names_from(a.names, ["character", "name", "title"], deep=("members",)) or die("no character names given", code=2)
-        pages = read_pages(n)
-        return emit({"characters": [parse_character(pages[x]["title"], pages[x]["content"]) for x in n]})
+        pages = read_pages(n); ch = channel_lookup({x: (pages[x]["title"], pages[x]["content"]) for x in n})
+        return emit({"characters": [dict(parse_character(pages[x]["title"], pages[x]["content"]), **ch[x]) for x in n]})
     if a.cmd in ("kick", "twitch"):
         plat = a.cmd; Plat = plat.capitalize()
         n = names_from(a.names, ["match", "title", "query", "name"]) or die("no faction names given", code=2)
@@ -301,13 +386,16 @@ def main():
         for x in bad: print(json.dumps({"warning": "unresolved faction skipped", "query": x.get("query"), "how": x.get("how"), "candidates": x.get("candidates")}), file=sys.stderr)
         fac = members_of(ok)
         chars = read_pages([m["character"] for f in fac for m in f["members"]])
+        ch = channel_lookup({k: (v["title"], v["content"]) for k, v in chars.items()})
         out = []
         for f in fac:
             rows = []
             for m in f["members"]:
-                c = parse_character(chars[m["character"]]["title"], chars[m["character"]]["content"])
+                c = dict(parse_character(chars[m["character"]]["title"], chars[m["character"]]["content"]), **ch[m["character"]])
                 rows.append({"character": c["name"], "role": m["role"], "group": m["group"], "deceased": m["deceased"],
-                             "hasPage": c["exists"], "playedBy": c["playedBy"], "kick": c["kick"], "twitch": c["twitch"], "url": c["url"]})
+                             "hasPage": c["exists"], "playedBy": c["playedBy"], "kick": c["kick"], "twitch": c["twitch"], "url": c["url"],
+                             "kickSource": c["kickSource"], "kickAll": c["kickAll"], "twitchSource": c["twitchSource"], "twitchAll": c["twitchAll"],
+                             "playerHint": c["playerHint"] if not (c["kick"] or c["twitch"]) else None})
             out.append({"faction": f["title"], "url": f["url"], "infoboxParsed": f["parsed"], "members": rows,
                         plat + "Usernames": sorted(set(r[plat] for r in rows if r[plat]), key=str.lower),
                         "missing" + Plat: sorted(set(r["character"] for r in rows if not r[plat]))})

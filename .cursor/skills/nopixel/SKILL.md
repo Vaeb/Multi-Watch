@@ -33,8 +33,8 @@ When you pass it on, credit and link the page (`url` fields are included).
 | `nopixel factions [--no-recurse]` | `{count, categoriesVisited, factions:[{title,url,category}]}` from `Category:Factions (Gangs/Departments/Businesses)` plus all subcategories (deduped). `--no-recurse` = direct pages only. |
 | `nopixel resolve <name>...` | `{results:[{query, match, how, candidates, url}]}`. `how` = `exact` (case-insensitive), `normalized` (ignores "The", punctuation, spaces), `ambiguous` or `no_match` (with suggestions in `candidates`). Never guesses. Exit 6 if any name failed. |
 | `nopixel members <faction title>... [--resolve]` | `{factions:[{title,url,exists,infobox,parsed,members:[{character,display,role,group,deceased,url}]}]}`. Takes exact titles; `--resolve` accepts loose names. |
-| `nopixel character <name>...` | `{characters:[{name,url,exists,template,playedBy,kick,kickUrl,twitch,twitchUrl,status,faction,rank}]}`. Missing page: `exists:false`, fields null. |
-| `nopixel kick <faction name>...` | Full chain. `{resolved, unresolved, factions:[{faction,url,infoboxParsed,members:[{character,role,group,deceased,hasPage,playedBy,kick,twitch,url}], kickUsernames:[unique], missingKick:[characters]}]}`. Members without a page or Kick are kept with nulls. |
+| `nopixel character <name>...` | `{characters:[{name,url,exists,template,playedBy,kick,kickSource,kickAll,kickUrl,twitch,twitchSource,twitchAll,twitchUrl,playerHint,status,faction,rank}]}`. Missing page: `exists:false`, fields null. |
+| `nopixel kick <faction name>...` | Full chain. `{resolved, unresolved, factions:[{faction,url,infoboxParsed,members:[{character,role,group,deceased,hasPage,playedBy,kick,twitch,url,kickSource,kickAll,twitchSource,twitchAll,playerHint}], kickUsernames:[unique], missingKick:[characters]}]}`. Members without a page or Kick are kept with nulls. |
 | `nopixel twitch <faction name>...` | Same as `kick`, but each faction has `twitchUsernames` / `missingTwitch` instead of `kickUsernames` / `missingKick`. |
 
 Global: `--fresh` bypasses the 6-hour cache in `~/.cache/nopixel` (e.g. `nopixel --fresh kick "Old Country"`).
@@ -83,13 +83,37 @@ E.g. `nopixel members "Brick Bois"` returns 5: its 4 founders plus Jean Paul (f 
 `nopixel kick "Street Sweepers"` includes Benji Ramos (role "owner founder", kick `lysium`).
 If you need the excluded people, read the faction page itself (`url`).
 
+## Channel lookup order
+`character`, `kick` and `twitch` look for each character's Kick and Twitch channels in these places. Candidates are
+ranked in this order, and the first one becomes `kick` / `twitch`:
+1. `infobox`: the `kick` / `twitch` fields on the character's own page.
+2. `playedBy`: kick.com / twitch.tv URLs inside that page's PlayedBy field.
+3. `playerPage`: the `kick` / `twitch` fields on the Player page linked from PlayedBy (e.g. "Louuis (Player)").
+   If a character has no channel and no Player link at all, it tries reading "<name> (Player)" and "<name>", where the
+   name comes from the lofi-nopixel streamer slug or a plain-text PlayedBy. It only reads those pages and never
+   invents a channel.
+4. `versionTab`: the same fields on the character's other-era pages from its tab template (e.g. "Name/3.0"). These are
+   only read when the current page lacks Kick or Twitch, and anything found on them ranks last, even PlayedBy URLs.
+
+New fields per character/member:
+- `kickSource` / `twitchSource`: `{type, page}` for the chosen channel. `type` is one of the four above and `page` is
+  the wiki page it came from.
+- `kickAll` / `twitchAll`: every distinct channel found (case-insensitive), in rank order, as `[{channel, source, page}]`.
+  Check this when the chosen channel looks outdated.
+- `playerHint`: the lofi slug or plain PlayedBy name. In `kick`/`twitch` output it's only set when no channel was found,
+  as a lead to check by hand.
+
+E.g. `nopixel twitch "The Collective"` finds Twitch for all 10 members: 4 via `infobox`, 4 via `playedBy` (one of
+them on a 3.0 version tab) and 2 via `playerPage` (Sparky Kane -> "Louuis (Player)": `louu`, with `louuis` also in
+`twitchAll`). These extra reads are batched like everything else (that command took 31 requests cold).
+
 ## Limits
 - First `factions`/`resolve`/`kick`/`twitch` run on a VM reads ~28 category requests (~30 s, ~1000 titles incl.
   2.0/3.0-era and some person categories like Police/Business Owners). Cached for 6 h after that, so repeats take ~0 requests.
 - Requests are paced ~1 s apart and page reads are batched 50 per request. `kick` on two factions: ~30 requests cold, 0 warm.
 - Links that redirect follow the wiki: e.g. Vittorio DiCenzo -> "Vittorio DiCenzo/4.0" (older-era page, no Kick).
 - Some faction pages list no members at all (e.g. Epsilon, La Sierra): `parsed:false`, empty members.
-- Kick/Twitch is only what the character's infobox says; many characters have none (`missingKick` / `missingTwitch`).
+- Kick/Twitch is only what the wiki says (see "Channel lookup order"); many characters have none (`missingKick` / `missingTwitch`).
 
 ## Errors
 JSON on stderr `{error,status,hint}`, non-zero exit. 2 bad args; 3 HTTP error; 4 network; 5 API changed/odd response; 6 unresolved names.
