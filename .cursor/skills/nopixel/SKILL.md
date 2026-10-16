@@ -89,9 +89,9 @@ ranked in this order, and the first one becomes `kick` / `twitch`:
 1. `infobox`: the `kick` / `twitch` fields on the character's own page.
 2. `playedBy`: kick.com / twitch.tv URLs inside that page's PlayedBy field.
 3. `playerPage`: the `kick` / `twitch` fields on the Player page linked from PlayedBy (e.g. "Louuis (Player)").
-   If a character has no channel and no Player link at all, it tries reading "<name> (Player)" and "<name>", where the
-   name comes from the lofi-nopixel streamer slug or a plain-text PlayedBy. It only reads those pages and never
-   invents a channel.
+   Fallback: if a character has no channel and no Player link at all, and its page (or one of its version tabs) has a
+   plain-text PlayedBy name, it tries reading "<name> (Player)" and "<name>". It never guesses pages from the
+   lofi-nopixel streamer slug (that only shows up as `playerHint`), only reads those pages, and never invents a channel.
 4. `versionTab`: the same fields on the character's other-era pages from its tab template (e.g. "Name/3.0"). These are
    only read when the current page lacks Kick or Twitch, and anything found on them ranks last, even PlayedBy URLs.
 
@@ -100,7 +100,7 @@ New fields per character/member:
   the wiki page it came from.
 - `kickAll` / `twitchAll`: every distinct channel found (case-insensitive), in rank order, as `[{channel, source, page}]`.
   Check this when the chosen channel looks outdated.
-- `playerHint`: the lofi slug or plain PlayedBy name. In `kick`/`twitch` output it's only set when no channel was found,
+- `playerHint`: the plain PlayedBy name, or else the lofi-nopixel streamer slug. In `kick`/`twitch` output it's only set when no channel was found,
   as a lead to check by hand.
 
 E.g. `nopixel twitch "The Collective"` finds Twitch for all 10 members: 4 via `infobox`, 4 via `playedBy` (one of

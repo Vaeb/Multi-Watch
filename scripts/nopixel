@@ -249,7 +249,9 @@ def channel_lookup(pages):
             add(t, p, chans(_pb(f), p, True), "playedBy", title)
         for pl in player_links(_pb(f)):
             if pl not in res[t]["players"]: res[t]["players"].append(pl)
-        res[t]["hint"] = res[t]["hint"] or lofi_hint(f) or (plain(_pb(f)) if _pb(f) and not re.search(r"\[", _pb(f)) else None)
+        pbn = plain(_pb(f)) if _pb(f).strip() and not re.search(r"\[", _pb(f)) else None
+        res[t]["pbname"] = res[t].get("pbname") or pbn
+        res[t]["hint"] = res[t]["hint"] or pbn or lofi_hint(f)
         return f
     vq = {}
     for t, (title, c) in pages.items():
@@ -265,10 +267,10 @@ def channel_lookup(pages):
     pq = {}
     for t, r in res.items():
         for pl in r["players"]: pq.setdefault(pl, []).append(t)
-    # still nothing at all: try '<hint> (Player)' pages from the PlayedBy name / lofi slug (read only; never invent a channel)
+    # still nothing at all: only if the page has a plain PlayedBy name, try '<name> (Player)' (read only; never invent a channel)
     for t, r in res.items():
-        if pages[t][1] is not None and not r["kick"] and not r["twitch"] and not r["players"] and r["hint"]:
-            for g in dict.fromkeys([r["hint"] + " (Player)", r["hint"]]): pq.setdefault(g, []).append(t)
+        if pages[t][1] is not None and not r["kick"] and not r["twitch"] and not r["players"] and r.get("pbname"):
+            for g in dict.fromkeys([r["pbname"] + " (Player)", r["pbname"]]): pq.setdefault(g, []).append(t)
     if pq:
         pp = read_pages(list(pq))
         for pl, ts in pq.items():
