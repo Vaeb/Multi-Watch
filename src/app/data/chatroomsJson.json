@@ -250,10 +250,10 @@
     "np": true,
     "assumeFaction": ["manor"]
   },
-  "Louuis": {
+  "louu": {
     "id": 2504848,
     "np": true,
-    "assumeFaction": ["faceless"]
+    "assumeFaction": ["faceless", "collective"]
   },
   "STE_Eire": {
     "id": 2718894,
