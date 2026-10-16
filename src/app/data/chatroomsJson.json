@@ -850,7 +850,7 @@
   "Kastiann": {
     "id": 61165716,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "doj"]
+    "assumeFaction": ["pawnaddicts"]
   },
   "KokoBananaMan": {
     "id": 6970425,
@@ -984,7 +984,7 @@
   "WhiskeyMate": {
     "id": 107590764,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "oldcountry"]
   },
   "Sarkwentv": {
     "id": 3591849,
@@ -1464,5 +1464,40 @@
     "id": 7411898,
     "np": true,
     "assumeFaction": ["bpm"]
+  },
+  "trashedpotatopie": {
+    "id": 1441242,
+    "np": true,
+    "assumeFaction": ["bpm"]
+  },
+  "margothesnail": {
+    "id": 10895263,
+    "np": true,
+    "assumeFaction": ["doc"]
+  },
+  "hulzy": {
+    "id": 1383167,
+    "np": true,
+    "assumeFaction": ["doj", "hkpawn", "oldcountry"]
+  },
+  "icky619": {
+    "id": 7574402,
+    "np": true,
+    "assumeFaction": ["doj"]
+  },
+  "acie": {
+    "id": 2384927,
+    "np": true,
+    "assumeFaction": ["gruppe6", "pawnaddicts"]
+  },
+  "rexs": {
+    "id": 82082,
+    "np": true,
+    "assumeFaction": ["police"]
+  },
+  "vawwn": {
+    "id": 1132419,
+    "np": true,
+    "assumeFaction": ["police"]
   }
 }
