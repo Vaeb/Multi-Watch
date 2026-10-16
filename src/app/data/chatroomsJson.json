@@ -63,7 +63,7 @@
   "itsginger": {
     "id": 1645049,
     "np": true,
-    "assumeFaction": ["hounds", "hkpawn", "oldcountry"]
+    "assumeFaction": ["hounds", "hkpawn", "oldcountry", "collective"]
   },
   "SkiMaskDaniel": {
     "id": 2697388,
@@ -140,7 +140,7 @@
   "TheEazyLife": {
     "id": 2305821,
     "np": true,
-    "assumeFaction": ["faceless"]
+    "assumeFaction": ["faceless", "collective"]
   },
   "Zetark": {
     "id": 7716147,
@@ -258,7 +258,7 @@
   "STE_Eire": {
     "id": 2718894,
     "np": true,
-    "assumeFaction": ["faceless"]
+    "assumeFaction": ["faceless", "collective"]
   },
   "Cheez": {
     "id": 60822788,
@@ -306,7 +306,7 @@
   "MattEU": {
     "id": 2825518,
     "np": true,
-    "assumeFaction": ["police", "sinnerpawn", "gruppe6"]
+    "assumeFaction": ["police", "sinnerpawn", "gruppe6", "collective"]
   },
   "burn": {
     "id": 82713773,
@@ -530,7 +530,7 @@
   "Caramel": {
     "id": 1194676,
     "np": true,
-    "assumeFaction": ["besties"]
+    "assumeFaction": ["besties", "collective"]
   },
   "Chelb": {
     "id": 1415812,
@@ -853,7 +853,7 @@
   "VanillaYoshee": {
     "id": 27351077,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "gruppe6"]
+    "assumeFaction": ["pawnaddicts", "gruppe6", "collective"]
   },
   "AlyssaJean": {
     "id": 1344143,
@@ -907,7 +907,7 @@
   "JayAitch": {
     "id": 2500057,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "gruppe6"]
+    "assumeFaction": ["sinnerpawn", "gruppe6", "collective"]
   },
   "KatFires": {
     "id": 122649,
