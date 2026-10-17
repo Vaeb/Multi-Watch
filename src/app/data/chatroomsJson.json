@@ -357,7 +357,7 @@
   "travpiper": {
     "id": 43042315,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "6chambers"]
   },
   "leonarwho": {
     "id": 2417280,
@@ -428,7 +428,7 @@
   "ghotties": {
     "id": 2911741,
     "np": true,
-    "assumeFaction": ["besties", "pawnaddicts"]
+    "assumeFaction": ["besties", "pawnaddicts", "6chambers"]
   },
   "sanesfx": {
     "id": 7255776,
@@ -468,7 +468,7 @@
   "Harmless": {
     "id": 47854692,
     "np": true,
-    "assumeFaction": ["besties", "police", "burgershot", "pawnaddicts"]
+    "assumeFaction": ["besties", "police", "burgershot", "pawnaddicts", "6chambers"]
   },
   "Rissabear": {
     "id": 50600228,
@@ -514,7 +514,7 @@
   "4HEAD": {
     "id": 2579856,
     "np": true,
-    "assumeFaction": ["besties", "pawnaddicts"]
+    "assumeFaction": ["besties", "pawnaddicts", "6chambers"]
   },
   "Swizz": {
     "id": 1466067,
@@ -540,7 +540,7 @@
   "moesabai": {
     "id": 63413405,
     "np": true,
-    "assumeFaction": ["besties", "pawnaddicts"]
+    "assumeFaction": ["besties", "pawnaddicts", "6chambers"]
   },
   "Daisyks": {
     "id": 57646900,
@@ -550,7 +550,7 @@
   "Jack": {
     "id": 65073,
     "np": true,
-    "assumeFaction": ["besties", "slim", "pawnaddicts"]
+    "assumeFaction": ["besties", "slim", "pawnaddicts", "6chambers"]
   },
   "Sukhi_1": {
     "id": 5192108,
@@ -608,7 +608,7 @@
   "Arro2k": {
     "id": 10258331,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "gruppe6"]
+    "assumeFaction": ["pawnaddicts", "gruppe6", "6chambers"]
   },
   "RayC": {
     "id": 118956,
@@ -677,7 +677,7 @@
   "itsHolmes": {
     "id": 50496895,
     "np": true,
-    "assumeFaction": ["ssb", "pawnaddicts", "gruppe6"]
+    "assumeFaction": ["ssb", "pawnaddicts", "gruppe6", "6chambers"]
   },
   "yuukidav": {
     "id": 88541,
@@ -850,7 +850,7 @@
   "mfWarlock": {
     "id": 1345063,
     "np": true,
-    "assumeFaction": ["pawnaddicts"]
+    "assumeFaction": ["pawnaddicts", "6chambers"]
   },
   "VanillaYoshee": {
     "id": 27351077,
