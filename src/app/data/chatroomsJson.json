@@ -150,7 +150,7 @@
   "Harry": {
     "id": 1218150,
     "np": true,
-    "assumeFaction": ["pissboiz", "casino"]
+    "assumeFaction": ["pissboiz", "casino", "brickhouse"]
   },
   "tjnv": {
     "id": 63701083,
@@ -325,7 +325,7 @@
   "52chains": {
     "id": 101941,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "gruppe6"]
+    "assumeFaction": ["pawnaddicts", "gruppe6", "police"]
   },
   "Sock22": {
     "id": 3054141,
@@ -372,7 +372,7 @@
   "ClaytonERP": {
     "id": 52715994,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "gruppe6"]
   },
   "KylieBitkin": {
     "id": 2733273,
@@ -783,7 +783,8 @@
   },
   "novazfov": {
     "id": 118594,
-    "np": true
+    "np": true,
+    "assumeFaction": ["brickhouse"]
   },
   "Sayeed": {
     "id": 125993,
@@ -898,7 +899,7 @@
   "LonnieLightning": {
     "id": 2231866,
     "np": true,
-    "assumeFaction": ["hkpawn", "slim"]
+    "assumeFaction": ["slim"]
   },
   "catherinereel": {
     "id": 66847409,
@@ -1534,5 +1535,15 @@
     "id": 7542473,
     "np": true,
     "assumeFaction": ["sinnerpawn"]
+  },
+  "Knut": {
+    "id": 56792,
+    "np": true,
+    "assumeFaction": ["brickhouse"]
+  },
+  "ItsFabelz": {
+    "id": 88018604,
+    "np": true,
+    "assumeFaction": ["police"]
   }
 }
