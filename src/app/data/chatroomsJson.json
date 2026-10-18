@@ -357,7 +357,7 @@
   "travpiper": {
     "id": 43042315,
     "np": true,
-    "assumeFaction": ["police", "6chambers"]
+    "assumeFaction": ["police", "6chambers", "pawnaddicts"]
   },
   "leonarwho": {
     "id": 2417280,
@@ -1499,7 +1499,7 @@
   "Jayyygo": {
     "id": 42319472,
     "np": true,
-    "assumeFaction": ["gruppe6"]
+    "assumeFaction": ["gruppe6", "police"]
   },
   "ReviveRP": {
     "id": 63766410,
@@ -1545,5 +1545,15 @@
     "id": 88018604,
     "np": true,
     "assumeFaction": ["police"]
+  },
+  "lawek": {
+    "id": 7094226,
+    "np": true,
+    "assumeFaction": ["bpm"]
+  },
+  "Tibbzzz": {
+    "id": 67735778,
+    "np": true,
+    "assumeFaction": ["bpm", "sweepers"]
   }
 }
