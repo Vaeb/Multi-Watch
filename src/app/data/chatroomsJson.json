@@ -944,7 +944,7 @@
   "NovaaBerries": {
     "id": 77514129,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "order"]
+    "assumeFaction": ["sinnerpawn", "order", "collective"]
   },
   "Roxmiral": {
     "id": 1876019,
@@ -1555,5 +1555,20 @@
     "id": 67735778,
     "np": true,
     "assumeFaction": ["bpm", "sweepers"]
+  },
+  "Nitemare_Boba": {
+    "id": 3829712,
+    "np": true,
+    "assumeFaction": ["doc"]
+  },
+  "Kaysan": {
+    "id": 246956,
+    "np": true,
+    "assumeFaction": ["police"]
+  },
+  "stevie_jay305": {
+    "id": 15284957,
+    "np": true,
+    "assumeFaction": ["police"]
   }
 }
