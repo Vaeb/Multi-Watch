@@ -211,7 +211,7 @@
   "StrikingContact": {
     "id": 2860619,
     "np": true,
-    "assumeFaction": ["habibis"]
+    "assumeFaction": ["habibis", "police"]
   },
   "kieron": {
     "id": 78555,
