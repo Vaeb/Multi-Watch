@@ -17,6 +17,7 @@ export const ANY_SERVER_FACTIONS = [
   "changgang",
   "hydragang",
   "manor",
+  "brickbois",
 ];
 
 export const MIN_FOCUS_HEIGHT = 10;
