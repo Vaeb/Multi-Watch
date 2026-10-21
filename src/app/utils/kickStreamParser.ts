@@ -479,10 +479,10 @@ export const createKickStreamParser = (
       tagFaction = nowCharacter.factionUse;
       tagText = nowCharacter.displayName;
     } else if (factionNames.length) {
-      const faction = factionNames[0]!;
+      const faction = getTopFaction(factionNames);
       const factionNameFull = fullFactionMap[faction] || faction;
       activeFactions = [...factionNames, "guessed"];
-      colorFaction = getTopFaction(factionNames);
+      colorFaction = faction;
       tagFaction = faction in useColorsDark ? faction : "independent";
       tagText =
         tagFaction === "podcast" || tagFaction === "watchparty"

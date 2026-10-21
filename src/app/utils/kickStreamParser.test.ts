@@ -170,6 +170,6 @@ void test("colours a guessed stream by its highest-priority faction", () => {
     id: 1,
     assumeFaction: ["alpha", "beta"],
   });
-  assert.equal(factionOnly.tagText, "〈alpha〉");
+  assert.equal(factionOnly.tagText, "〈beta〉");
   assert.equal(factionOnly.faction, "beta");
 });
