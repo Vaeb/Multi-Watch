@@ -88,3 +88,27 @@ void test("labels streams on other servers", () => {
   assert.equal(stream.rpServer, "PurpleRP");
   assert.equal(stream.noOthersInclude, false);
 });
+
+void test("colours a matched character by their highest-priority faction", () => {
+  const parseMulti = createKickStreamParser({
+    npCharacters: {
+      Multi: [
+        { name: "Abdul AlRahim", factions: ["Gruppe6", "Police"] },
+        { name: "Una Listed", factions: ["Zeta", "Omega"] },
+        { name: "Mixed Bag", factions: ["Zeta", "Casino", "Besties"] },
+        { name: "Solo Sam", factions: ["Gruppe6"] },
+      ],
+    },
+  });
+  const factionFor = (title: string) =>
+    parseMulti(kick("Multi", title), { id: 1 }).faction;
+
+  assert.equal(factionFor("Abdul on duty"), "police");
+  assert.equal(factionFor("Una today"), "zeta");
+  assert.equal(factionFor("Mixed today"), "besties");
+  assert.equal(factionFor("Sam today"), "gruppe6");
+  assert.deepEqual(
+    parseMulti(kick("Multi", "Abdul on duty"), { id: 1 }).factions,
+    ["gruppe6", "police", "whitelistnp"],
+  );
+});

@@ -112,6 +112,7 @@ export interface RemoteTnoData {
   regNpWhitelist: string;
   regNpInternational: string;
   regOthers: { name: string; reg: string; include: number }[];
+  filterOrderTop?: string[]; // Faction priority order; not yet sent by TNO-Backend
 }
 
 export interface CachedStreams {

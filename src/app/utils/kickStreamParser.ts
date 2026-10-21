@@ -17,6 +17,7 @@ interface Character {
   factions: string[];
   factionsObj: Record<string, true>;
   factionUse: string;
+  colorFaction: string;
   displayName: string;
   nameReg: RegExp;
   assumeServer: AssumeServer;
@@ -53,6 +54,57 @@ const DISPLAY_NAME_DEFAULT: Record<string, number> = {
   doj: 2,
   mersions: 0,
 };
+
+// Copy of filterOrderTop in TNO-Backend's src/data/factions.ts, used until /tno_data provides it
+const FILTER_ORDER_TOP = [
+  "allnopixel",
+  "alltwitch",
+  "publicnp",
+  "international",
+  "independent",
+  "6chambers",
+  "besties",
+  "pawnaddicts",
+  "police",
+  "brickbois",
+  "sinnerpawn",
+  "oldcountry",
+  "the404",
+  "sweepers",
+  "slim",
+  "casino",
+  "brickhouse",
+  "hkpawn",
+  "pissboiz",
+  "polish",
+  "burgershot",
+  "gruppe6",
+  "doj",
+  "doc",
+  "nest",
+  "order",
+  "locksmiths",
+  "bpm",
+  "collective",
+  "faceless",
+  "manor",
+  "hydragang",
+  "habibis",
+  "admc",
+  "kc",
+  "clowns",
+  "hounds",
+  "changgang",
+  "medical",
+  "saints",
+  "vagos",
+  "hoa",
+  "ssb",
+  "lostmc",
+  "gsf",
+  "marabunta",
+  "prison",
+];
 
 const serverTwoCheck = /(?:[lp]|\b)2\.0\b|\bclassic|classic\b/i;
 
@@ -128,7 +180,14 @@ export const createKickStreamParser = (
     serverTwoFactions = {},
     useColorsDark = {},
     regOthers: regOthersRaw = [],
+    filterOrderTop = FILTER_ORDER_TOP,
   } = data;
+
+  const filterOrderRank = new Map(
+    filterOrderTop.map((faction, index) => [faction, index]),
+  );
+  const getFilterOrderRank = (faction: string) =>
+    filterOrderRank.get(faction) ?? Infinity;
 
   const factionsRegex = Object.fromEntries(
     Object.entries(data.npFactionsRegex ?? {}).map(([faction, source]) => [
@@ -233,6 +292,9 @@ export const createKickStreamParser = (
       ),
       factionUse:
         primaryFaction in useColorsDark ? primaryFaction : "otherfaction",
+      colorFaction: factions.reduce((best, faction) =>
+        getFilterOrderRank(faction) < getFilterOrderRank(best) ? faction : best,
+      ),
       displayName:
         `${rawChar.leader ? `♛${displayNameTitle ? "" : " "}` : ""}${displayNameTitle}${displayNameChar}`.trim(),
       nameReg: new RegExp(
@@ -502,7 +564,7 @@ export const createKickStreamParser = (
             .map((nickname) => parseLookup(nickname))
             .join(" _-_ ")
         : null,
-      faction: activeFactions[0]!,
+      faction: nowCharacter ? nowCharacter.colorFaction : activeFactions[0]!,
       factions: activeFactions,
       factionsMap: Object.fromEntries(
         activeFactions.map((faction) => [faction, true]),
