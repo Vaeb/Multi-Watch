@@ -89,16 +89,19 @@ void test("labels streams on other servers", () => {
   assert.equal(stream.noOthersInclude, false);
 });
 
+const multiCharacters = {
+  Multi: [
+    { name: "Abdul AlRahim", factions: ["Gruppe6", "Police"] },
+    { name: "Una Listed", factions: ["Zeta", "Omega"] },
+    { name: "Mixed Bag", factions: ["Zeta", "Casino", "Besties"] },
+    { name: "Solo Sam", factions: ["Gruppe6"] },
+  ],
+};
+
 void test("colours a matched character by their highest-priority faction", () => {
   const parseMulti = createKickStreamParser({
-    npCharacters: {
-      Multi: [
-        { name: "Abdul AlRahim", factions: ["Gruppe6", "Police"] },
-        { name: "Una Listed", factions: ["Zeta", "Omega"] },
-        { name: "Mixed Bag", factions: ["Zeta", "Casino", "Besties"] },
-        { name: "Solo Sam", factions: ["Gruppe6"] },
-      ],
-    },
+    npCharacters: multiCharacters,
+    filterOrderTop: ["besties", "police", "casino", "gruppe6"],
   });
   const factionFor = (title: string) =>
     parseMulti(kick("Multi", title), { id: 1 }).faction;
@@ -111,4 +114,20 @@ void test("colours a matched character by their highest-priority faction", () =>
     parseMulti(kick("Multi", "Abdul on duty"), { id: 1 }).factions,
     ["gruppe6", "police", "whitelistnp"],
   );
+});
+
+void test("colours a matched character by their first faction without a priority order", () => {
+  for (const filterOrderTop of [undefined, []]) {
+    const parseMulti = createKickStreamParser({
+      npCharacters: multiCharacters,
+      filterOrderTop,
+    });
+    const factionFor = (title: string) =>
+      parseMulti(kick("Multi", title), { id: 1 }).faction;
+
+    assert.equal(factionFor("Abdul on duty"), "gruppe6");
+    assert.equal(factionFor("Una today"), "zeta");
+    assert.equal(factionFor("Mixed today"), "zeta");
+    assert.equal(factionFor("Sam today"), "gruppe6");
+  }
 });

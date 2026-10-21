@@ -55,57 +55,6 @@ const DISPLAY_NAME_DEFAULT: Record<string, number> = {
   mersions: 0,
 };
 
-// Copy of filterOrderTop in TNO-Backend's src/data/factions.ts, used until /tno_data provides it
-const FILTER_ORDER_TOP = [
-  "allnopixel",
-  "alltwitch",
-  "publicnp",
-  "international",
-  "independent",
-  "6chambers",
-  "besties",
-  "pawnaddicts",
-  "police",
-  "brickbois",
-  "sinnerpawn",
-  "oldcountry",
-  "the404",
-  "sweepers",
-  "slim",
-  "casino",
-  "brickhouse",
-  "hkpawn",
-  "pissboiz",
-  "polish",
-  "burgershot",
-  "gruppe6",
-  "doj",
-  "doc",
-  "nest",
-  "order",
-  "locksmiths",
-  "bpm",
-  "collective",
-  "faceless",
-  "manor",
-  "hydragang",
-  "habibis",
-  "admc",
-  "kc",
-  "clowns",
-  "hounds",
-  "changgang",
-  "medical",
-  "saints",
-  "vagos",
-  "hoa",
-  "ssb",
-  "lostmc",
-  "gsf",
-  "marabunta",
-  "prison",
-];
-
 const serverTwoCheck = /(?:[lp]|\b)2\.0\b|\bclassic|classic\b/i;
 
 const escapeRegExp = (text: string) =>
@@ -180,7 +129,7 @@ export const createKickStreamParser = (
     serverTwoFactions = {},
     useColorsDark = {},
     regOthers: regOthersRaw = [],
-    filterOrderTop = FILTER_ORDER_TOP,
+    filterOrderTop = [],
   } = data;
 
   const filterOrderRank = new Map(
