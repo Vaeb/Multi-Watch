@@ -11,7 +11,13 @@ export const LARGE_FACTIONS: Record<string, boolean> = {
 };
 
 // Faction slugs whose connected Kick channels are listed whatever RP server they're on
-export const ANY_SERVER_FACTIONS = ["besties", "6chambers"];
+export const ANY_SERVER_FACTIONS = [
+  "besties",
+  "6chambers",
+  "changgang",
+  "hydragang",
+  "manor",
+];
 
 export const MIN_FOCUS_HEIGHT = 10;
 export const MAX_FOCUS_HEIGHT = 90;
