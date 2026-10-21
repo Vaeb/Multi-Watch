@@ -6,6 +6,7 @@ import {
   type RemoteTnoCharacter,
   type RemoteTnoData,
 } from "../../types";
+import { ANY_SERVER_FACTIONS } from "../constants";
 import { getAssumeFactions } from "./assumeFaction";
 import { parseLookup } from "./parseLookup";
 
@@ -309,8 +310,17 @@ export const createKickStreamParser = (
       onOther = false;
     }
 
+    const otherTagText = serverName ? `::${serverName}::` : "::Other Server::";
+    const streamer = streamers[(chatroom?.twitch ?? channelName).toLowerCase()];
+    const characters = streamer?.characters ?? [];
+    const isAnyServerFaction = (faction: string) =>
+      ANY_SERVER_FACTIONS.includes(faction);
+    const onAnyServer =
+      getAssumeFactions(chatroom?.assumeFaction).some(isAnyServerFaction) ||
+      characters.some((char) => char.factions.some(isAnyServerFaction));
+
     // Kick streamers marked as NoPixel are assumed to be on NoPixel unless their title names another server
-    if (onOther) {
+    if (onOther && !onAnyServer) {
       return {
         ...baseStream,
         rpServer: serverName || null,
@@ -319,7 +329,7 @@ export const createKickStreamParser = (
         faction: "other",
         factions: ["other"],
         factionsMap: { other: true },
-        tagText: serverName ? `::${serverName}::` : "::Other Server::",
+        tagText: otherTagText,
         tagFaction: "other",
         noOthersInclude: false,
         noPublicInclude: true,
@@ -327,10 +337,7 @@ export const createKickStreamParser = (
       };
     }
 
-    serverName = "NP";
-
-    const streamer = streamers[(chatroom?.twitch ?? channelName).toLowerCase()];
-    const characters = streamer?.characters ?? [];
+    if (!onOther) serverName = "NP";
 
     let onServer: AssumeServer = streamer?.characters.length
       ? streamer.assumeServer
@@ -464,9 +471,9 @@ export const createKickStreamParser = (
       }
     }
 
-    const onNpWhitelist = onServer === "whitelist";
-    const onNpPublic = onServer === "public";
-    const onNpInternational = onServer === "international";
+    const onNpWhitelist = !onOther && onServer === "whitelist";
+    const onNpPublic = !onOther && onServer === "public";
+    const onNpInternational = !onOther && onServer === "international";
 
     let activeFactions: string[];
     let colorFaction: string;
@@ -513,7 +520,7 @@ export const createKickStreamParser = (
 
     return {
       ...baseStream,
-      rpServer: serverName,
+      rpServer: serverName || null,
       characterName: possibleCharacter?.name ?? null,
       nicknameLookup: possibleCharacter?.nicknames
         ? possibleCharacter.nicknames
@@ -525,7 +532,7 @@ export const createKickStreamParser = (
       factionsMap: Object.fromEntries(
         activeFactions.map((faction) => [faction, true]),
       ),
-      tagText,
+      tagText: onOther ? otherTagText : tagText,
       tagFaction,
       tagFactionSecondary:
         (onNpPublic && "publicnp") ||

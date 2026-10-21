@@ -2,6 +2,10 @@ import { strict as assert } from "node:assert";
 import test from "node:test";
 import { type RemoteKickLivestream } from "../../types";
 import { createKickStreamParser } from "./kickStreamParser";
+import {
+  filterNoPixelStreamsByFaction,
+  isNoPixelStreamAllowed,
+} from "./nopixelFilter";
 
 const parse = createKickStreamParser({
   npCharacters: {
@@ -87,6 +91,78 @@ void test("labels streams on other servers", () => {
   assert.equal(stream.tagText, "::PurpleRP::");
   assert.equal(stream.rpServer, "PurpleRP");
   assert.equal(stream.noOthersInclude, false);
+});
+
+const parseAnyServer = createKickStreamParser({
+  npCharacters: {
+    BestieTwitch: [{ name: "Bree Bestie", factions: ["Besties"] }],
+    Outsider: [{ name: "Otto Out", factions: ["Alpha"] }],
+  },
+  npFactionsRegex: { "6chambers": "\\b6 ?chambers\\b", alpha: "\\balpha\\b" },
+  useColorsDark: { besties: "#f0f", "6chambers": "#ff0", alpha: "#f00" },
+  regNp: "\\bnopixel\\b|\\bnp\\b",
+  regNpPublic: "\\bpublic\\b",
+  regOthers: [{ name: "Prodigy", reg: "\\bprodigy\\b", include: 1 }],
+});
+
+void test("lists any-server faction channels on other servers under their faction", () => {
+  const byCharacter = parseAnyServer(
+    kick("BestieKick", "Prodigy | Bree today"),
+    {
+      id: 1,
+      twitch: "BestieTwitch",
+    },
+  );
+  assert.equal(byCharacter.rpServer, "Prodigy");
+  assert.equal(byCharacter.tagText, "::Prodigy::");
+  assert.equal(byCharacter.characterName, "Bree Bestie");
+  assert.equal(byCharacter.faction, "besties");
+  assert.deepEqual(byCharacter.factions, ["besties"]);
+  assert.equal(byCharacter.noOthersInclude, true);
+  assert.equal(byCharacter.noPublicInclude, true);
+  assert.equal(byCharacter.noInternationalInclude, true);
+  assert.ok(isNoPixelStreamAllowed("besties", byCharacter));
+  assert.ok(!isNoPixelStreamAllowed("nponly", byCharacter));
+  assert.deepEqual(filterNoPixelStreamsByFaction([byCharacter], "allnopixel"), [
+    byCharacter,
+  ]);
+
+  const byChatroom = parseAnyServer(kick("Chamber", "public prodigy grind"), {
+    id: 2,
+    assumeFaction: ["6chambers"],
+  });
+  assert.equal(byChatroom.rpServer, "Prodigy");
+  assert.equal(byChatroom.tagText, "::Prodigy::");
+  assert.ok(byChatroom.factionsMap["6chambers"]);
+  assert.equal(byChatroom.tagFactionSecondary, undefined);
+  assert.equal(byChatroom.noOthersInclude, true);
+  assert.equal(byChatroom.noPublicInclude, true);
+  assert.equal(byChatroom.noInternationalInclude, true);
+});
+
+void test("still excludes other-server channels outside the any-server factions", () => {
+  const stream = parseAnyServer(kick("OutKick", "Prodigy | Otto today"), {
+    id: 3,
+    twitch: "Outsider",
+    assumeFaction: ["alpha"],
+  });
+  assert.equal(stream.rpServer, "Prodigy");
+  assert.equal(stream.tagText, "::Prodigy::");
+  assert.equal(stream.faction, "other");
+  assert.equal(stream.characterName, null);
+  assert.equal(stream.noOthersInclude, false);
+});
+
+void test("leaves any-server faction channels on NoPixel unchanged", () => {
+  const stream = parseAnyServer(kick("BestieKick", "NoPixel | Bree today"), {
+    id: 1,
+    twitch: "BestieTwitch",
+  });
+  assert.equal(stream.rpServer, "NP");
+  assert.equal(stream.tagText, "Bree");
+  assert.equal(stream.faction, "besties");
+  assert.deepEqual(stream.factions, ["besties", "whitelistnp"]);
+  assert.equal(stream.noOthersInclude, true);
 });
 
 const multiCharacters = {
