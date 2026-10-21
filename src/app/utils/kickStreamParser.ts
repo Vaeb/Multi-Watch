@@ -137,6 +137,10 @@ export const createKickStreamParser = (
   );
   const getFilterOrderRank = (faction: string) =>
     filterOrderRank.get(faction) ?? Infinity;
+  const getTopFaction = (factions: string[]) =>
+    factions.reduce((best, faction) =>
+      getFilterOrderRank(faction) < getFilterOrderRank(best) ? faction : best,
+    );
 
   const factionsRegex = Object.fromEntries(
     Object.entries(data.npFactionsRegex ?? {}).map(([faction, source]) => [
@@ -241,9 +245,7 @@ export const createKickStreamParser = (
       ),
       factionUse:
         primaryFaction in useColorsDark ? primaryFaction : "otherfaction",
-      colorFaction: factions.reduce((best, faction) =>
-        getFilterOrderRank(faction) < getFilterOrderRank(best) ? faction : best,
-      ),
+      colorFaction: getTopFaction(factions),
       displayName:
         `${rawChar.leader ? `♛${displayNameTitle ? "" : " "}` : ""}${displayNameTitle}${displayNameChar}`.trim(),
       nameReg: new RegExp(
@@ -467,17 +469,20 @@ export const createKickStreamParser = (
     const onNpInternational = onServer === "international";
 
     let activeFactions: string[];
+    let colorFaction: string;
     let tagFaction: string;
     let tagText: string;
 
     if (nowCharacter) {
       activeFactions = [...nowCharacter.factions];
+      colorFaction = nowCharacter.colorFaction;
       tagFaction = nowCharacter.factionUse;
       tagText = nowCharacter.displayName;
     } else if (factionNames.length) {
       const faction = factionNames[0]!;
       const factionNameFull = fullFactionMap[faction] || faction;
       activeFactions = [...factionNames, "guessed"];
+      colorFaction = getTopFaction(factionNames);
       tagFaction = faction in useColorsDark ? faction : "independent";
       tagText =
         tagFaction === "podcast" || tagFaction === "watchparty"
@@ -485,10 +490,12 @@ export const createKickStreamParser = (
           : `〈${factionNameFull}〉`;
     } else if (possibleCharacter) {
       activeFactions = [...possibleCharacter.factions, "guessed"];
+      colorFaction = possibleCharacter.colorFaction;
       tagFaction = possibleCharacter.factionUse;
       tagText = `? ${possibleCharacter.displayName} ?`;
     } else {
       activeFactions = ["othernp"];
+      colorFaction = "othernp";
       tagFaction = "othernp";
       tagText = "Kick";
     }
@@ -513,7 +520,7 @@ export const createKickStreamParser = (
             .map((nickname) => parseLookup(nickname))
             .join(" _-_ ")
         : null,
-      faction: nowCharacter ? nowCharacter.colorFaction : activeFactions[0]!,
+      faction: colorFaction,
       factions: activeFactions,
       factionsMap: Object.fromEntries(
         activeFactions.map((faction) => [faction, true]),
