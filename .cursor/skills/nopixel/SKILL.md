@@ -59,8 +59,8 @@ printf 'Hong Kong Pawn\nOld Country\n' | nopixel kick
 ## Unresolved faction names (kick / twitch)
 If some faction names don't resolve, the others are still fetched. The skipped ones appear in the output's
 `unresolved` list (`query`, `how: no_match`, `candidates`) and as a warning line on stderr, with exit 0. Only when
-no name resolves does it stop (exit 6) before fetching any pages. Factions get renamed (e.g. PISS BOIZ* is now
-PSec), so check `unresolved` and its candidates.
+no name resolves does it stop (exit 6) before fetching any pages. Factions get renamed (e.g. one is now Los $antos
+Degens), so check `unresolved` and its candidates.
 
 ## How roles are read
 Faction infoboxes vary. Members come from fields like `owner`, `founder`, `leader`, `f_leader`, `key_people`,
