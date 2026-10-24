@@ -93,7 +93,7 @@
   "Capped": {
     "id": 62909184,
     "np": true,
-    "assumeFaction": ["locksmiths", "faceless", "nest"]
+    "assumeFaction": ["locksmiths", "faceless", "nest", "brickbois"]
   },
   "4hBunger": {
     "id": 16120140,
@@ -858,12 +858,13 @@
   },
   "AlyssaJean": {
     "id": 1344143,
-    "np": true
+    "np": true,
+    "assumeFaction": ["brickbois"]
   },
   "crystalst": {
     "id": 99687,
     "np": true,
-    "assumeFaction": ["brickhouse", "sweepers", "casino", "gruppe6", "police"]
+    "assumeFaction": ["brickhouse", "sweepers", "casino", "gruppe6", "police", "brickbois"]
   },
   "6ixThree": {
     "id": 289188,
@@ -968,7 +969,7 @@
   "WhiskeyMate": {
     "id": 107590764,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "brickbois"]
   },
   "Sarkwentv": {
     "id": 3591849,
@@ -988,7 +989,7 @@
   "GEEGA": {
     "id": 7592215,
     "np": true,
-    "assumeFaction": ["casino", "police", "sinnerpawn"]
+    "assumeFaction": ["casino", "police"]
   },
   "ikitty": {
     "id": 960721,
@@ -1023,7 +1024,7 @@
   "bigbam": {
     "id": 1695907,
     "np": true,
-    "assumeFaction": ["doc"]
+    "assumeFaction": ["doc", "clowns"]
   },
   "Bodocc": {
     "id": 100331092,
@@ -1562,8 +1563,7 @@
   },
   "Kaysan": {
     "id": 246956,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "stevie_jay305": {
     "id": 15284957,
@@ -1574,5 +1574,10 @@
     "id": 5508876,
     "np": true,
     "twitch": "SilentSentry"
+  },
+  "dariqueen": {
+    "id": 5691333,
+    "np": true,
+    "assumeFaction": ["collective"]
   }
 }
