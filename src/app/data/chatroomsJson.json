@@ -623,7 +623,7 @@
   "qift": {
     "id": 48105250,
     "np": true,
-    "assumeFaction": ["burgershot"]
+    "assumeFaction": ["burgershot", "bpm"]
   },
   "Boss-Zulu": {
     "id": 2021342,
@@ -1029,7 +1029,7 @@
   "Bodocc": {
     "id": 100331092,
     "np": true,
-    "assumeFaction": ["clowns"]
+    "assumeFaction": ["clowns", "burgershot"]
   },
   "FirecrackThat": {
     "id": 1333171,
@@ -1414,7 +1414,7 @@
   "kerazane": {
     "id": 20851470,
     "np": true,
-    "assumeFaction": ["sinnerpawn"]
+    "assumeFaction": ["sinnerpawn", "collective"]
   },
   "natettvrp": {
     "id": 1246540,
@@ -1464,7 +1464,7 @@
   "hulzy": {
     "id": 1383167,
     "np": true,
-    "assumeFaction": ["doj", "hkpawn", "oldcountry"]
+    "assumeFaction": ["hkpawn", "oldcountry"]
   },
   "icky619": {
     "id": 7574402,
@@ -1579,5 +1579,10 @@
     "id": 5691333,
     "np": true,
     "assumeFaction": ["collective"]
+  },
+  "EsfandTV": {
+    "id": 58085886,
+    "np": true,
+    "assumeFaction": ["police"]
   }
 }
