@@ -155,7 +155,7 @@
   "tjnv": {
     "id": 63701083,
     "np": true,
-    "assumeFaction": ["casino", "doc", "degens"]
+    "assumeFaction": ["casino", "doc", "degens", "brickhouse"]
   },
   "iateabattery": {
     "id": 2634803,
@@ -211,7 +211,7 @@
   "StrikingContact": {
     "id": 2860619,
     "np": true,
-    "assumeFaction": ["habibis", "police"]
+    "assumeFaction": ["habibis", "police", "hkpawn", "oldcountry"]
   },
   "kieron": {
     "id": 78555,
@@ -874,7 +874,7 @@
   "Dyoti": {
     "id": 2423614,
     "np": true,
-    "assumeFaction": ["hkpawn", "oldcountry", "police"]
+    "assumeFaction": ["hkpawn", "oldcountry", "police", "doj"]
   },
   "givemeuhminute": {
     "id": 2689154,
@@ -904,7 +904,7 @@
   "catherinereel": {
     "id": 66847409,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "doc"]
+    "assumeFaction": ["sinnerpawn", "doc", "brickbois"]
   },
   "JayAitch": {
     "id": 2500057,
@@ -979,7 +979,7 @@
   "MEKABEAR": {
     "id": 51504,
     "np": true,
-    "assumeFaction": ["degens", "casino"]
+    "assumeFaction": ["degens", "casino", "brickhouse"]
   },
   "AngelKnivez": {
     "id": 1989830,
@@ -1004,7 +1004,7 @@
   "aikobliss": {
     "id": 76272,
     "np": true,
-    "assumeFaction": ["burgershot"]
+    "assumeFaction": ["burgershot", "brickbois", "brickhouse"]
   },
   "CannaYaps": {
     "id": 51902930,
@@ -1319,7 +1319,7 @@
   "SgtApollo": {
     "id": 970607,
     "np": true,
-    "assumeFaction": ["police", "brickhouse", "gruppe6", "the404"]
+    "assumeFaction": ["police", "gruppe6", "the404"]
   },
   "Sharaadrick": {
     "id": 1669530,
@@ -1414,7 +1414,7 @@
   "kerazane": {
     "id": 20851470,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "collective"]
+    "assumeFaction": ["sinnerpawn"]
   },
   "natettvrp": {
     "id": 1246540,
@@ -1469,7 +1469,7 @@
   "icky619": {
     "id": 7574402,
     "np": true,
-    "assumeFaction": ["doj"]
+    "assumeFaction": ["doj", "brickbois"]
   },
   "acie": {
     "id": 2384927,
@@ -1489,7 +1489,7 @@
   "Pengwin": {
     "id": 98541,
     "np": true,
-    "assumeFaction": ["burgershot"]
+    "assumeFaction": ["burgershot", "brickbois"]
   },
   "vertex84": {
     "id": 1276402,
@@ -1577,8 +1577,7 @@
   },
   "dariqueen": {
     "id": 5691333,
-    "np": true,
-    "assumeFaction": ["collective"]
+    "np": true
   },
   "EsfandTV": {
     "id": 58085886,
