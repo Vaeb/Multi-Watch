@@ -30,7 +30,7 @@ When you pass it on, credit and link the page (`url` fields are included).
 ## Commands
 | Command | Returns |
 |---|---|
-| `nopixel factions [--no-recurse]` | `{count, categoriesVisited, factions:[{title,url,category}]}` from `Category:Factions (Gangs/Departments/Businesses)` plus all subcategories (deduped). `--no-recurse` = direct pages only. |
+| `nopixel factions [--no-recurse]` | `{count, categoriesVisited, factions:[{title,url,category}]}` from `Category:Groups` plus all non-empty subcategories (deduped). `--no-recurse` = direct pages only. The wiki moved this root from `Category:Factions (Gangs/Departments/Businesses)` on 25 Oct 2026; if the root returns no pages it exits 5. |
 | `nopixel resolve <name>...` | `{results:[{query, match, how, candidates, url}]}`. `how` = `exact` (case-insensitive), `normalized` (ignores "The", punctuation, spaces), `ambiguous` or `no_match` (with suggestions in `candidates`). Never guesses. Exit 6 if any name failed. |
 | `nopixel members <faction title>... [--resolve]` | `{factions:[{title,url,exists,infobox,parsed,members:[{character,display,role,group,deceased,url}]}]}`. Takes exact titles; `--resolve` accepts loose names. |
 | `nopixel character <name>...` | `{characters:[{name,url,exists,template,playedBy,kick,kickSource,kickAll,kickUrl,twitch,twitchSource,twitchAll,twitchUrl,playerHint,status,faction,rank}]}`. Missing page: `exists:false`, fields null. |
@@ -108,15 +108,16 @@ them on a 3.0 version tab) and 2 via `playerPage` (Sparky Kane -> "Louuis (Playe
 `twitchAll`). These extra reads are batched like everything else (that command took 31 requests cold).
 
 ## Limits
-- First `factions`/`resolve`/`kick`/`twitch` run on a VM reads ~28 category requests (~30 s, ~1000 titles incl.
-  2.0/3.0-era and some person categories like Police/Business Owners). Cached for 6 h after that, so repeats take ~0 requests.
+- First `factions`/`resolve`/`kick`/`twitch` run on a VM reads ~30 category requests (~35 s, ~1000 titles incl.
+  2.0/3.0/4.0-era Gangs/Businesses/Government, Families and Archived Groups). Empty subcategories are skipped without
+  a request. Cached for 6 h after that, so repeats take ~0 requests.
 - Requests are paced ~1 s apart and page reads are batched 50 per request. `kick` on two factions: ~30 requests cold, 0 warm.
 - Links that redirect follow the wiki: e.g. Vittorio DiCenzo -> "Vittorio DiCenzo/4.0" (older-era page, no Kick).
 - Some faction pages list no members at all (e.g. Epsilon, La Sierra): `parsed:false`, empty members.
 - Kick/Twitch is only what the wiki says (see "Channel lookup order"); many characters have none (`missingKick` / `missingTwitch`).
 
 ## Errors
-JSON on stderr `{error,status,hint}`, non-zero exit. 2 bad args; 3 HTTP error; 4 network; 5 API changed/odd response; 6 unresolved names.
+JSON on stderr `{error,status,hint}`, non-zero exit. 2 bad args; 3 HTTP error; 4 network; 5 API changed/odd response (including an empty root category, e.g. if the wiki moves `Category:Groups` again); 6 unresolved names.
 
 **HTTP 402/403/429 = Fandom blocked us. Stop. Do not retry in a loop, change the User-Agent, add delays/proxies, or
 otherwise work around it. Report the error JSON to the user (in your reply and PR) and continue without wiki data.**
