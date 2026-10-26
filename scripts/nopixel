@@ -6,7 +6,7 @@ import argparse, json, os, sys, time, re, gzip, hashlib, difflib, urllib.request
 API = "https://nopixel.fandom.com/api.php"
 WIKI = "https://nopixel.fandom.com/wiki/"
 UA = "mwclient/0.11"  # honest library UA; never spoof a browser, never add 'bot'
-ROOT = "Category:Factions (Gangs/Departments/Businesses)"
+ROOT = "Category:Groups"  # moved from "Category:Factions (Gangs/Departments/Businesses)" on 25 Oct 2026
 CACHE = os.path.expanduser("~/.cache/nopixel"); TTL = 6 * 3600
 LICENSE = "Content from nopixel.fandom.com, CC BY-SA. Credit and link the page."
 FRESH = False; STATS = {"requests": 0, "cacheHits": 0}; _last = [0.0]
@@ -46,10 +46,12 @@ def api(params):
     return d
 
 def category_members(cat):
+    """Members of one category; subcategories carry their categoryinfo size so empty ones can be skipped."""
     out, cont = [], {}
     while True:
-        d = api(dict(action="query", list="categorymembers", cmtitle=cat, cmlimit="500", cmprop="title|ns", **cont))
-        out += d.get("query", {}).get("categorymembers", [])
+        d = api(dict(action="query", generator="categorymembers", gcmtitle=cat, gcmlimit="500", prop="categoryinfo", **cont))
+        for p in d.get("query", {}).get("pages", []):
+            out.append({"title": p["title"], "ns": p["ns"], "size": (p.get("categoryinfo") or {}).get("size")})
         if "continue" not in d: return out
         cont = {k: v for k, v in d["continue"].items()}
 
@@ -63,8 +65,10 @@ def factions(recurse=True):
         seen_c.add(c)
         for m in category_members(c):
             if m["ns"] == 14:
-                if recurse: todo.append(m["title"])
+                if recurse and m["size"] != 0: todo.append(m["title"])  # skip empty subcategories (no request)
             elif m["ns"] == 0: pages.setdefault(m["title"], c)
+    if not pages:
+        die(f"{ROOT} returned no pages", None, "the wiki may have moved or renamed the root category; tell Bridge", 5)
     res = [{"title": t, "url": url_of(t), "category": c} for t, c in sorted(pages.items(), key=lambda x: x[0].lower())]
     _fcache[recurse] = (res, sorted(seen_c))
     return _fcache[recurse]
