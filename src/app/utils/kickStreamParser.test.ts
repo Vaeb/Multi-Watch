@@ -214,7 +214,7 @@ void test("colours a guessed stream by its highest-priority faction", () => {
       SgtApollo: [
         {
           name: "Salem Barghouthi",
-          factions: ["Brick House", "The 404", "Gruppe6"],
+          factions: ["Brick House", "BNE", "Gruppe6"],
         },
         {
           name: "[Officer] Aziz Sultan",
@@ -224,19 +224,19 @@ void test("colours a guessed stream by its highest-priority faction", () => {
         { name: "Malik Mansori", factions: ["Police"], displayName: 0 },
       ],
     },
-    filterOrderTop: ["police", "the404", "brickhouse", "gruppe6"],
+    filterOrderTop: ["police", "bne", "brickhouse", "gruppe6"],
   });
   const apollo = (title: string) =>
     parseApollo(kick("SgtApollo", title), {
       id: 970607,
-      assumeFaction: ["police", "brickhouse", "gruppe6", "the404"],
+      assumeFaction: ["police", "brickhouse", "gruppe6", "bne"],
     });
 
   const guessed = apollo("chill stream");
   assert.equal(guessed.characterName, "Salem Barghouthi");
   assert.equal(guessed.tagText, "? Salem ?");
-  assert.equal(guessed.faction, "the404");
-  assert.equal(apollo("Salem today").faction, "the404");
+  assert.equal(guessed.faction, "bne");
+  assert.equal(apollo("Salem today").faction, "bne");
 
   const parseFactionOnly = createKickStreamParser({
     npFactionsRegex: { alpha: "\\balpha\\b", beta: "\\bbeta\\b" },

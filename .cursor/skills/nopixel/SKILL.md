@@ -80,7 +80,7 @@ Anything ambiguous is kept, e.g. `f_leader` (role "f leader") and `overseen_by`;
 Hangarounds count as members.
 
 E.g. `nopixel members "Brick Bois"` returns 5: its 4 founders plus Jean Paul (f leader), not its Associates.
-`nopixel kick "Street Sweepers"` includes Benji Ramos (role "owner founder", kick `lysium`).
+`nopixel kick "BNE"` includes Giovanna Gambino (role "2IC", kick `geega`).
 If you need the excluded people, read the faction page itself (`url`).
 
 ## Channel lookup order
