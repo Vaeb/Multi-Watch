@@ -613,7 +613,7 @@
   "RayC": {
     "id": 118956,
     "np": true,
-    "assumeFaction": ["habibis", "sinnerpawn"],
+    "assumeFaction": ["habibis", "sinnerpawn", "bpm"],
     "twitch": "Ray__C"
   },
   "zandr400": {
@@ -844,7 +844,7 @@
   "Kripted": {
     "id": 95358,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "police"]
+    "assumeFaction": ["pawnaddicts", "police", "collective"]
   },
   "mfWarlock": {
     "id": 1345063,
@@ -969,7 +969,7 @@
   "WhiskeyMate": {
     "id": 107590764,
     "np": true,
-    "assumeFaction": ["police", "brickbois"]
+    "assumeFaction": ["police", "brickbois", "oldcountry"]
   },
   "Sarkwentv": {
     "id": 3591849,
