@@ -103,7 +103,7 @@
   "heyimzed": {
     "id": 91168,
     "np": true,
-    "assumeFaction": ["admc", "sinnerpawn"]
+    "assumeFaction": ["admc", "sinnerpawn", "brickbois"]
   },
   "Barky": {
     "id": 4234650,
@@ -783,7 +783,7 @@
   "novazfov": {
     "id": 118594,
     "np": true,
-    "assumeFaction": ["brickhouse"]
+    "assumeFaction": ["brickhouse", "brickbois"]
   },
   "Sayeed": {
     "id": 125993,
@@ -1563,8 +1563,7 @@
   },
   "Kaysan": {
     "id": 246956,
-    "np": true,
-    "assumeFaction": ["bne"]
+    "np": true
   },
   "stevie_jay305": {
     "id": 15284957,
