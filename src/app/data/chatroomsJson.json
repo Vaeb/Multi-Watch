@@ -103,7 +103,7 @@
   "heyimzed": {
     "id": 91168,
     "np": true,
-    "assumeFaction": ["admc", "sinnerpawn", "brickbois"]
+    "assumeFaction": ["admc", "sinnerpawn"]
   },
   "Barky": {
     "id": 4234650,
@@ -994,7 +994,7 @@
   "ikitty": {
     "id": 960721,
     "np": true,
-    "assumeFaction": ["casino", "gruppe6"]
+    "assumeFaction": ["casino", "gruppe6", "doj"]
   },
   "Nieuczesana": {
     "id": 59152267,
@@ -1583,5 +1583,10 @@
     "id": 58085886,
     "np": true,
     "assumeFaction": ["police"]
+  },
+  "Blau": {
+    "id": 1591382,
+    "np": true,
+    "assumeFaction": ["bpm"]
   }
 }
