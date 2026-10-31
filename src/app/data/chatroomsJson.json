@@ -659,7 +659,8 @@
   },
   "traycee": {
     "id": 123740,
-    "np": true
+    "np": true,
+    "assumeFaction": ["brickbois", "brickhouse"]
   },
   "ZPapz": {
     "id": 2513940,
