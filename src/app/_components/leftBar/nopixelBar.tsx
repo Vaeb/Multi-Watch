@@ -15,6 +15,7 @@ import { BarHeader } from "./BarHeader";
 import { LARGE_FACTIONS } from "../../constants";
 import { parseLookup } from "../../utils/parseLookup";
 import { filterNoPixelStreamsByFaction } from "../../utils/nopixelFilter";
+import { FAVORITES_FILTER, filterFavoriteStreams } from "../../utils/favorites";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -144,12 +145,14 @@ const StreamIcon = ({
 
 const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
   factions,
+  initialFaction,
   useColorsDark,
   setFactionFilter,
   filteredStreams,
   filteredStreamsAdditional,
 }: {
   factions: RemoteParsed["filterFactions"];
+  initialFaction: string;
   useColorsDark: RemoteParsed["useColorsDark"];
   setFactionFilter: (slug: string) => void;
   filteredStreams: RemoteStream[];
@@ -159,7 +162,7 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
   const [showFactions, setShowFactions] = useState(false);
   const [factionValue, setFactionValue] = useState<
     RemoteParsed["filterFactions"][0]
-  >(factions[0]!);
+  >(() => factions.find(([slug]) => slug === initialFaction) ?? factions[0]!);
   const [filterText, setFilterText] = useState("");
 
   const watchClickOutside = useCallback((e: MouseEvent) => {
@@ -293,8 +296,16 @@ function NopixelBarComponent({
     useColorsDark: _useColorsDark,
   } = parsed;
 
+  const favorites = usePersistStore((state) => state.favorites);
+
   const [searchFilter, setSearchFilter] = useState("");
-  const [factionFilter, setFactionFilter] = useState(_filterFactions[0]![0]);
+  const [initialFactionFilter] = useState(_filterFactions[0]![0]);
+  const [factionFilter, setFactionFilter] = useState(initialFactionFilter);
+
+  const hasLiveFavorite = useMemo(
+    () => filterFavoriteStreams(streams, favorites).length > 0,
+    [streams, favorites],
+  );
 
   const [filterFactions, useColorsDark] = useMemo(() => {
     const factionFilterEdited = [..._filterFactions];
@@ -304,13 +315,20 @@ function NopixelBarComponent({
       _filterFactions[0]![2],
       1000,
     ]);
+    factionFilterEdited.unshift([
+      FAVORITES_FILTER,
+      "Favorites",
+      hasLiveFavorite,
+      0,
+    ]);
 
     const useColorsDarkEdited: typeof _useColorsDark = {
       ..._useColorsDark,
       nponly: "#FFF",
+      [FAVORITES_FILTER]: "#FBBF24",
     };
     return [factionFilterEdited, useColorsDarkEdited];
-  }, [_filterFactions, _useColorsDark]);
+  }, [_filterFactions, _useColorsDark, hasLiveFavorite]);
 
   const filteredStreams = useMemo(() => {
     let _filteredStreams = streams;
@@ -326,6 +344,8 @@ function NopixelBarComponent({
           stream.channelName.toLowerCase().includes(searchFilterTrimmed) ||
           stream.title.toLowerCase().includes(searchFilterTrimmed),
       );
+    } else if (factionFilter === FAVORITES_FILTER) {
+      _filteredStreams = filterFavoriteStreams(_filteredStreams, favorites);
     } else {
       _filteredStreams = filterNoPixelStreamsByFaction(
         _filteredStreams,
@@ -334,7 +354,16 @@ function NopixelBarComponent({
     }
 
     return _filteredStreams;
-  }, [streams, searchFilter, factionFilter]);
+  }, [streams, searchFilter, factionFilter, favorites]);
+
+  const favoritesEmptyMessage =
+    factionFilter === FAVORITES_FILTER &&
+    searchFilter.trim() === "" &&
+    filteredStreams.length === 0
+      ? favorites.length === 0
+        ? "No favorites yet. Star a channel under another filter to add it here."
+        : "None of your favorites are live right now."
+      : null;
 
   const filteredStreamsAdditional = useMemo(
     () =>
@@ -385,6 +414,7 @@ function NopixelBarComponent({
 
       <NopixelFactionFilter
         factions={filterFactions}
+        initialFaction={initialFactionFilter}
         useColorsDark={useColorsDark}
         setFactionFilter={setFactionFilter}
         filteredStreams={filteredStreams}
@@ -392,6 +422,11 @@ function NopixelBarComponent({
       />
 
       <div className="no-scrollbar mt-2 flex w-full flex-1 flex-col gap-0 overflow-y-auto overflow-x-hidden">
+        {favoritesEmptyMessage ? (
+          <p className="px-4 py-2 text-sm text-[#ddd] opacity-60">
+            {favoritesEmptyMessage}
+          </p>
+        ) : null}
         {filteredStreams.map((stream, i) => (
           <StreamIcon
             key={`${filteredStreamsAdditional[i]!.platform}-${stream.channelName}`}
