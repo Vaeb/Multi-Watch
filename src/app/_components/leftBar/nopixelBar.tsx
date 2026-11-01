@@ -342,23 +342,17 @@ function NopixelBarComponent({
 
   const [filterFactions, useColorsDark] = useMemo(() => {
     const factionFilterEdited = [..._filterFactions];
-    factionFilterEdited.splice(1, 0, [
-      "nponly",
-      "Now on NoPixel",
-      _filterFactions[0]![2],
-      1000,
-    ]);
-    factionFilterEdited.unshift([
-      FAVORITES_FILTER,
-      "Favorites",
-      hasLiveFavorite,
+    factionFilterEdited.splice(
+      1,
       0,
-    ]);
+      [FAVORITES_FILTER, "Favorites", hasLiveFavorite, 0],
+      ["nponly", "Now on NoPixel", _filterFactions[0]![2], 1000],
+    );
 
     const useColorsDarkEdited: typeof _useColorsDark = {
       ..._useColorsDark,
       nponly: "#FFF",
-      [FAVORITES_FILTER]: "#FBBF24",
+      [FAVORITES_FILTER]: "#FFF",
     };
     return [factionFilterEdited, useColorsDarkEdited];
   }, [_filterFactions, _useColorsDark, hasLiveFavorite]);
