@@ -143,6 +143,10 @@ const StreamIcon = ({
   );
 };
 
+// Favorites and the catch-all groups (all streams, server-wide, independent) aren't factions
+const canFavoriteFaction = (slug: string) =>
+  slug !== FAVORITES_FILTER && !LARGE_FACTIONS[slug];
+
 const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
   factions,
   initialFaction,
@@ -164,6 +168,8 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
     RemoteParsed["filterFactions"][0]
   >(() => factions.find(([slug]) => slug === initialFaction) ?? factions[0]!);
   const [filterText, setFilterText] = useState("");
+  const favoriteFactions = usePersistStore((state) => state.favoriteFactions);
+  const { toggleFavoriteFaction } = usePersistStore.getState().actions;
 
   const watchClickOutside = useCallback((e: MouseEvent) => {
     const didClickOutside = !containerRef?.current?.contains(e.target as Node);
@@ -231,24 +237,49 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
                   name.toLowerCase().includes(filterText.toLowerCase()),
                 )
               : factions
-            ).map((faction) => (
-              <div
-                key={`faction-${faction[0]}`}
-                className="cursor-pointer px-3 py-2 text-sm transition-colors hover:bg-[#6B46C1]"
-                style={{
-                  color: useColorsDark[faction[0]] || useColorsDark.independent,
-                }}
-                onClick={() => {
-                  setFactionValue(faction);
-                  setFactionFilter(faction[0]);
-                  setShowFactions(false);
-                  setFilterText("");
-                }}
-              >
-                {faction[1]}
-                {faction[2] ? "" : " (Offline)"}
-              </div>
-            ))}
+            ).map((faction) => {
+              const factionFavorited = favoriteFactions.includes(faction[0]);
+              return (
+                <div
+                  key={`faction-${faction[0]}`}
+                  className="group/faction flex cursor-pointer items-center gap-2 py-2 pl-3 pr-2 text-sm transition-colors hover:bg-[#6B46C1]"
+                  style={{
+                    color:
+                      useColorsDark[faction[0]] || useColorsDark.independent,
+                  }}
+                  onClick={() => {
+                    setFactionValue(faction);
+                    setFactionFilter(faction[0]);
+                    setShowFactions(false);
+                    setFilterText("");
+                  }}
+                >
+                  <span className="min-w-0 flex-1">
+                    {faction[1]}
+                    {faction[2] ? "" : " (Offline)"}
+                  </span>
+                  {canFavoriteFaction(faction[0]) ? (
+                    <button
+                      type="button"
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-white/70 ${factionFavorited ? "text-amber-400 hover:text-amber-300" : "text-[#ddd] opacity-40 hover:!opacity-100 group-hover/faction:opacity-70"}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavoriteFaction(faction[0]);
+                      }}
+                      aria-pressed={factionFavorited}
+                      aria-label={`${factionFavorited ? "Unfavorite" : "Favorite"} faction ${faction[1]}`}
+                      title={
+                        factionFavorited
+                          ? "Unfavorite faction"
+                          : "Favorite faction"
+                      }
+                    >
+                      <StarIcon size={14} filled={factionFavorited} />
+                    </button>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
         ) : null}
       </div>
@@ -297,14 +328,16 @@ function NopixelBarComponent({
   } = parsed;
 
   const favorites = usePersistStore((state) => state.favorites);
+  const favoriteFactions = usePersistStore((state) => state.favoriteFactions);
 
   const [searchFilter, setSearchFilter] = useState("");
   const [initialFactionFilter] = useState(_filterFactions[0]![0]);
   const [factionFilter, setFactionFilter] = useState(initialFactionFilter);
 
   const hasLiveFavorite = useMemo(
-    () => filterFavoriteStreams(streams, favorites).length > 0,
-    [streams, favorites],
+    () =>
+      filterFavoriteStreams(streams, favorites, favoriteFactions).length > 0,
+    [streams, favorites, favoriteFactions],
   );
 
   const [filterFactions, useColorsDark] = useMemo(() => {
@@ -345,7 +378,11 @@ function NopixelBarComponent({
           stream.title.toLowerCase().includes(searchFilterTrimmed),
       );
     } else if (factionFilter === FAVORITES_FILTER) {
-      _filteredStreams = filterFavoriteStreams(_filteredStreams, favorites);
+      _filteredStreams = filterFavoriteStreams(
+        _filteredStreams,
+        favorites,
+        favoriteFactions,
+      );
     } else {
       _filteredStreams = filterNoPixelStreamsByFaction(
         _filteredStreams,
@@ -354,14 +391,14 @@ function NopixelBarComponent({
     }
 
     return _filteredStreams;
-  }, [streams, searchFilter, factionFilter, favorites]);
+  }, [streams, searchFilter, factionFilter, favorites, favoriteFactions]);
 
   const favoritesEmptyMessage =
     factionFilter === FAVORITES_FILTER &&
     searchFilter.trim() === "" &&
     filteredStreams.length === 0
-      ? favorites.length === 0
-        ? "No favorites yet. Star a channel under another filter to add it here."
+      ? favorites.length === 0 && favoriteFactions.length === 0
+        ? "No favorites yet. Star a channel, or a faction in the filter list, to add it here."
         : "None of your favorites are live right now."
       : null;
 
