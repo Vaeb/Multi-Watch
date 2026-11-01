@@ -17,12 +17,29 @@ globalThis.localStorage = {
   },
 };
 
-const { favoriteKey, isFavorite, persistDefaults, usePersistStore } =
-  await import("../stores/persistStore");
+const {
+  favoriteKey,
+  isFavorite,
+  isFavoriteFaction,
+  persistDefaults,
+  usePersistStore,
+} = await import("../stores/persistStore");
 const { filterFavoriteStreams } = await import("./favorites");
 
-const liveStream = (channelName: string, platform?: Platform) =>
-  ({ channelName, platform }) as RemoteStream;
+const liveStream = (
+  channelName: string,
+  platform?: Platform,
+  factions: string[] = [],
+) =>
+  ({
+    channelName,
+    platform,
+    rpServer: "NP",
+    factionsMap: Object.fromEntries(factions.map((faction) => [faction, true])),
+  }) as RemoteStream;
+
+const liveNames = (streams: RemoteStream[]) =>
+  streams.map((stream) => stream.channelName);
 
 const savedState = () =>
   (
@@ -138,4 +155,93 @@ void test("favorites filter is empty with no favorites or none live", () => {
 
   assert.deepEqual(filterFavoriteStreams(streams, []), []);
   assert.deepEqual(filterFavoriteStreams(streams, ["twitch:offline"]), []);
+});
+
+void test("toggles a faction favorite separately from channel favorites", () => {
+  usePersistStore.setState({ favorites: [], favoriteFactions: [] });
+  const { toggleFavoriteFaction } = usePersistStore.getState().actions;
+
+  toggleFavorite("twitch", "Member");
+  toggleFavoriteFaction("besties");
+  let state = usePersistStore.getState();
+  assert.deepEqual(state.favoriteFactions, ["besties"]);
+  assert.deepEqual(savedState()?.favoriteFactions, ["besties"]);
+  assert.equal(isFavoriteFaction("besties")(state), true);
+  assert.deepEqual(state.favorites, ["twitch:member"]);
+
+  toggleFavoriteFaction("besties");
+  state = usePersistStore.getState();
+  assert.deepEqual(state.favoriteFactions, []);
+  assert.deepEqual(savedState()?.favoriteFactions, []);
+  assert.deepEqual(state.favorites, ["twitch:member"]);
+});
+
+void test("favorites filter includes every live member of a favorited faction", () => {
+  const streams = [
+    liveStream("BestieA", undefined, ["besties"]),
+    liveStream("Starred", "kick", ["pawnaddicts"]),
+    liveStream("BestieB", "kick", ["besties", "police"]),
+    liveStream("Other", undefined, ["police"]),
+  ];
+
+  assert.deepEqual(
+    liveNames(filterFavoriteStreams(streams, ["kick:starred"], ["besties"])),
+    ["BestieA", "Starred", "BestieB"],
+  );
+  assert.deepEqual(liveNames(filterFavoriteStreams(streams, [], ["besties"])), [
+    "BestieA",
+    "BestieB",
+  ]);
+});
+
+void test("members favorited individually stay after their faction is unfavorited", () => {
+  usePersistStore.setState({ favorites: [], favoriteFactions: [] });
+  const { toggleFavoriteFaction } = usePersistStore.getState().actions;
+  const streams = [
+    liveStream("BestieA", undefined, ["besties"]),
+    liveStream("BestieB", undefined, ["besties"]),
+  ];
+  const shown = () => {
+    const { favorites, favoriteFactions } = usePersistStore.getState();
+    return liveNames(
+      filterFavoriteStreams(streams, favorites, favoriteFactions),
+    );
+  };
+
+  toggleFavorite("twitch", "BestieA");
+  toggleFavoriteFaction("besties");
+  assert.deepEqual(shown(), ["BestieA", "BestieB"]);
+
+  toggleFavoriteFaction("besties");
+  assert.deepEqual(shown(), ["BestieA"]);
+});
+
+void test("resetDefaults keeps faction favorites", () => {
+  usePersistStore.setState({ favoriteFactions: ["police"], chatWidth: 820 });
+
+  resetDefaults();
+  assert.deepEqual(usePersistStore.getState().favoriteFactions, ["police"]);
+});
+
+void test("saved state without faction favorites, or a corrupted value, loads as empty", async () => {
+  let state = await loadFromStorage({
+    state: { ...persistDefaults, favorites: ["twitch:a"] },
+    version: 0,
+  });
+  assert.deepEqual(state.favoriteFactions, []);
+  assert.deepEqual(state.favorites, ["twitch:a"]);
+
+  state = await loadFromStorage({
+    state: { favoriteFactions: { besties: true } },
+    version: 0,
+  });
+  assert.deepEqual(state.favoriteFactions, []);
+});
+
+void test("saved faction favorites load after a reload", async () => {
+  const state = await loadFromStorage({
+    state: { ...persistDefaults, favoriteFactions: ["besties", 7] },
+    version: 0,
+  });
+  assert.deepEqual(state.favoriteFactions, ["besties"]);
 });

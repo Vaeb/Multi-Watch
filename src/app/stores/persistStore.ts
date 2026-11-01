@@ -15,6 +15,7 @@ export interface PersistState {
   chatWidth: number;
   hideLeftBar: boolean;
   favorites: FavoriteKey[];
+  favoriteFactions: string[];
 
   actions: {
     resetDefaults: () => void;
@@ -23,6 +24,7 @@ export interface PersistState {
     setChatWidth: (value: number) => void;
     setHideLeftBar: (value: boolean) => void;
     toggleFavorite: (platform: Platform, channel: string) => void;
+    toggleFavoriteFaction: (faction: string) => void;
   };
 }
 
@@ -39,12 +41,22 @@ export const isFavorite =
   (state: Pick<PersistState, "favorites">) =>
     state.favorites.includes(favoriteKey(platform, channel));
 
+export const isFavoriteFaction =
+  (faction: string) => (state: Pick<PersistState, "favoriteFactions">) =>
+    state.favoriteFactions.includes(faction);
+
+const savedStringList = (value: unknown) =>
+  Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : null;
+
 export const usePersistStore = create<PersistState>()(
   subscribeWithSelector(
     persist(
       stateApplyLog<PersistState>((set) => ({
         ...persistDefaults,
         favorites: [],
+        favoriteFactions: [],
 
         actions: {
           resetDefaults: () => set({ ...persistDefaults }),
@@ -68,6 +80,12 @@ export const usePersistStore = create<PersistState>()(
                   : [...state.favorites, key],
               };
             }),
+          toggleFavoriteFaction: (faction) =>
+            set((state) => ({
+              favoriteFactions: state.favoriteFactions.includes(faction)
+                ? state.favoriteFactions.filter((fav) => fav !== faction)
+                : [...state.favoriteFactions, faction],
+            })),
         },
       })),
       {
@@ -82,11 +100,12 @@ export const usePersistStore = create<PersistState>()(
           return {
             ...current,
             ...saved,
-            favorites: Array.isArray(saved.favorites)
-              ? saved.favorites.filter(
-                  (fav): fav is FavoriteKey => typeof fav === "string",
-                )
-              : current.favorites,
+            favorites:
+              (savedStringList(saved.favorites) as FavoriteKey[] | null) ??
+              current.favorites,
+            favoriteFactions:
+              savedStringList(saved.favoriteFactions) ??
+              current.favoriteFactions,
           };
         },
       },
