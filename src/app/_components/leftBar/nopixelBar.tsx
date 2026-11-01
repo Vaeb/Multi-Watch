@@ -3,6 +3,8 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { addStream } from "../../utils/addStream";
 import { useMainStore } from "../../stores/mainStore";
+import { isFavorite, usePersistStore } from "../../stores/persistStore";
+import StarIcon from "../icons/starIcon";
 import {
   type RemoteParsed,
   type Platform,
@@ -65,6 +67,7 @@ const NopixelBarButton = ({ alt, onClick }: NopixelBarButtonProps) => {
 
 const StreamIcon = ({
   platform,
+  channel,
   topText,
   imageUrl,
   viewers,
@@ -72,47 +75,70 @@ const StreamIcon = ({
   color,
   onClick,
 }: StreamIconProps) => {
+  const favorited = usePersistStore(isFavorite(platform, channel));
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    usePersistStore.getState().actions.toggleFavorite(platform, channel);
+  };
+
   return (
-    <button
-      className="group/stream flex w-full whitespace-nowrap rounded-lg px-2 py-[3px] text-[#ddd] hover:text-white"
-      onClick={onClick}
-      aria-label={topText}
-    >
-      <div className="flex h-full w-full items-center gap-3 whitespace-nowrap rounded-md py-[5px] pl-2 pr-1 group-hover/stream:bg-[#6B46C1]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="h-[32px] w-[32px] shrink-0 rounded-full opacity-70 group-hover/stream:opacity-100"
-          src={imageUrl}
-          fetchPriority="low"
-          decoding="async"
-          loading="lazy"
-          width={32}
-          height={32}
-          aria-label={topText}
-          alt={topText}
-        />
-        <div className="flex min-w-0 flex-1 flex-col items-start">
-          <div className="flex w-full items-center gap-2">
-            <p
-              style={{ color }}
-              className="flex-1 truncate text-left text-[14px] font-medium"
-            >
-              {topText}
-            </p>
-            <p
-              className={`flex-shrink-0 text-xs ${platform === "twitch" ? "text-purple-400" : "text-green-400"} opacity-70 group-hover/stream:opacity-100`}
-            >
-              {viewers < 1000
-                ? viewers
-                : `${parseFloat((viewers / 1e3).toFixed(1))}K`}
+    <div className="group/stream relative w-full">
+      <button
+        className="flex w-full whitespace-nowrap rounded-lg px-2 py-[3px] text-[#ddd] group-hover/stream:text-white"
+        onClick={onClick}
+        aria-label={topText}
+      >
+        <div className="flex h-full w-full items-center gap-3 whitespace-nowrap rounded-md py-[5px] pl-2 pr-1 group-hover/stream:bg-[#6B46C1]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="h-[32px] w-[32px] shrink-0 rounded-full opacity-70 group-hover/stream:opacity-100"
+            src={imageUrl}
+            fetchPriority="low"
+            decoding="async"
+            loading="lazy"
+            width={32}
+            height={32}
+            aria-label={topText}
+            alt={topText}
+          />
+          <div className="flex min-w-0 flex-1 flex-col items-start">
+            <div className="flex w-full items-center gap-2">
+              <p
+                style={{ color }}
+                className="flex-1 truncate text-left text-[14px] font-medium"
+              >
+                {topText}
+              </p>
+              <p
+                className={`flex-shrink-0 text-xs ${platform === "twitch" ? "text-purple-400" : "text-green-400"} opacity-70 group-hover/stream:opacity-100`}
+              >
+                {viewers < 1000
+                  ? viewers
+                  : `${parseFloat((viewers / 1e3).toFixed(1))}K`}
+              </p>
+            </div>
+            <p className="max-w-full truncate pr-5 text-xs opacity-60 group-hover/stream:opacity-80">
+              {bottomText}
             </p>
           </div>
-          <p className="truncate text-xs opacity-60 group-hover/stream:opacity-80">
-            {bottomText}
-          </p>
         </div>
+      </button>
+      {/* Spans the text column (from x=60px) and clips, so the star hides with the text when the bar is collapsed.
+          Centred on the bottom text row, which is 16px tall and 8px above the row's bottom edge. */}
+      <div className="pointer-events-none absolute bottom-[6px] left-[60px] right-[9px] flex h-5 items-center justify-end overflow-hidden">
+        <button
+          type="button"
+          className={`pointer-events-auto flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-white/70 ${favorited ? "text-amber-400 hover:text-amber-300" : "text-[#ddd] opacity-40 hover:!opacity-100 group-hover/stream:opacity-70"}`}
+          onClick={handleFavoriteClick}
+          aria-pressed={favorited}
+          aria-label={`${favorited ? "Unfavorite" : "Favorite"} ${channel}`}
+          title={favorited ? "Unfavorite" : "Favorite"}
+        >
+          <StarIcon size={14} filled={favorited} />
+        </button>
       </div>
-    </button>
+    </div>
   );
 };
 
