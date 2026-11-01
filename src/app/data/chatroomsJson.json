@@ -150,7 +150,7 @@
   "Harry": {
     "id": 1218150,
     "np": true,
-    "assumeFaction": ["degens", "casino", "brickhouse"]
+    "assumeFaction": ["degens", "casino", "brickhouse", "brickbois"]
   },
   "tjnv": {
     "id": 63701083,
@@ -423,7 +423,7 @@
   "zuck": {
     "id": 386790,
     "np": true,
-    "assumeFaction": ["besties", "brickhouse", "gruppe6", "bne"]
+    "assumeFaction": ["besties", "brickhouse", "gruppe6", "bne", "brickbois"]
   },
   "ghotties": {
     "id": 2911741,
@@ -835,7 +835,7 @@
   "Kastiann": {
     "id": 61165716,
     "np": true,
-    "assumeFaction": ["pawnaddicts"]
+    "assumeFaction": ["pawnaddicts", "6chambers"]
   },
   "KokoBananaMan": {
     "id": 6970425,
@@ -865,7 +865,7 @@
   "crystalst": {
     "id": 99687,
     "np": true,
-    "assumeFaction": ["brickhouse", "casino", "gruppe6", "police", "brickbois"]
+    "assumeFaction": ["police"]
   },
   "6ixThree": {
     "id": 289188,
@@ -905,7 +905,7 @@
   "catherinereel": {
     "id": 66847409,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "doc", "brickbois"]
+    "assumeFaction": ["sinnerpawn", "brickbois"]
   },
   "JayAitch": {
     "id": 2500057,
@@ -920,7 +920,7 @@
   "Leahstoo": {
     "id": 16843253,
     "np": true,
-    "assumeFaction": ["sinnerpawn"]
+    "assumeFaction": ["sinnerpawn", "oldcountry"]
   },
   "LetterJaye": {
     "id": 2405631,
@@ -960,7 +960,7 @@
   "Hazan": {
     "id": 83133,
     "np": true,
-    "assumeFaction": ["brickhouse", "gruppe6", "bne"]
+    "assumeFaction": ["brickhouse", "gruppe6", "bne", "brickbois"]
   },
   "zaytyree": {
     "id": 108902,
@@ -980,7 +980,7 @@
   "MEKABEAR": {
     "id": 51504,
     "np": true,
-    "assumeFaction": ["degens", "casino", "brickhouse"]
+    "assumeFaction": ["degens", "casino", "brickhouse", "brickbois"]
   },
   "AngelKnivez": {
     "id": 1989830,
@@ -1589,5 +1589,15 @@
     "id": 1591382,
     "np": true,
     "assumeFaction": ["bpm"]
+  },
+  "lovendors": {
+    "id": 73955425,
+    "np": true,
+    "assumeFaction": ["brickhouse"]
+  },
+  "sanauchiha": {
+    "id": 91551,
+    "np": true,
+    "assumeFaction": ["brickhouse"]
   }
 }
