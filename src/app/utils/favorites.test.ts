@@ -1,5 +1,6 @@
 import { strict as assert } from "node:assert";
 import test from "node:test";
+import { type Platform, type RemoteStream } from "../../types";
 
 const STORAGE_KEY = "vaeb-multi-persist-storage";
 const storage = new Map<string, string>();
@@ -18,6 +19,10 @@ globalThis.localStorage = {
 
 const { favoriteKey, isFavorite, persistDefaults, usePersistStore } =
   await import("../stores/persistStore");
+const { filterFavoriteStreams } = await import("./favorites");
+
+const liveStream = (channelName: string, platform?: Platform) =>
+  ({ channelName, platform }) as RemoteStream;
 
 const savedState = () =>
   (
@@ -110,4 +115,27 @@ void test("saved favorites load after a reload", async () => {
   assert.equal(isFavorite("twitch", "A")(state), true);
   assert.equal(isFavorite("kick", "b")(state), true);
   assert.equal(isFavorite("kick", "a")(state), false);
+});
+
+void test("favorites filter keeps only favorited live streams, in live order", () => {
+  const streams = [
+    liveStream("TwitchFav"),
+    liveStream("NotFav"),
+    liveStream("KickFav", "kick"),
+    liveStream("kickfav"),
+  ];
+
+  assert.deepEqual(
+    filterFavoriteStreams(streams, ["kick:kickfav", "twitch:twitchfav"]).map(
+      (stream) => `${stream.platform ?? "twitch"}:${stream.channelName}`,
+    ),
+    ["twitch:TwitchFav", "kick:KickFav"],
+  );
+});
+
+void test("favorites filter is empty with no favorites or none live", () => {
+  const streams = [liveStream("Live"), liveStream("Other", "kick")];
+
+  assert.deepEqual(filterFavoriteStreams(streams, []), []);
+  assert.deepEqual(filterFavoriteStreams(streams, ["twitch:offline"]), []);
 });

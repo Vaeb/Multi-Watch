@@ -5,8 +5,9 @@ import { persist, subscribeWithSelector } from "zustand/middleware";
 import { stateApplyLog } from "./storeUtils";
 import { type Autoplay, type GridMode } from "./storeTypes";
 import { type Platform } from "~/types";
+import { favoriteKey, type FavoriteKey } from "../utils/favorites";
 
-export type FavoriteKey = `${Platform}:${string}`;
+export { favoriteKey, type FavoriteKey };
 
 export interface PersistState {
   gridMode: GridMode;
@@ -32,9 +33,6 @@ export const persistDefaults = {
   chatWidth: 470,
   hideLeftBar: false,
 } as const satisfies Partial<PersistState>;
-
-export const favoriteKey = (platform: Platform, channel: string): FavoriteKey =>
-  `${platform}:${channel.toLowerCase()}`;
 
 export const isFavorite =
   (platform: Platform, channel: string) =>
