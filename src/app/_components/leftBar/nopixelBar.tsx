@@ -149,14 +149,14 @@ const canFavoriteFaction = (slug: string) =>
 
 const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
   factions,
-  initialFaction,
+  factionFilter,
   useColorsDark,
   setFactionFilter,
   filteredStreams,
   filteredStreamsAdditional,
 }: {
   factions: RemoteParsed["filterFactions"];
-  initialFaction: string;
+  factionFilter: string;
   useColorsDark: RemoteParsed["useColorsDark"];
   setFactionFilter: (slug: string) => void;
   filteredStreams: RemoteStream[];
@@ -164,9 +164,8 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [showFactions, setShowFactions] = useState(false);
-  const [factionValue, setFactionValue] = useState<
-    RemoteParsed["filterFactions"][0]
-  >(() => factions.find(([slug]) => slug === initialFaction) ?? factions[0]!);
+  const factionValue =
+    factions.find(([slug]) => slug === factionFilter) ?? factions[0]!;
   const [filterText, setFilterText] = useState("");
   const favoriteFactions = usePersistStore((state) => state.favoriteFactions);
   const { toggleFavoriteFaction } = usePersistStore.getState().actions;
@@ -248,7 +247,6 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
                       useColorsDark[faction[0]] || useColorsDark.independent,
                   }}
                   onClick={() => {
-                    setFactionValue(faction);
                     setFactionFilter(faction[0]);
                     setShowFactions(false);
                     setFilterText("");
@@ -332,7 +330,32 @@ function NopixelBarComponent({
 
   const [searchFilter, setSearchFilter] = useState("");
   const [initialFactionFilter] = useState(_filterFactions[0]![0]);
-  const [factionFilter, setFactionFilter] = useState(initialFactionFilter);
+  const [factionFilter, setFactionFilterState] = useState(initialFactionFilter);
+  const userPickedFilter = useRef(false);
+
+  const setFactionFilter = useCallback((slug: string) => {
+    userPickedFilter.current = true;
+    setFactionFilterState(slug);
+  }, []);
+
+  // The saved setting is only known after hydration. Reading it into the
+  // initial state would disagree with the server render, so apply it once
+  // the store has loaded, and leave a filter the user already picked alone.
+  useEffect(() => {
+    const applyDefaultFilter = () => {
+      if (userPickedFilter.current) return;
+      if (usePersistStore.getState().defaultToFavorites) {
+        setFactionFilterState(FAVORITES_FILTER);
+      }
+    };
+
+    if (usePersistStore.persist.hasHydrated()) {
+      applyDefaultFilter();
+      return;
+    }
+
+    return usePersistStore.persist.onFinishHydration(applyDefaultFilter);
+  }, []);
 
   const hasLiveFavorite = useMemo(
     () =>
@@ -445,7 +468,7 @@ function NopixelBarComponent({
 
       <NopixelFactionFilter
         factions={filterFactions}
-        initialFaction={initialFactionFilter}
+        factionFilter={factionFilter}
         useColorsDark={useColorsDark}
         setFactionFilter={setFactionFilter}
         filteredStreams={filteredStreams}

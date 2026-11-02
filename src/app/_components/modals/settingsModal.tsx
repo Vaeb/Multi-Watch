@@ -97,16 +97,24 @@ function SettingsModal() {
   } = useMainStore(useShallow(selectorMain));
 
   const [
-    { resetDefaults, setAutoplay, setChatWidth, setHideLeftBar },
+    {
+      resetDefaults,
+      setAutoplay,
+      setChatWidth,
+      setHideLeftBar,
+      setDefaultToFavorites,
+    },
     autoplay,
     chatWidth,
     hideLeftBar,
+    defaultToFavorites,
   ] = usePersistStore(
     useShallow((state) => [
       state.actions,
       state.autoplay,
       state.chatWidth,
       state.hideLeftBar,
+      state.defaultToFavorites,
     ]),
   );
 
@@ -119,6 +127,10 @@ function SettingsModal() {
 
   const setHideLeftBarCb = useStableCallback((val: string) => {
     setHideLeftBar(val === "true");
+  });
+
+  const setDefaultToFavoritesCb = useStableCallback((val: string) => {
+    setDefaultToFavorites(val === "true");
   });
 
   return (
@@ -167,6 +179,14 @@ function SettingsModal() {
             mapper={["Yes", "No"]}
             current={String(hideLeftBar)}
             cb={setHideLeftBarCb}
+          />
+
+          <SettingsOption
+            setting="Default to Favorites filter"
+            values={["true", "false"]}
+            mapper={["Yes", "No"]}
+            current={String(defaultToFavorites)}
+            cb={setDefaultToFavoritesCb}
           />
 
           <SettingsOption
