@@ -364,7 +364,6 @@ function NopixelBarComponent({
     return usePersistStore.persist.onFinishHydration(applyDefaultFilter);
   }, []);
 
-  // The server HTML is Show all. Apply the saved choice only after this list has painted.
   const [listPainted, setListPainted] = useState(false);
   useEffect(() => {
     setListPainted(true);

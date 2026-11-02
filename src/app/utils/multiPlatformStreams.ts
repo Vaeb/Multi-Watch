@@ -17,7 +17,6 @@ export function kickStreamerKey(
   twitchOverride: string | undefined,
   kickChannelName: string,
 ): string {
-  // ?? keeps an empty twitch override. || would replace "" with the Kick channel name.
   return (twitchOverride ?? kickChannelName).toLowerCase();
 }
 
