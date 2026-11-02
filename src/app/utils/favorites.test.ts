@@ -278,6 +278,50 @@ void test("saved defaultToFavorites loads, and a missing or non-boolean value st
   assert.equal(state.defaultToFavorites, false);
 });
 
+void test("multiPlatformStreams defaults to show all, persists, and resets without clearing favorites", () => {
+  assert.equal(persistDefaults.multiPlatformStreams, "all");
+  usePersistStore.setState({
+    multiPlatformStreams: "all",
+    favorites: ["twitch:keep"],
+    favoriteFactions: ["besties"],
+  });
+
+  usePersistStore.getState().actions.setMultiPlatformStreams("kick");
+  assert.equal(usePersistStore.getState().multiPlatformStreams, "kick");
+  assert.equal(savedState()?.multiPlatformStreams, "kick");
+
+  resetDefaults();
+  const state = usePersistStore.getState();
+  assert.equal(
+    state.multiPlatformStreams,
+    persistDefaults.multiPlatformStreams,
+  );
+  assert.deepEqual(state.favorites, ["twitch:keep"]);
+  assert.deepEqual(state.favoriteFactions, ["besties"]);
+});
+
+void test("saved multiPlatformStreams loads, and a missing or unknown value stays on show all", async () => {
+  let state = await loadFromStorage({
+    state: { autoplay: "none", multiPlatformStreams: "twitch" },
+    version: 0,
+  });
+  assert.equal(state.multiPlatformStreams, "twitch");
+  assert.equal(state.autoplay, "none");
+
+  state = await loadFromStorage({
+    state: { autoplay: "one" },
+    version: 0,
+  });
+  assert.equal(state.multiPlatformStreams, "all");
+  assert.equal(state.autoplay, "one");
+
+  state = await loadFromStorage({
+    state: { multiPlatformStreams: "youtube" },
+    version: 0,
+  });
+  assert.equal(state.multiPlatformStreams, "all");
+});
+
 void test("saved faction favorites load after a reload", async () => {
   const state = await loadFromStorage({
     state: { ...persistDefaults, favoriteFactions: ["besties", 7] },

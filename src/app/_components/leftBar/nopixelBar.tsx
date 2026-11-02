@@ -16,6 +16,10 @@ import { LARGE_FACTIONS } from "../../constants";
 import { parseLookup } from "../../utils/parseLookup";
 import { filterNoPixelStreamsByFaction } from "../../utils/nopixelFilter";
 import { FAVORITES_FILTER, filterFavoriteStreams } from "../../utils/favorites";
+import {
+  applyMultiPlatformStreams,
+  preferenceOnFirstPaint,
+} from "../../utils/multiPlatformStreams";
 
 interface NopixelBarButtonProps {
   alt: string;
@@ -327,6 +331,9 @@ function NopixelBarComponent({
 
   const favorites = usePersistStore((state) => state.favorites);
   const favoriteFactions = usePersistStore((state) => state.favoriteFactions);
+  const savedMultiPlatformStreams = usePersistStore(
+    (state) => state.multiPlatformStreams,
+  );
 
   const [searchFilter, setSearchFilter] = useState("");
   const [initialFactionFilter] = useState(_filterFactions[0]![0]);
@@ -357,10 +364,31 @@ function NopixelBarComponent({
     return usePersistStore.persist.onFinishHydration(applyDefaultFilter);
   }, []);
 
+  // The server HTML is Show all. Apply the saved choice only after this list has painted.
+  const [listPainted, setListPainted] = useState(false);
+  useEffect(() => {
+    setListPainted(true);
+  }, []);
+  const multiPlatformStreams = preferenceOnFirstPaint(
+    listPainted,
+    savedMultiPlatformStreams,
+  );
+
+  const listedStreams = useMemo(
+    () =>
+      applyMultiPlatformStreams({
+        liveStreams: streams,
+        chatrooms: receivedData.chatrooms,
+        preference: multiPlatformStreams,
+      }),
+    [streams, receivedData.chatrooms, multiPlatformStreams],
+  );
+
   const hasLiveFavorite = useMemo(
     () =>
-      filterFavoriteStreams(streams, favorites, favoriteFactions).length > 0,
-    [streams, favorites, favoriteFactions],
+      filterFavoriteStreams(listedStreams, favorites, favoriteFactions).length >
+      0,
+    [listedStreams, favorites, favoriteFactions],
   );
 
   const [filterFactions, useColorsDark] = useMemo(() => {
@@ -381,7 +409,7 @@ function NopixelBarComponent({
   }, [_filterFactions, _useColorsDark, hasLiveFavorite]);
 
   const filteredStreams = useMemo(() => {
-    let _filteredStreams = streams;
+    let _filteredStreams = listedStreams;
     const searchFilterTrimmed = searchFilter.trim().toLowerCase();
 
     if (searchFilterTrimmed !== "") {
@@ -408,7 +436,7 @@ function NopixelBarComponent({
     }
 
     return _filteredStreams;
-  }, [streams, searchFilter, factionFilter, favorites, favoriteFactions]);
+  }, [listedStreams, searchFilter, factionFilter, favorites, favoriteFactions]);
 
   const favoritesEmptyMessage =
     factionFilter === FAVORITES_FILTER &&

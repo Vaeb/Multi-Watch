@@ -4,6 +4,10 @@ import { useShallow } from "zustand/shallow";
 import { type MainState, useMainStore } from "../../stores/mainStore";
 import { useState } from "react";
 import { usePersistStore } from "../../stores/persistStore";
+import {
+  isMultiPlatformStreams,
+  MULTI_PLATFORM_OPTIONS,
+} from "../../utils/multiPlatformStreams";
 import { type Autoplay } from "../../stores/storeTypes";
 import { useStableCallback } from "../../hooks/useStableCallback";
 import { noprop } from "../../utils/noprop";
@@ -103,11 +107,13 @@ function SettingsModal() {
       setChatWidth,
       setHideLeftBar,
       setDefaultToFavorites,
+      setMultiPlatformStreams,
     },
     autoplay,
     chatWidth,
     hideLeftBar,
     defaultToFavorites,
+    multiPlatformStreams,
   ] = usePersistStore(
     useShallow((state) => [
       state.actions,
@@ -115,6 +121,7 @@ function SettingsModal() {
       state.chatWidth,
       state.hideLeftBar,
       state.defaultToFavorites,
+      state.multiPlatformStreams,
     ]),
   );
 
@@ -131,6 +138,11 @@ function SettingsModal() {
 
   const setDefaultToFavoritesCb = useStableCallback((val: string) => {
     setDefaultToFavorites(val === "true");
+  });
+
+  const setMultiPlatformStreamsCb = useStableCallback((val: string) => {
+    if (!isMultiPlatformStreams(val)) return;
+    setMultiPlatformStreams(val);
   });
 
   return (
@@ -187,6 +199,14 @@ function SettingsModal() {
             mapper={["Yes", "No"]}
             current={String(defaultToFavorites)}
             cb={setDefaultToFavoritesCb}
+          />
+
+          <SettingsOption
+            setting="Multi-platform streams"
+            values={MULTI_PLATFORM_OPTIONS.map((option) => option.value)}
+            mapper={MULTI_PLATFORM_OPTIONS.map((option) => option.label)}
+            current={multiPlatformStreams}
+            cb={setMultiPlatformStreamsCb}
           />
 
           <SettingsOption

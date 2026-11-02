@@ -6,6 +6,11 @@ import { stateApplyLog } from "./storeUtils";
 import { type Autoplay, type GridMode } from "./storeTypes";
 import { type Platform } from "~/types";
 import { favoriteKey, type FavoriteKey } from "../utils/favorites";
+import {
+  isMultiPlatformStreams,
+  MULTI_PLATFORM_DEFAULT,
+  type MultiPlatformStreams,
+} from "../utils/multiPlatformStreams";
 
 export { favoriteKey, type FavoriteKey };
 
@@ -15,6 +20,7 @@ export interface PersistState {
   chatWidth: number;
   hideLeftBar: boolean;
   defaultToFavorites: boolean;
+  multiPlatformStreams: MultiPlatformStreams;
   favorites: FavoriteKey[];
   favoriteFactions: string[];
 
@@ -25,6 +31,7 @@ export interface PersistState {
     setChatWidth: (value: number) => void;
     setHideLeftBar: (value: boolean) => void;
     setDefaultToFavorites: (value: boolean) => void;
+    setMultiPlatformStreams: (value: MultiPlatformStreams) => void;
     toggleFavorite: (platform: Platform, channel: string) => void;
     toggleFavoriteFaction: (faction: string) => void;
   };
@@ -37,6 +44,7 @@ export const persistDefaults = {
   chatWidth: 470,
   hideLeftBar: false,
   defaultToFavorites: false,
+  multiPlatformStreams: MULTI_PLATFORM_DEFAULT,
 } as const satisfies Partial<PersistState>;
 
 export const isFavorite =
@@ -76,6 +84,8 @@ export const usePersistStore = create<PersistState>()(
           setHideLeftBar: (hideLeftBar) => set({ hideLeftBar }),
           setDefaultToFavorites: (defaultToFavorites) =>
             set({ defaultToFavorites }),
+          setMultiPlatformStreams: (multiPlatformStreams) =>
+            set({ multiPlatformStreams }),
           toggleFavorite: (platform, channel) =>
             set((state) => {
               const key = favoriteKey(platform, channel);
@@ -115,6 +125,11 @@ export const usePersistStore = create<PersistState>()(
               typeof saved.defaultToFavorites === "boolean"
                 ? saved.defaultToFavorites
                 : current.defaultToFavorites,
+            multiPlatformStreams: isMultiPlatformStreams(
+              saved.multiPlatformStreams,
+            )
+              ? saved.multiPlatformStreams
+              : current.multiPlatformStreams,
           };
         },
       },

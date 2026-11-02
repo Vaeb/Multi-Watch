@@ -8,6 +8,7 @@ import {
 } from "../../types";
 import { ANY_SERVER_FACTIONS } from "../constants";
 import { getAssumeFactions } from "./assumeFaction";
+import { kickStreamerKey } from "./multiPlatformStreams";
 import { parseLookup } from "./parseLookup";
 
 // Guesses the NoPixel character of a Kick stream from its title, mirroring how TNO-Backend parses Twitch streams
@@ -311,7 +312,7 @@ export const createKickStreamParser = (
     }
 
     const otherTagText = serverName ? `::${serverName}::` : "::Other Server::";
-    const streamer = streamers[(chatroom?.twitch ?? channelName).toLowerCase()];
+    const streamer = streamers[kickStreamerKey(chatroom?.twitch, channelName)];
     const characters = streamer?.characters ?? [];
     const isAnyServerFaction = (faction: string) =>
       ANY_SERVER_FACTIONS.includes(faction);
