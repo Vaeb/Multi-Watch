@@ -124,6 +124,13 @@ export type GlobalData = typeof global &
   Partial<CachedStreams> & {
     cachedKickStreams: RemoteKickLivestream[];
     cachedKickTime: number;
+    kickInitPromise?: Promise<void>;
+    kickServerInit?: Promise<void>;
+    kickBackgroundStarted?: boolean;
+    // Shared by the startup bundle and the request bundle. The first Twitch
+    // fetch resolves it; a request that arrives first waits on the same promise.
+    twitchReady?: Promise<CachedStreams>;
+    resolveTwitch?: (value: CachedStreams) => void;
     kickStreamParser?: KickStreamParser;
     connected: number;
   };

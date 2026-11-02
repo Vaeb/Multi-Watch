@@ -14,6 +14,12 @@ import {
 } from "../../types";
 import { IS_LOCALHOST, NOPIXEL_DATA_INTERVAL } from "../constants";
 import { createKickStreamParser } from "./kickStreamParser";
+import {
+  isKickSnapshotCurrent,
+  kickSnapshotPath,
+  loadKickSnapshot,
+  saveKickSnapshot,
+} from "./kickSnapshot";
 import { log } from "./log";
 
 const globalData = global as GlobalData;
@@ -25,10 +31,27 @@ const NOPIXEL_API_URL = IS_LOCALHOST
 // Used until the character data has been fetched
 const fallbackKickStreamParser = createKickStreamParser();
 
-let cacheResolve: (value: CachedStreams | PromiseLike<CachedStreams>) => void;
-const cachePromise = new Promise<CachedStreams>((resolve) => {
-  cacheResolve = resolve;
-});
+const twitchReady = (): Promise<CachedStreams> => {
+  if (!globalData.twitchReady) {
+    globalData.twitchReady = new Promise((resolve) => {
+      globalData.resolveTwitch = resolve;
+    });
+  }
+  return globalData.twitchReady;
+};
+
+const publishTwitch = (parsed: RemoteParsed) => {
+  const isFirst = globalData.cachedTwitch === undefined;
+  const cachedTwitchTime = +new Date();
+  globalData.cachedTwitch = parsed;
+  globalData.cachedTwitchTime = cachedTwitchTime;
+  if (!isFirst) return;
+  void twitchReady();
+  globalData.resolveTwitch?.({
+    cachedTwitch: parsed,
+    cachedTwitchTime,
+  });
+};
 
 const updateKickStreamParser = async () => {
   try {
@@ -68,7 +91,7 @@ const mergeKickIntoParsed = async (
   _kickStreams: RemoteKickLivestream[],
 ) => {
   parsed = { ...parsed };
-  let streams = [...parsed.streams];
+  const streams = [...parsed.streams];
   parsed.streams = streams;
 
   streams.push({ viewers: Infinity } as RemoteStream);
@@ -137,8 +160,10 @@ const mergeKickIntoParsed = async (
 
   streams.pop();
 
+  // `streams` is the array on `parsed`. Append in place so kick streams that
+  // sit below every Twitch stream stay in the list handed to clients.
   if (kickStreamNext) {
-    streams = streams.concat(kickStreams.slice(kickStreamIdx));
+    streams.push(...kickStreams.slice(kickStreamIdx));
   }
 
   return parsed;
@@ -178,52 +203,72 @@ const getParsedTwitchDataCb = (
   getParsedTwitchData().then(callback).catch(console.error);
 };
 
-export const init = async () => {
-  if (typeof window !== "undefined") {
-    return;
+const loadKickIntoMemory = async () => {
+  const snapshotPath = kickSnapshotPath();
+  const snapshot = await loadKickSnapshot(snapshotPath);
+  if (snapshot) {
+    globalData.cachedKickStreams = snapshot.streams;
+    globalData.cachedKickTime = snapshot.time;
+    log(
+      `[Init] Loaded ${snapshot.streams.length} kick streams from ${snapshotPath} (saved ${snapshot.time})`,
+    );
+  } else {
+    globalData.cachedKickStreams = [];
+    globalData.cachedKickTime = 0;
+    log(`[Init] No kick snapshot at ${snapshotPath}; starting empty`);
   }
+};
 
+// One load per process, shared across the instrumentation bundle and the
+// request bundle. A request that arrives while startup is still reading the
+// file waits for that read instead of answering with an empty list.
+export const ensureKickSnapshot = (): Promise<void> => {
+  if (typeof window !== "undefined") return Promise.resolve();
+  globalData.kickInitPromise ??= loadKickIntoMemory();
+  return globalData.kickInitPromise;
+};
+
+const start = async () => {
   log(
     `[Init] Localhost: ${IS_LOCALHOST} | Node env: ${process.env.NODE_ENV} | Next.js runtime: ${process.env.NEXT_RUNTIME}`,
   );
 
-  if (!globalData.cachedKickStreams) globalData.cachedKickStreams = [];
-  if (!globalData.cachedKickTime) globalData.cachedKickTime = 0;
+  await ensureKickSnapshot();
+  if (globalData.kickBackgroundStarted) return;
+  globalData.kickBackgroundStarted = true;
   if (!globalData.connected) globalData.connected = 0;
 
   updateKickStreamParser().catch(console.error);
 
-  getParsedTwitchDataCb(async (parsed) => {
-    const isFirst = globalData.cachedTwitch === undefined;
-    globalData.cachedTwitch = parsed;
-    globalData.cachedTwitchTime = +new Date();
-    if (isFirst) {
-      cacheResolve({
-        cachedTwitch: globalData.cachedTwitch,
-        cachedTwitchTime: globalData.cachedTwitchTime,
-      });
-    }
-  });
+  getParsedTwitchDataCb(publishTwitch);
 
   setInterval(() => {
     updateKickStreamParser().catch(console.error);
-    getParsedTwitchDataCb((parsed) => {
-      globalData.cachedTwitch = parsed;
-      globalData.cachedTwitchTime = +new Date();
-    });
+    getParsedTwitchDataCb(publishTwitch);
     log(`[getStreams] Clients:`, globalData.connected);
     globalData.connected = 0;
   }, NOPIXEL_DATA_INTERVAL);
 };
 
+export const init = (): Promise<void> => {
+  if (typeof window !== "undefined") return Promise.resolve();
+  globalData.kickServerInit ??= start();
+  return globalData.kickServerInit;
+};
+
 const _getStreams = async (): Promise<RemoteReceived> => {
-  const needsKickLiveStreams =
-    +new Date() - globalData.cachedKickTime > NOPIXEL_DATA_INTERVAL - 1000 * 10;
+  const needsKickLiveStreams = !isKickSnapshotCurrent(
+    globalData.cachedKickTime ?? 0,
+  );
 
   const { cachedTwitch, cachedTwitchTime } =
-    globalData.cachedTwitch !== undefined
-      ? (globalData as GlobalData & CachedStreams)
-      : await cachePromise;
+    globalData.cachedTwitch !== undefined &&
+    globalData.cachedTwitchTime !== undefined
+      ? {
+          cachedTwitch: globalData.cachedTwitch,
+          cachedTwitchTime: globalData.cachedTwitchTime,
+        }
+      : await twitchReady();
 
   const mergedStreams = await mergeKickIntoParsed(
     cachedTwitch,
@@ -246,7 +291,8 @@ const _getStreams = async (): Promise<RemoteReceived> => {
 };
 
 export const getStreams = async (): Promise<RemoteReceived> => {
-  globalData.connected++;
+  await ensureKickSnapshot();
+  globalData.connected = (globalData.connected || 0) + 1;
 
   // log(
   //   "[getParsedNopixelData] Server responding with cached streams:",
@@ -271,9 +317,17 @@ export async function setKickStreams(
   kickStreams: RemoteKickLivestream[],
   hydrateReceived: true | false,
 ) {
+  await ensureKickSnapshot();
+  const savedAt = +new Date();
   globalData.cachedKickStreams = kickStreams;
-  globalData.cachedKickTime = +new Date();
+  globalData.cachedKickTime = savedAt;
   // log("[setKickStreams] Set kick streams:", kickStreams.length);
+
+  try {
+    await saveKickSnapshot({ streams: kickStreams, time: savedAt });
+  } catch (err) {
+    log("[setKickStreams] Failed to save kick snapshot:", err);
+  }
 
   if (hydrateReceived === true) {
     return _getStreams();

@@ -1,5 +1,6 @@
 import { log } from "console";
 import { type RemoteKickLivestream, type GlobalData } from "~/types";
+import { ensureKickSnapshot } from "~/app/utils/getStreams";
 
 const globalData = global as GlobalData;
 
@@ -84,6 +85,7 @@ export async function POST(request: Request) {
 }
 
 export async function GET(_request: Request, { params }: PageParams) {
+  await ensureKickSnapshot();
   const channelWithSuffix = (await params).channel.toLowerCase();
 
   // log("[API:m3u8] tempCachedKickStreams:", tempCachedKickStreams);
