@@ -14,6 +14,7 @@ export interface PersistState {
   autoplay: Autoplay;
   chatWidth: number;
   hideLeftBar: boolean;
+  defaultToFavorites: boolean;
   favorites: FavoriteKey[];
   favoriteFactions: string[];
 
@@ -23,6 +24,7 @@ export interface PersistState {
     setAutoplay: (autoplay: Autoplay) => void;
     setChatWidth: (value: number) => void;
     setHideLeftBar: (value: boolean) => void;
+    setDefaultToFavorites: (value: boolean) => void;
     toggleFavorite: (platform: Platform, channel: string) => void;
     toggleFavoriteFaction: (faction: string) => void;
   };
@@ -34,6 +36,7 @@ export const persistDefaults = {
   autoplay: "all",
   chatWidth: 470,
   hideLeftBar: false,
+  defaultToFavorites: false,
 } as const satisfies Partial<PersistState>;
 
 export const isFavorite =
@@ -71,6 +74,8 @@ export const usePersistStore = create<PersistState>()(
                   : state.chatWidth,
             })),
           setHideLeftBar: (hideLeftBar) => set({ hideLeftBar }),
+          setDefaultToFavorites: (defaultToFavorites) =>
+            set({ defaultToFavorites }),
           toggleFavorite: (platform, channel) =>
             set((state) => {
               const key = favoriteKey(platform, channel);
@@ -106,6 +111,10 @@ export const usePersistStore = create<PersistState>()(
             favoriteFactions:
               savedStringList(saved.favoriteFactions) ??
               current.favoriteFactions,
+            defaultToFavorites:
+              typeof saved.defaultToFavorites === "boolean"
+                ? saved.defaultToFavorites
+                : current.defaultToFavorites,
           };
         },
       },

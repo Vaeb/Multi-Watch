@@ -238,6 +238,46 @@ void test("saved state without faction favorites, or a corrupted value, loads as
   assert.deepEqual(state.favoriteFactions, []);
 });
 
+void test("defaultToFavorites is off by default, persists, and resets without clearing favorites", () => {
+  assert.equal(persistDefaults.defaultToFavorites, false);
+  usePersistStore.setState({
+    defaultToFavorites: false,
+    favorites: ["twitch:keep"],
+    favoriteFactions: ["besties"],
+  });
+
+  usePersistStore.getState().actions.setDefaultToFavorites(true);
+  assert.equal(usePersistStore.getState().defaultToFavorites, true);
+  assert.equal(savedState()?.defaultToFavorites, true);
+
+  resetDefaults();
+  const state = usePersistStore.getState();
+  assert.equal(state.defaultToFavorites, persistDefaults.defaultToFavorites);
+  assert.deepEqual(state.favorites, ["twitch:keep"]);
+  assert.deepEqual(state.favoriteFactions, ["besties"]);
+});
+
+void test("saved defaultToFavorites loads, and a missing or non-boolean value stays off", async () => {
+  let state = await loadFromStorage({
+    state: { autoplay: "none", defaultToFavorites: true },
+    version: 0,
+  });
+  assert.equal(state.defaultToFavorites, true);
+  assert.equal(state.autoplay, "none");
+
+  state = await loadFromStorage({
+    state: { autoplay: "one" },
+    version: 0,
+  });
+  assert.equal(state.defaultToFavorites, false);
+
+  state = await loadFromStorage({
+    state: { defaultToFavorites: "yes" },
+    version: 0,
+  });
+  assert.equal(state.defaultToFavorites, false);
+});
+
 void test("saved faction favorites load after a reload", async () => {
   const state = await loadFromStorage({
     state: { ...persistDefaults, favoriteFactions: ["besties", 7] },
