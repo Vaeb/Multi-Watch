@@ -316,7 +316,7 @@
   "uhsnow": {
     "id": 7645377,
     "np": true,
-    "assumeFaction": ["police", "pawnaddicts"]
+    "assumeFaction": ["police", "pawnaddicts", "collective"]
   },
   "Saphirici": {
     "id": 2448474,
@@ -484,7 +484,7 @@
   "Manax": {
     "id": 21140232,
     "np": true,
-    "assumeFaction": ["besties"]
+    "assumeFaction": ["besties", "6chambers"]
   },
   "omie": {
     "id": 89446,
@@ -905,7 +905,7 @@
   "catherinereel": {
     "id": 66847409,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "brickbois"]
+    "assumeFaction": ["sinnerpawn"]
   },
   "JayAitch": {
     "id": 2500057,
@@ -1005,7 +1005,7 @@
   "aikobliss": {
     "id": 76272,
     "np": true,
-    "assumeFaction": ["burgershot", "brickbois", "brickhouse"]
+    "assumeFaction": ["burgershot", "brickhouse"]
   },
   "CannaYaps": {
     "id": 51902930,
@@ -1248,8 +1248,7 @@
   },
   "iMaceinHD": {
     "id": 64677971,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "Kaaleesi": {
     "id": 2334654,
@@ -1567,8 +1566,7 @@
   },
   "stevie_jay305": {
     "id": 15284957,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "Sentry": {
     "id": 5508876,
