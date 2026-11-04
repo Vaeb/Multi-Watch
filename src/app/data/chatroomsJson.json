@@ -865,7 +865,7 @@
   "crystalst": {
     "id": 99687,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "casino", "brickbois", "gruppe6", "brickhouse"]
   },
   "6ixThree": {
     "id": 289188,
@@ -1005,7 +1005,7 @@
   "aikobliss": {
     "id": 76272,
     "np": true,
-    "assumeFaction": ["burgershot", "brickhouse"]
+    "assumeFaction": ["burgershot", "brickhouse", "brickbois"]
   },
   "CannaYaps": {
     "id": 51902930,
@@ -1115,7 +1115,7 @@
   "ms_star": {
     "id": 2898133,
     "np": true,
-    "assumeFaction": ["doj", "police", "pawnaddicts"]
+    "assumeFaction": ["doj", "pawnaddicts"]
   },
   "Sun_Bae": {
     "id": 32681089,
@@ -1352,8 +1352,7 @@
   },
   "UnicornFrapp": {
     "id": 50832461,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "Workszy": {
     "id": 6280990,
