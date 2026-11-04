@@ -14,29 +14,29 @@ const urlAt = (nowMs: number, createdAt = CREATED_AT, videoId = VIDEO_ID) =>
     nowMs,
   });
 
-void test("rewinds a live VoD by 5.5 minutes in whole seconds", () => {
+void test("rewinds a live VoD by 1.5 minutes in whole seconds", () => {
   assert.equal(
     urlAt(startedAt + 10 * 60 * 1000),
-    `https://kick.com/absi/videos/${VIDEO_ID}?t=270`,
+    `https://kick.com/absi/videos/${VIDEO_ID}?t=510`,
   );
   // 1.5s past that minute is truncated, not rounded up.
   assert.equal(
     urlAt(startedAt + 10 * 60 * 1000 + 1500),
-    `https://kick.com/absi/videos/${VIDEO_ID}?t=271`,
+    `https://kick.com/absi/videos/${VIDEO_ID}?t=511`,
   );
 });
 
-void test("clamps the offset to 0 when the stream is younger than 5.5 minutes", () => {
+void test("clamps the offset to 0 when the stream is younger than 1.5 minutes", () => {
   assert.equal(
-    urlAt(startedAt + 5 * 60 * 1000),
+    urlAt(startedAt + 1 * 60 * 1000),
     `https://kick.com/absi/videos/${VIDEO_ID}?t=0`,
   );
   assert.equal(
-    urlAt(startedAt + 5.5 * 60 * 1000),
+    urlAt(startedAt + 1.5 * 60 * 1000),
     `https://kick.com/absi/videos/${VIDEO_ID}?t=0`,
   );
   assert.equal(
-    urlAt(startedAt + 5.5 * 60 * 1000 + 1000),
+    urlAt(startedAt + 1.5 * 60 * 1000 + 1000),
     `https://kick.com/absi/videos/${VIDEO_ID}?t=1`,
   );
 });

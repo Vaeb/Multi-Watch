@@ -7,7 +7,7 @@
 const KICK_TIMESTAMP =
   /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})(?:\.\d+)?Z?$/;
 
-export const KICK_VOD_REWIND_SECONDS = 5.5 * 60;
+export const KICK_VOD_REWIND_SECONDS = 1.5 * 60;
 
 export const parseKickTimestamp = (createdAt: string): number | null => {
   const match = KICK_TIMESTAMP.exec(createdAt.trim());
@@ -43,7 +43,7 @@ export const parseKickTimestamp = (createdAt: string): number | null => {
   return parsed;
 };
 
-// Opens kick.com/<channel>/videos/<videoId> at now minus 5.5 minutes.
+// Opens kick.com/<channel>/videos/<videoId> at now minus 1.5 minutes.
 // videoId is the channel info livestream.vod_id, not the numeric livestream id.
 export const kickVodUrl = ({
   channel,

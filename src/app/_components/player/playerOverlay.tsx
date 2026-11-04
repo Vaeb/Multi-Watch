@@ -185,7 +185,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
                 href={`https://kick.com/${channel}/videos/${vod.vodId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                title="Open VoD from 5.5 minutes ago"
+                title="Open VoD from 1.5 minutes ago"
                 onMouseDown={assignVodHref}
                 onClick={assignVodHref}
               >
@@ -194,7 +194,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
                   className="opacity-90"
                   width={18}
                   height={15}
-                  alt="Open VoD from 5.5 minutes ago"
+                  alt="Open VoD from 1.5 minutes ago"
                 />
               </a>
             ) : null}
