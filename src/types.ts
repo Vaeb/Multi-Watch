@@ -85,6 +85,9 @@ export interface RemoteKickLivestream {
   thumbnail: RemoteKickThumbnail;
   // From the channel info endpoint, cached while this livestream id is current.
   vodId?: string;
+  // Last successful livestream response for this channel, in ms. A failure
+  // keeps the previous value. Unset means this process has not confirmed it.
+  fetchedAt?: number;
 }
 
 export type RemoteKickLivestreamData = RemoteKickLivestream | null;
@@ -130,6 +133,9 @@ export type GlobalData = typeof global &
     kickServerInit?: Promise<void>;
     kickBackgroundStarted?: boolean;
     kickPollerStarted?: boolean;
+    // Touched on each poll request. While it is fresh, browsers are not asked
+    // to scan Kick even if the saved list is past the usual refresh window.
+    kickPollHeartbeat?: number;
     // Shared by the startup bundle and the request bundle. The first Twitch
     // fetch resolves it; a request that arrives first waits on the same promise.
     twitchReady?: Promise<CachedStreams>;

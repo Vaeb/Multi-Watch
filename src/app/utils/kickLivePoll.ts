@@ -2,12 +2,17 @@ import { promises as fs } from "fs";
 import path from "path";
 import { type GlobalData, type RemoteKickLivestream } from "../../types";
 import {
-  mergeKickPoll,
+  applyKickPollBatch,
   npKickChannels,
+  orderKickPoll,
   parseLivestreamResponse,
   parseVodIdFromInfo,
   type KickPollResult,
 } from "./kickLive";
+import {
+  getKickRequestQueue,
+  touchKickPollHeartbeat,
+} from "./kickRequestQueue";
 import { log } from "./log";
 import { sleep } from "./sleep";
 
@@ -15,7 +20,6 @@ import { sleep } from "./sleep";
 // but channels are fetched one at a time ~500ms apart, so a pass takes longer
 // than that and the next one waits until this one has finished.
 const PASS_INTERVAL_MS = 60_000;
-const REQUEST_SPACING_MS = 500;
 const REQUEST_TIMEOUT_MS = 10_000;
 const KICK_USER_AGENT = "Mozilla/5.0";
 
@@ -48,17 +52,36 @@ const readNpChannels = async (): Promise<string[]> => {
   return npKickChannels(chatrooms);
 };
 
+interface QueuedKickBody {
+  status: number;
+  raw: string;
+  pauseMs: number;
+  retryAfter: string | null;
+}
+
+const queuedKickGet = async (url: string): Promise<QueuedKickBody> => {
+  const queue = getKickRequestQueue();
+  return queue.enqueue(async () => {
+    const response = await kickFetch(url);
+    const retryAfter = response.headers.get("retry-after");
+    const pauseMs = queue.noteResponse(response.status, retryAfter);
+    const raw = await response.text();
+    return { status: response.status, raw, pauseMs, retryAfter };
+  });
+};
+
 const fetchLivestream = async (
   channelName: string,
 ): Promise<KickPollResult> => {
   const url = `https://kick.com/api/v2/channels/${encodeURIComponent(channelName)}/livestream`;
   try {
-    const response = await kickFetch(url);
-    const raw = await response.text();
-    const result = parseLivestreamResponse(channelName, response.status, raw);
+    const { status, raw, pauseMs, retryAfter } = await queuedKickGet(url);
+    const result = parseLivestreamResponse(channelName, status, raw);
     if (!result.ok) {
       log(
-        `[kickPoll] ${channelName} livestream failed (HTTP ${response.status})`,
+        status === 429
+          ? `[kickPoll] ${channelName} livestream failed (HTTP 429), pausing ${pauseMs}ms (Retry-After: ${retryAfter ?? "none"})`
+          : `[kickPoll] ${channelName} livestream failed (HTTP ${status})`,
       );
     }
     return result;
@@ -77,12 +100,13 @@ const fetchVodId = async (
 ): Promise<string | null> => {
   const url = `https://kick.com/api/v2/channels/${encodeURIComponent(channelName)}/info`;
   try {
-    const response = await kickFetch(url);
-    const raw = await response.text();
-    const vodId = parseVodIdFromInfo(response.status, raw, livestreamId);
+    const { status, raw, pauseMs, retryAfter } = await queuedKickGet(url);
+    const vodId = parseVodIdFromInfo(status, raw, livestreamId);
     if (!vodId) {
       log(
-        `[kickPoll] ${channelName} info had no vod id (HTTP ${response.status})`,
+        status === 429
+          ? `[kickPoll] ${channelName} info failed (HTTP 429), pausing ${pauseMs}ms (Retry-After: ${retryAfter ?? "none"})`
+          : `[kickPoll] ${channelName} info had no vod id (HTTP ${status})`,
       );
     }
     return vodId;
@@ -102,15 +126,30 @@ const fillMissingVodIds = async (
   for (let i = 0; i < next.length; i++) {
     const stream = next[i]!;
     if (stream.vodId) continue;
-    await sleep(REQUEST_SPACING_MS);
     const vodId = await fetchVodId(stream.channelName, stream.id);
     if (vodId) next[i] = { ...stream, vodId };
   }
   return next;
 };
 
+const pollChannels = async (
+  channels: readonly string[],
+  progress: { done: number; total: number },
+): Promise<KickPollResult[]> => {
+  const results: KickPollResult[] = [];
+  for (const channelName of channels) {
+    results.push(await fetchLivestream(channelName));
+    progress.done += 1;
+    if (progress.done % 100 === 0) {
+      log(`[kickPoll] ${progress.done}/${progress.total}`);
+    }
+  }
+  return results;
+};
+
 const pollOnce = async (deps: KickLivePollDeps): Promise<void> => {
   const started = Date.now();
+  touchKickPollHeartbeat(started);
   await deps.ensureLoaded();
   const channels = await readNpChannels();
   if (channels.length === 0) {
@@ -118,21 +157,37 @@ const pollOnce = async (deps: KickLivePollDeps): Promise<void> => {
     return;
   }
 
-  log(`[kickPoll] checking ${channels.length} channels`);
-  const results: KickPollResult[] = [];
-  for (let i = 0; i < channels.length; i++) {
-    const channelName = channels[i]!;
-    results.push(await fetchLivestream(channelName));
-    if ((i + 1) % 100 === 0) {
-      log(`[kickPoll] ${i + 1}/${channels.length}`);
+  // Order from the list loaded at the start. The merge below reads again so
+  // a client push during the batch is what a failed channel falls back to.
+  const { priority, rest } = orderKickPoll(channels, deps.readStreams());
+  log(
+    `[kickPoll] checking ${channels.length} channels (${priority.length} previously live first)`,
+  );
+
+  const progress = { done: 0, total: channels.length };
+  const priorityResults = await pollChannels(priority, progress);
+  if (priorityResults.length > 0) {
+    const priorityMerged = applyKickPollBatch(
+      deps.readStreams(),
+      priorityResults,
+      { dropUnmentioned: false },
+    );
+    if (priorityMerged) {
+      await deps.writeStreams(priorityMerged);
+      log(`[kickPoll] saved priority batch (${priorityMerged.length} rows)`);
+    } else {
+      log(
+        "[kickPoll] priority batch had no successful response; leaving the list unchanged",
+      );
     }
-    if (i < channels.length - 1) await sleep(REQUEST_SPACING_MS);
   }
 
+  const restResults = await pollChannels(rest, progress);
+  const results = [...priorityResults, ...restResults];
   const failed = results.filter((result) => !result.ok).length;
-  // Read after the fetches so a client push during the pass is the base
-  // that failed channels fall back to.
-  const merged = mergeKickPoll(deps.readStreams(), results);
+  const merged = applyKickPollBatch(deps.readStreams(), results, {
+    dropUnmentioned: true,
+  });
   if (!merged) {
     log(
       `[kickPoll] all ${results.length} channels failed; keeping the previous list`,
@@ -152,6 +207,7 @@ const pollOnce = async (deps: KickLivePollDeps): Promise<void> => {
 
 const pollLoop = async (deps: KickLivePollDeps): Promise<void> => {
   for (;;) {
+    touchKickPollHeartbeat();
     const started = Date.now();
     try {
       await pollOnce(deps);
@@ -162,7 +218,10 @@ const pollLoop = async (deps: KickLivePollDeps): Promise<void> => {
       );
     }
     const waitMs = PASS_INTERVAL_MS - (Date.now() - started);
-    if (waitMs > 0) await sleep(waitMs);
+    if (waitMs > 0) {
+      touchKickPollHeartbeat();
+      await sleep(waitMs);
+    }
   }
 };
 

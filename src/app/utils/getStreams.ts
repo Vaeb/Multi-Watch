@@ -20,6 +20,7 @@ import {
   loadKickSnapshot,
   saveKickSnapshot,
 } from "./kickSnapshot";
+import { clientNeedsKickRefresh } from "./kickLive";
 import { startKickLivePoller } from "./kickLivePoll";
 import { log } from "./log";
 
@@ -267,8 +268,9 @@ export const init = (): Promise<void> => {
 };
 
 const _getStreams = async (): Promise<RemoteReceived> => {
-  const needsKickLiveStreams = !isKickSnapshotCurrent(
-    globalData.cachedKickTime ?? 0,
+  const needsKickLiveStreams = clientNeedsKickRefresh(
+    isKickSnapshotCurrent(globalData.cachedKickTime ?? 0),
+    globalData.kickPollHeartbeat ?? 0,
   );
 
   const { cachedTwitch, cachedTwitchTime } =

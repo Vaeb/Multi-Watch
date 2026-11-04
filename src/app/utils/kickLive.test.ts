@@ -2,8 +2,14 @@ import { strict as assert } from "node:assert";
 import test from "node:test";
 import { type RemoteKickLivestream } from "../../types";
 import {
+  applyKickPollBatch,
+  backoffDelayMs,
+  clientNeedsKickRefresh,
+  KICK_FAILURE_RETAIN_MS,
+  KICK_POLL_HEARTBEAT_FRESH_MS,
   mergeKickPoll,
   npKickChannels,
+  orderKickPoll,
   parseLivestreamResponse,
   parseVodIdFromInfo,
   toKickLiveResponse,
@@ -179,6 +185,149 @@ void test("a successful pass replaces live rows, drops offline rows, and sorts b
     previous.map((entry) => entry.viewers),
     [10, 99],
   );
+});
+
+void test("a partial batch keeps a live row it has not checked", () => {
+  const previous = [
+    stream("Buddha", 200),
+    stream("Unchecked", 40),
+    stream("Peppo", 10),
+  ];
+  const merged = applyKickPollBatch(
+    previous,
+    [parseLivestreamResponse("Buddha", 200, JSON.stringify({ data: null }))],
+    { dropUnmentioned: false, now: 1_000_000 },
+  );
+  assert.ok(merged);
+  assert.deepEqual(
+    merged.map((entry) => entry.channelName),
+    ["Unchecked", "Peppo"],
+  );
+  assert.equal(
+    merged.find((entry) => entry.channelName === "Unchecked"),
+    previous[1],
+  );
+  assert.equal(
+    merged.find((entry) => entry.channelName === "Peppo"),
+    previous[2],
+  );
+});
+
+void test("offline drops immediately even when that row was just fetched", () => {
+  const now = 5_000_000;
+  const previous = [
+    stream("Buddha", 20, { fetchedAt: now }),
+    stream("Other", 5, { fetchedAt: now }),
+  ];
+  const merged = applyKickPollBatch(
+    previous,
+    [parseLivestreamResponse("Buddha", 200, JSON.stringify({ data: null }))],
+    { dropUnmentioned: false, now },
+  );
+  assert.ok(merged);
+  assert.deepEqual(
+    merged.map((entry) => entry.channelName),
+    ["Other"],
+  );
+  assert.equal(merged[0], previous[1]);
+});
+
+void test("a failure-only row older than 15 minutes is dropped, and an all-fail batch writes nothing", () => {
+  const now = 10_000_000_000;
+  const old = stream("Buddha", 200, {
+    fetchedAt: now - KICK_FAILURE_RETAIN_MS - 1,
+  });
+  const exact = stream("Exact", 30, {
+    fetchedAt: now - KICK_FAILURE_RETAIN_MS,
+  });
+  const recent = stream("Peppo", 50, { fetchedAt: now - 1_000 });
+  const unchecked = stream("Keep", 5);
+  const ming = parseLivestreamResponse("Ming", 200, liveJson(9, 9));
+  assert.equal(ming.ok, true);
+
+  const merged = applyKickPollBatch(
+    [old, exact, recent, unchecked],
+    [
+      { channelName: "Buddha", ok: false },
+      { channelName: "Exact", ok: false },
+      { channelName: "Peppo", ok: false },
+      ming,
+    ],
+    { dropUnmentioned: false, now },
+  );
+  assert.ok(merged);
+  assert.deepEqual(
+    merged.map((entry) => entry.channelName),
+    ["Peppo", "Exact", "Ming", "Keep"],
+  );
+  assert.equal(
+    merged.find((entry) => entry.channelName === "Peppo"),
+    recent,
+  );
+  assert.equal(
+    merged.find((entry) => entry.channelName === "Exact"),
+    exact,
+  );
+  assert.equal(
+    merged.find((entry) => entry.channelName === "Ming")?.fetchedAt,
+    now,
+  );
+  assert.equal(
+    merged.find((entry) => entry.channelName === "Buddha"),
+    undefined,
+  );
+
+  assert.equal(
+    applyKickPollBatch([old], [{ channelName: "Buddha", ok: false }], {
+      dropUnmentioned: false,
+      now,
+    }),
+    null,
+  );
+});
+
+void test("429 backoff uses a short Retry-After and otherwise climbs 5s, 10s, 20s, 30s", () => {
+  const now = Date.parse("2026-11-04T20:00:00.000Z");
+  assert.equal(backoffDelayMs("3", 4, now), 3_000);
+  assert.equal(backoffDelayMs("0", 2, now), 10_000);
+  assert.equal(backoffDelayMs("120", 1, now), 5_000);
+  assert.equal(backoffDelayMs("nope", 1, now), 5_000);
+  assert.equal(backoffDelayMs(null, 1, now), 5_000);
+  assert.equal(backoffDelayMs(undefined, 2, now), 10_000);
+  assert.equal(backoffDelayMs("", 3, now), 20_000);
+  assert.equal(backoffDelayMs(null, 4, now), 30_000);
+  assert.equal(backoffDelayMs(null, 9, now), 30_000);
+
+  const soon = new Date(now + 10_000).toUTCString();
+  assert.equal(backoffDelayMs(soon, 2, now), 10_000);
+  const far = new Date(now + 120_000).toUTCString();
+  assert.equal(backoffDelayMs(far, 2, now), 10_000);
+  const past = new Date(now - 5_000).toUTCString();
+  assert.equal(backoffDelayMs(past, 1, now), 5_000);
+});
+
+void test("previously live channels are polled first and unknown names stay out of the pass", () => {
+  const ordered = orderKickPoll(
+    ["A", "B", "C", "D"],
+    [{ channelName: "c" }, { channelName: "A" }, { channelName: "Z" }],
+  );
+  assert.deepEqual(ordered.priority, ["C", "A"]);
+  assert.deepEqual(ordered.rest, ["B", "D"]);
+});
+
+void test("a fresh poller heartbeat suppresses the client Kick refresh", () => {
+  const now = 5_000_000;
+  assert.equal(clientNeedsKickRefresh(false, now, now), false);
+  assert.equal(
+    clientNeedsKickRefresh(false, now - KICK_POLL_HEARTBEAT_FRESH_MS, now),
+    false,
+  );
+  assert.equal(
+    clientNeedsKickRefresh(false, now - KICK_POLL_HEARTBEAT_FRESH_MS - 1, now),
+    true,
+  );
+  assert.equal(clientNeedsKickRefresh(false, 0, now), true);
+  assert.equal(clientNeedsKickRefresh(true, 0, now), false);
 });
 
 void test("a new livestream id does not reuse the previous vod id", () => {
