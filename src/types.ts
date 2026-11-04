@@ -83,6 +83,8 @@ export interface RemoteKickLivestream {
   playback_url: string;
   category: RemoteKickSubCategory;
   thumbnail: RemoteKickThumbnail;
+  // From the channel info endpoint, cached while this livestream id is current.
+  vodId?: string;
 }
 
 export type RemoteKickLivestreamData = RemoteKickLivestream | null;
@@ -127,6 +129,7 @@ export type GlobalData = typeof global &
     kickInitPromise?: Promise<void>;
     kickServerInit?: Promise<void>;
     kickBackgroundStarted?: boolean;
+    kickPollerStarted?: boolean;
     // Shared by the startup bundle and the request bundle. The first Twitch
     // fetch resolves it; a request that arrives first waits on the same promise.
     twitchReady?: Promise<CachedStreams>;

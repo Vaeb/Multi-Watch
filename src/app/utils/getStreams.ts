@@ -20,6 +20,7 @@ import {
   loadKickSnapshot,
   saveKickSnapshot,
 } from "./kickSnapshot";
+import { startKickLivePoller } from "./kickLivePoll";
 import { log } from "./log";
 
 const globalData = global as GlobalData;
@@ -248,6 +249,15 @@ const start = async () => {
     log(`[getStreams] Clients:`, globalData.connected);
     globalData.connected = 0;
   }, NOPIXEL_DATA_INTERVAL);
+
+  // Test runs call init() and would otherwise poll Kick for the whole suite.
+  if (!process.env.NODE_TEST_CONTEXT) {
+    startKickLivePoller({
+      ensureLoaded: ensureKickSnapshot,
+      readStreams: () => globalData.cachedKickStreams ?? [],
+      writeStreams: (streams) => setKickStreams(streams, false),
+    });
+  }
 };
 
 export const init = (): Promise<void> => {

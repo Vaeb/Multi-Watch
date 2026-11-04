@@ -7,9 +7,9 @@ import {
 import { type KickState } from "../stores/kickStore";
 import { sleep } from "./sleep";
 
-// Client periodically makes a request to the Kick API to fetch the streams
-// This should only be needed if the server's cache of kick streams becomes outdated and needs updating by a client
-// (FYI: Kick API can only be accessed client-side)
+// Fallback when the server's Kick cache is stale: a browser fetches each
+// NoPixel channel and pushes the list through updateServerKickLive. The
+// server polls the same channels itself (kickLivePoll).
 export const fetchKickLive = async (
   chatrooms: KickState["chatrooms"],
 ): Promise<RemoteKickLivestream[]> => {
