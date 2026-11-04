@@ -1,6 +1,7 @@
 "use client";
 
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
+import { getKickChannel } from "../../actions/getKickChannel";
 import { type PlayerProps } from "./videoClient";
 import { useMainStore } from "../../stores/mainStore";
 import { useKickStore } from "../../stores/kickStore";
@@ -114,6 +115,29 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
     type === "kick" ? (state.vods[channel] ?? null) : null,
   );
   const showVod = vod != null && parseKickTimestamp(vod.createdAt) != null;
+
+  useEffect(() => {
+    if (type !== "kick") return;
+    let cancelled = false;
+    getKickChannel(channel)
+      .then((channelInfo) => {
+        if (cancelled) return;
+        const next =
+          channelInfo.live && channelInfo.vodId && channelInfo.createdAt
+            ? { vodId: channelInfo.vodId, createdAt: channelInfo.createdAt }
+            : null;
+        useKickStore.getState().actions.setVod(channel, next);
+      })
+      .catch((error: unknown) => {
+        console.error(
+          `[PlayerOverlay] Kick channel lookup failed for ${channel}:`,
+          error,
+        );
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [channel, type]);
 
   const assignVodHref = (event: React.MouseEvent<HTMLAnchorElement>) => {
     if (!vod) {

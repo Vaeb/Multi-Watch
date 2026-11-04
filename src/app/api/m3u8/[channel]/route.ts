@@ -1,6 +1,10 @@
 import { log } from "console";
 import { type RemoteKickLivestream, type GlobalData } from "~/types";
 import { ensureKickSnapshot } from "~/app/utils/getStreams";
+import {
+  decideKickChannel,
+  ensureKickOnDemand,
+} from "~/app/utils/kickOnDemand";
 
 const globalData = global as GlobalData;
 
@@ -84,6 +88,22 @@ export async function POST(request: Request) {
   }
 }
 
+// NoPixel cache first, then a recent on-demand row. A miss enqueues one
+// livestream fetch. A 403 from the playlist host is returned as-is; the next
+// Kick fetch for this slug waits out the two-minute window.
+const playbackUrlFor = async (channel: string): Promise<string | null> => {
+  const decision = decideKickChannel(
+    channel,
+    globalData.cachedKickStreams,
+    globalData.kickOnDemand,
+    Date.now(),
+  );
+  if (decision.kind === "reject") return null;
+  if (decision.kind === "cached") return decision.stream?.playback_url ?? null;
+  const entry = await ensureKickOnDemand(channel);
+  return entry?.stream?.playback_url ?? null;
+};
+
 export async function GET(_request: Request, { params }: PageParams) {
   await ensureKickSnapshot();
   const channelWithSuffix = (await params).channel.toLowerCase();
@@ -118,11 +138,7 @@ export async function GET(_request: Request, { params }: PageParams) {
     });
   }
 
-  const playbackUrl =
-    tempCachedKickStreams[channel]?.playback_url ??
-    globalData.cachedKickStreams.find(
-      (stream) => stream.channelName.toLowerCase() === channel,
-    )?.playback_url;
+  const playbackUrl = await playbackUrlFor(channel);
 
   if (!playbackUrl) {
     return new Response(`No playback URL found (${channel})!`, { status: 404 });

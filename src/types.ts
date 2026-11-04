@@ -92,6 +92,13 @@ export interface RemoteKickLivestream {
 
 export type RemoteKickLivestreamData = RemoteKickLivestream | null;
 
+// A channel the poller does not track, fetched because someone opened it.
+// Kept off cachedKickStreams so GET /api/kick-live stays the NoPixel list.
+export interface KickOnDemandEntry {
+  stream: RemoteKickLivestream | null;
+  fetchedAt: number;
+}
+
 export type AssumeServer = "whitelist" | "public" | "international";
 
 export interface RemoteTnoCharacter {
@@ -136,6 +143,8 @@ export type GlobalData = typeof global &
     // Touched on each poll request. While it is fresh, browsers are not asked
     // to scan Kick even if the saved list is past the usual refresh window.
     kickPollHeartbeat?: number;
+    kickOnDemand?: Record<string, KickOnDemandEntry>;
+    kickOnDemandInflight?: Map<string, Promise<KickOnDemandEntry>>;
     // Shared by the startup bundle and the request bundle. The first Twitch
     // fetch resolves it; a request that arrives first waits on the same promise.
     twitchReady?: Promise<CachedStreams>;
