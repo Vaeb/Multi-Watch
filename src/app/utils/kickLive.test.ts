@@ -7,6 +7,9 @@ import {
   clientNeedsKickRefresh,
   KICK_FAILURE_RETAIN_MS,
   KICK_POLL_HEARTBEAT_FRESH_MS,
+  KICK_STATUS_DELAYED,
+  KICK_STATUS_DELAYED_MS,
+  kickStatusText,
   mergeKickPoll,
   npKickChannels,
   orderKickPoll,
@@ -313,6 +316,17 @@ void test("previously live channels are polled first and unknown names stay out 
   );
   assert.deepEqual(ordered.priority, ["C", "A"]);
   assert.deepEqual(ordered.rest, ["B", "D"]);
+});
+
+void test("Kick status is delayed at 0 and once the list is older than 8 minutes", () => {
+  const now = 1_000_000;
+  assert.equal(kickStatusText(0, now), KICK_STATUS_DELAYED);
+  assert.equal(kickStatusText(now, now), "");
+  assert.equal(kickStatusText(now - KICK_STATUS_DELAYED_MS, now), "");
+  assert.equal(
+    kickStatusText(now - KICK_STATUS_DELAYED_MS - 1, now),
+    KICK_STATUS_DELAYED,
+  );
 });
 
 void test("a fresh poller heartbeat suppresses the client Kick refresh", () => {

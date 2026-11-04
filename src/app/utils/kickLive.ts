@@ -155,6 +155,22 @@ export const KICK_FAILURE_RETAIN_MS = 15 * 60 * 1000;
 // that is waiting still counts as alive. A stopped loop goes stale.
 export const KICK_POLL_HEARTBEAT_FRESH_MS = 90_000;
 
+// Two poll passes. A slow pass stays under this, so the sidebar does not
+// flash "delayed" while the loop is still writing.
+export const KICK_STATUS_DELAYED_MS = 8 * 60 * 1000;
+
+export const KICK_STATUS_DELAYED = "Kick status delayed";
+
+// kickSavedAt 0 means this process has no saved list yet. Exactly 8 minutes
+// is still on time; anything older is the delayed line.
+export const kickStatusText = (
+  kickSavedAt: number,
+  now = Date.now(),
+): string =>
+  kickSavedAt === 0 || now - kickSavedAt > KICK_STATUS_DELAYED_MS
+    ? KICK_STATUS_DELAYED
+    : "";
+
 export const KICK_BACKOFF_STEPS_MS = [5_000, 10_000, 20_000, 30_000] as const;
 export const KICK_BACKOFF_CAP_MS = 30_000;
 

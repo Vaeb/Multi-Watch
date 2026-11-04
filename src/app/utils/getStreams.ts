@@ -298,6 +298,7 @@ const _getStreams = async (): Promise<RemoteReceived> => {
     parsed: mergedStreams,
     time: cachedTwitchTime,
     needsKickLiveStreams,
+    kickSavedAt: globalData.cachedKickTime ?? 0,
     chatrooms,
   };
 };

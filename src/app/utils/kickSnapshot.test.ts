@@ -16,6 +16,7 @@ import { pathToFileURL } from "node:url";
 import test from "node:test";
 import { NOPIXEL_DATA_INTERVAL } from "../constants";
 import { type RemoteKickLivestream } from "../../types";
+import { KICK_STATUS_DELAYED, kickStatusText } from "./kickLive";
 import {
   isKickSnapshotCurrent,
   kickSnapshotPath,
@@ -94,6 +95,7 @@ const received = await getStreams();
 const { writeFileSync } = await import("node:fs");
 writeFileSync(process.env.RESULT_PATH, JSON.stringify({
   time: global.cachedKickTime,
+  kickSavedAt: received.kickSavedAt,
   needsKickLiveStreams: received.needsKickLiveStreams,
   channels: received.parsed.streams.map((entry) => entry.channelName),
 }));
@@ -102,6 +104,7 @@ process.exit(0);
 
 interface BootReport {
   time: number;
+  kickSavedAt: number;
   needsKickLiveStreams: boolean;
   channels: string[];
 }
@@ -294,7 +297,9 @@ void test("a fresh process serves a recent snapshot as current", async () => {
 
     const report = await boot(filePath);
     assert.equal(report.time, savedAt);
+    assert.equal(report.kickSavedAt, savedAt);
     assert.equal(report.needsKickLiveStreams, false);
+    assert.equal(kickStatusText(report.kickSavedAt, savedAt), "");
     assert.equal(report.channels.includes("RecentKick"), true);
   });
 });
@@ -310,7 +315,9 @@ void test("a fresh process serves an older snapshot and marks it stale", async (
 
     const report = await boot(filePath);
     assert.equal(report.time, savedAt);
+    assert.equal(report.kickSavedAt, savedAt);
     assert.equal(report.needsKickLiveStreams, true);
+    assert.equal(kickStatusText(report.kickSavedAt), KICK_STATUS_DELAYED);
     assert.equal(report.channels.includes("OlderKick"), true);
   });
 });
@@ -319,15 +326,40 @@ void test("a fresh process stays empty when the snapshot cannot be read", async 
   await withDir(async (dir) => {
     const missing = await boot(path.join(dir, "missing.json"));
     assert.equal(missing.time, 0);
+    assert.equal(missing.kickSavedAt, 0);
     assert.equal(missing.needsKickLiveStreams, true);
+    assert.equal(
+      kickStatusText(missing.kickSavedAt, 60_000),
+      KICK_STATUS_DELAYED,
+    );
     assert.deepEqual(missing.channels, []);
 
     const corruptPath = path.join(dir, "corrupt.json");
     await writeFile(corruptPath, "{not json");
     const corrupt = await boot(corruptPath);
     assert.equal(corrupt.time, 0);
+    assert.equal(corrupt.kickSavedAt, 0);
     assert.equal(corrupt.needsKickLiveStreams, true);
     assert.deepEqual(corrupt.channels, []);
+  });
+});
+
+void test("a snapshot stamped at 0 still returns its rows", async () => {
+  await withDir(async (dir) => {
+    const filePath = path.join(dir, "kick-live.json");
+    await saveKickSnapshot(
+      { streams: [stream("DelayedSentinel", 50)], time: 0 },
+      filePath,
+    );
+
+    const report = await boot(filePath);
+    assert.equal(report.time, 0);
+    assert.equal(report.kickSavedAt, 0);
+    assert.equal(
+      kickStatusText(report.kickSavedAt, 60_000),
+      KICK_STATUS_DELAYED,
+    );
+    assert.equal(report.channels.includes("DelayedSentinel"), true);
   });
 });
 

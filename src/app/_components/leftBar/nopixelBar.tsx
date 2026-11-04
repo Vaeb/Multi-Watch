@@ -314,7 +314,7 @@ const NopixelFactionFilter = memo(function NopixelFactionFilterComponent({
 
 function NopixelBarComponent({
   receivedData,
-  timeFormatted: _timeFormatted,
+  timeFormatted,
 }: {
   receivedData: RemoteReceived;
   timeFormatted: string;
@@ -484,6 +484,9 @@ function NopixelBarComponent({
             {filteredStreams?.length ?? 0} streams live
           </span>
         </div>
+        {timeFormatted ? (
+          <p className="text-sm text-[#ddd]">{timeFormatted}</p>
+        ) : null}
 
         <input
           className="h-[32px] w-full rounded-md border border-gray-600 bg-[#2f2f2f] px-3 py-[7px] text-sm text-white placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-0"
