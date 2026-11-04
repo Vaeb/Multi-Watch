@@ -15,6 +15,7 @@ import RefreshIcon from "../icons/refreshIcon";
 import clsx from "clsx";
 import { useDrag } from "./dragContext";
 import { useStableCallback } from "~/app/hooks/useStableCallback";
+import { kickVodUrl, parseKickTimestamp } from "~/app/utils/kickVod";
 import Image from "next/image";
 
 interface PlayerOverlayProps extends PlayerProps {}
@@ -100,7 +101,7 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
   const { onMouseDownDrag } = useDrag();
 
   const onMouseDown = useStableCallback((e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest("button")) {
+    if ((e.target as HTMLElement).closest("button, a")) {
       return;
     }
     e.preventDefault();
@@ -109,10 +110,33 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
 
   const isDraggingThis = isDragging && dragChannel === channel;
 
+  const vod = useKickStore((state) =>
+    type === "kick" ? (state.vods[channel] ?? null) : null,
+  );
+  const showVod = vod != null && parseKickTimestamp(vod.createdAt) != null;
+
+  const assignVodHref = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!vod) {
+      event.preventDefault();
+      return;
+    }
+    const url = kickVodUrl({
+      channel,
+      videoId: vod.vodId,
+      createdAt: vod.createdAt,
+      nowMs: Date.now(),
+    });
+    if (!url) {
+      event.preventDefault();
+      return;
+    }
+    event.currentTarget.href = url;
+  };
+
   // Handler for double-click to go fullscreen
   const onDoubleClick = useStableCallback((e: React.MouseEvent) => {
     // Don't trigger if clicking on buttons
-    if ((e.target as HTMLElement).closest("button")) {
+    if ((e.target as HTMLElement).closest("button, a")) {
       return;
     }
     e.preventDefault();
@@ -156,6 +180,24 @@ function PlayerOverlayComponent({ channel, type }: PlayerOverlayProps) {
                 alt="Go to channel"
               />
             </a>
+            {showVod && vod ? (
+              <a
+                href={`https://kick.com/${channel}/videos/${vod.vodId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open VoD from 5.5 minutes ago"
+                onMouseDown={assignVodHref}
+                onClick={assignVodHref}
+              >
+                <Image
+                  src="/kick_vod_32.png"
+                  className="opacity-90"
+                  width={18}
+                  height={15}
+                  alt="Open VoD from 5.5 minutes ago"
+                />
+              </a>
+            ) : null}
           </div>
           {/* New Hint Text */}
           <div className="relative mb-2 h-4 w-full text-center text-xs text-gray-300/95">

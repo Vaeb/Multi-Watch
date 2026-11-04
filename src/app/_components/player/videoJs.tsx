@@ -5,7 +5,8 @@ import type Player from "video.js/dist/types/player";
 import "video.js/dist/video-js.css";
 import { registerIVSTech, registerIVSQualityPlugin } from "amazon-ivs-player";
 import "../../../styles/videojs-custom.css";
-import { type RemoteKickLivestreamData } from "~/types";
+import { type RemoteKickLivestream } from "~/types";
+import { useKickStore } from "~/app/stores/kickStore";
 import { log } from "~/app/utils/log";
 
 interface VideoJSProps {
@@ -26,27 +27,105 @@ interface VideoJSProps {
   4. Backend returns success -> VideoJS /api/m3u8 -> Else -> Offline screen
  */
 
-const getLivestreamData = async (channel: string) => {
-  const url = `https://kick.com/api/v2/channels/${channel}/livestream`;
+interface KickInfoCategory {
+  id?: number;
+  name?: string;
+  slug?: string;
+}
+
+interface KickInfoLivestream {
+  id?: number;
+  vod_id?: string | null;
+  session_title?: string;
+  created_at?: string;
+  viewer_count?: number;
+  categories?: KickInfoCategory[];
+  thumbnail?: {
+    url?: string;
+    src?: string;
+    responsive?: string;
+    srcset?: string;
+  } | null;
+}
+
+interface KickChannelInfo {
+  playback_url?: string | null;
+  livestream?: KickInfoLivestream | null;
+}
+
+const rememberVod = (channel: string, live: KickInfoLivestream | null) => {
+  const vodId = live?.vod_id;
+  const createdAt = live?.created_at;
+  useKickStore
+    .getState()
+    .actions.setVod(
+      channel,
+      typeof vodId === "string" &&
+        vodId &&
+        typeof createdAt === "string" &&
+        createdAt
+        ? { vodId, createdAt }
+        : null,
+    );
+};
+
+// /info's livestream.vod_id is the uuid kick.com/<channel>/videos/<id> opens.
+// /livestream's numeric id matches the old videos list, and that page rejects it.
+const getLivestreamData = async (
+  channel: string,
+): Promise<RemoteKickLivestream | null> => {
+  const url = `https://kick.com/api/v2/channels/${channel}/info`;
   try {
     const response = await fetch(url, {
       cache: "no-store",
     });
     if (!response.ok) {
       console.error(
-        `[videoJS] Failed to fetch playback_url for ${channel}: ${response.status} ${response.statusText}`,
+        `[videoJS] Failed to fetch livestream for ${channel}: ${response.status} ${response.statusText}`,
       );
       return null;
     }
-    const livestream = (await response.json()).data as RemoteKickLivestreamData;
-    if (!livestream?.playback_url) {
+    const info = (await response.json()) as KickChannelInfo;
+    const live = info.livestream;
+    if (!live || typeof live.id !== "number") {
+      rememberVod(channel, null);
       console.error(
-        `[videoJS] Fetch worked but no playback_url/livestream for ${channel}:`,
-        livestream,
+        `[videoJS] Fetch worked but no livestream for ${channel}:`,
+        live,
       );
       return null;
     }
-    log(`[videoJS] Got livestream data for ${channel}:`, livestream);
+    rememberVod(channel, live);
+    if (!info.playback_url) {
+      console.error(
+        `[videoJS] Livestream for ${channel} has no playback_url:`,
+        live,
+      );
+      return null;
+    }
+    const category = live.categories?.[0];
+    const livestream: RemoteKickLivestream = {
+      id: live.id,
+      channelName: channel,
+      session_title: live.session_title ?? "",
+      created_at: live.created_at ?? "",
+      viewers: live.viewer_count ?? 0,
+      playback_url: info.playback_url,
+      category: {
+        id: category?.id ?? 0,
+        name: category?.name ?? "",
+        slug: category?.slug ?? "",
+      },
+      thumbnail: {
+        src: live.thumbnail?.url ?? live.thumbnail?.src ?? "",
+        srcset: live.thumbnail?.responsive ?? live.thumbnail?.srcset ?? "",
+      },
+    };
+    log(
+      `[videoJS] Got livestream data for ${channel}:`,
+      livestream,
+      live.vod_id,
+    );
     return livestream;
   } catch (error) {
     console.error(
