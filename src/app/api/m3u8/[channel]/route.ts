@@ -1,5 +1,5 @@
 import { log } from "console";
-import { type RemoteKickLivestream, type GlobalData } from "~/types";
+import { type GlobalData } from "~/types";
 import { ensureKickSnapshot } from "~/app/utils/getStreams";
 import {
   decideKickChannel,
@@ -20,8 +20,6 @@ interface CachedM3U8 {
 
 // In-memory cache for m3u8 files
 const m3u8Cache = new Map<string, CachedM3U8>();
-
-const tempCachedKickStreams: Record<string, RemoteKickLivestream> = {};
 
 // Periodic cleanup of expired cache entries
 setInterval(() => {
@@ -50,44 +48,6 @@ interface PageParams {
   }>;
 }
 
-export async function POST(request: Request) {
-  try {
-    const requestBody = (await request.json()) as {
-      channel: string;
-      title: string;
-      game: string;
-      playback_url: string;
-    };
-    const { channel, playback_url } = requestBody;
-
-    if (!channel || !playback_url) {
-      log(
-        `[API:m3u8] Missing channelName or playback_url in request body: ${JSON.stringify(requestBody)}`,
-      );
-      return new Response(
-        "Missing channelName or playback_url in request body",
-        {
-          status: 400,
-        },
-      );
-    }
-
-    tempCachedKickStreams[channel.toLowerCase()] = {
-      playback_url,
-      channelName: channel,
-    } as RemoteKickLivestream;
-
-    // log(`[API:m3u8] Stored playback_url for ${channel}`);
-    return new Response("done", {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    log("[API:m3u8] Error handling POST request:", error);
-    return new Response("Internal Server Error", { status: 500 });
-  }
-}
-
 // NoPixel cache first, then a recent on-demand row. A miss enqueues one
 // livestream fetch. A 403 from the playlist host is returned as-is; the next
 // Kick fetch for this slug waits out the two-minute window.
@@ -107,8 +67,6 @@ const playbackUrlFor = async (channel: string): Promise<string | null> => {
 export async function GET(_request: Request, { params }: PageParams) {
   await ensureKickSnapshot();
   const channelWithSuffix = (await params).channel.toLowerCase();
-
-  // log("[API:m3u8] tempCachedKickStreams:", tempCachedKickStreams);
 
   if (!channelWithSuffix.endsWith(".m3u8")) {
     return new Response(

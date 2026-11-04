@@ -15,12 +15,10 @@ import {
 import { IS_LOCALHOST, NOPIXEL_DATA_INTERVAL } from "../constants";
 import { createKickStreamParser } from "./kickStreamParser";
 import {
-  isKickSnapshotCurrent,
   kickSnapshotPath,
   loadKickSnapshot,
   saveKickSnapshot,
 } from "./kickSnapshot";
-import { clientNeedsKickRefresh } from "./kickLive";
 import { startKickLivePoller } from "./kickLivePoll";
 import { log } from "./log";
 
@@ -268,11 +266,6 @@ export const init = (): Promise<void> => {
 };
 
 const _getStreams = async (): Promise<RemoteReceived> => {
-  const needsKickLiveStreams = clientNeedsKickRefresh(
-    isKickSnapshotCurrent(globalData.cachedKickTime ?? 0),
-    globalData.kickPollHeartbeat ?? 0,
-  );
-
   const { cachedTwitch, cachedTwitchTime } =
     globalData.cachedTwitch !== undefined &&
     globalData.cachedTwitchTime !== undefined
@@ -297,7 +290,6 @@ const _getStreams = async (): Promise<RemoteReceived> => {
   return {
     parsed: mergedStreams,
     time: cachedTwitchTime,
-    needsKickLiveStreams,
     kickSavedAt: globalData.cachedKickTime ?? 0,
     chatrooms,
   };
@@ -306,14 +298,6 @@ const _getStreams = async (): Promise<RemoteReceived> => {
 export const getStreams = async (): Promise<RemoteReceived> => {
   await ensureKickSnapshot();
   globalData.connected = (globalData.connected || 0) + 1;
-
-  // log(
-  //   "[getParsedNopixelData] Server responding with cached streams:",
-  //   mergedStreams.streams.length,
-  //   cachedTwitch.streams.length,
-  //   globalData.cachedKickStreams.length,
-  //   needsKickLiveStreams,
-  // );
 
   return _getStreams();
 };

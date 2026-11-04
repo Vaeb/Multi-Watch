@@ -158,7 +158,7 @@ const pollOnce = async (deps: KickLivePollDeps): Promise<void> => {
   }
 
   // Order from the list loaded at the start. The merge below reads again so
-  // a client push during the batch is what a failed channel falls back to.
+  // a failed channel keeps the row held when that fetch finishes.
   const { priority, rest } = orderKickPoll(channels, deps.readStreams());
   log(
     `[kickPoll] checking ${channels.length} channels (${priority.length} previously live first)`,

@@ -96,7 +96,6 @@ const { writeFileSync } = await import("node:fs");
 writeFileSync(process.env.RESULT_PATH, JSON.stringify({
   time: global.cachedKickTime,
   kickSavedAt: received.kickSavedAt,
-  needsKickLiveStreams: received.needsKickLiveStreams,
   channels: received.parsed.streams.map((entry) => entry.channelName),
 }));
 process.exit(0);
@@ -105,7 +104,6 @@ process.exit(0);
 interface BootReport {
   time: number;
   kickSavedAt: number;
-  needsKickLiveStreams: boolean;
   channels: string[];
 }
 
@@ -298,7 +296,6 @@ void test("a fresh process serves a recent snapshot as current", async () => {
     const report = await boot(filePath);
     assert.equal(report.time, savedAt);
     assert.equal(report.kickSavedAt, savedAt);
-    assert.equal(report.needsKickLiveStreams, false);
     assert.equal(kickStatusText(report.kickSavedAt, savedAt), "");
     assert.equal(report.channels.includes("RecentKick"), true);
   });
@@ -316,7 +313,6 @@ void test("a fresh process serves an older snapshot and marks it stale", async (
     const report = await boot(filePath);
     assert.equal(report.time, savedAt);
     assert.equal(report.kickSavedAt, savedAt);
-    assert.equal(report.needsKickLiveStreams, true);
     assert.equal(kickStatusText(report.kickSavedAt), KICK_STATUS_DELAYED);
     assert.equal(report.channels.includes("OlderKick"), true);
   });
@@ -327,7 +323,6 @@ void test("a fresh process stays empty when the snapshot cannot be read", async 
     const missing = await boot(path.join(dir, "missing.json"));
     assert.equal(missing.time, 0);
     assert.equal(missing.kickSavedAt, 0);
-    assert.equal(missing.needsKickLiveStreams, true);
     assert.equal(
       kickStatusText(missing.kickSavedAt, 60_000),
       KICK_STATUS_DELAYED,
@@ -339,7 +334,10 @@ void test("a fresh process stays empty when the snapshot cannot be read", async 
     const corrupt = await boot(corruptPath);
     assert.equal(corrupt.time, 0);
     assert.equal(corrupt.kickSavedAt, 0);
-    assert.equal(corrupt.needsKickLiveStreams, true);
+    assert.equal(
+      kickStatusText(corrupt.kickSavedAt, 60_000),
+      KICK_STATUS_DELAYED,
+    );
     assert.deepEqual(corrupt.channels, []);
   });
 });
@@ -398,7 +396,7 @@ void test("updating the live list saves that timestamp for the next process", as
 
     const report = await boot(filePath);
     assert.equal(report.time, memory.time);
-    assert.equal(report.needsKickLiveStreams, false);
+    assert.equal(report.kickSavedAt, memory.time);
     assert.equal(report.channels.includes("SavedKick"), true);
   });
 });
