@@ -151,10 +151,6 @@ const retainVodId = (
 // lasted this long. A successful poll of any other channel is what applies it.
 export const KICK_FAILURE_RETAIN_MS = 15 * 60 * 1000;
 
-// Longer than the 60s gap between passes and the 30s 429 pause, so a loop
-// that is waiting still counts as alive. A stopped loop goes stale.
-export const KICK_POLL_HEARTBEAT_FRESH_MS = 90_000;
-
 // Two poll passes. A slow pass stays under this, so the sidebar does not
 // flash "delayed" while the loop is still writing.
 export const KICK_STATUS_DELAYED_MS = 8 * 60 * 1000;
@@ -173,22 +169,6 @@ export const kickStatusText = (
 
 export const KICK_BACKOFF_STEPS_MS = [5_000, 10_000, 20_000, 30_000] as const;
 export const KICK_BACKOFF_CAP_MS = 30_000;
-
-export const isKickPollHeartbeatFresh = (
-  heartbeatAt: number,
-  now = Date.now(),
-): boolean =>
-  Number.isFinite(heartbeatAt) &&
-  heartbeatAt > 0 &&
-  now - heartbeatAt <= KICK_POLL_HEARTBEAT_FRESH_MS;
-
-// Snapshot freshness is decided by the caller. A fresh heartbeat means the
-// poller is looping, so browsers are not asked to scan Kick themselves.
-export const clientNeedsKickRefresh = (
-  snapshotIsCurrent: boolean,
-  heartbeatAt: number,
-  now = Date.now(),
-): boolean => !snapshotIsCurrent && !isKickPollHeartbeatFresh(heartbeatAt, now);
 
 const retryAfterMs = (header: string, now: number): number | null => {
   const trimmed = header.trim();

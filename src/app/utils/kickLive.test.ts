@@ -4,9 +4,7 @@ import { type RemoteKickLivestream } from "../../types";
 import {
   applyKickPollBatch,
   backoffDelayMs,
-  clientNeedsKickRefresh,
   KICK_FAILURE_RETAIN_MS,
-  KICK_POLL_HEARTBEAT_FRESH_MS,
   KICK_STATUS_DELAYED,
   KICK_STATUS_DELAYED_MS,
   kickStatusText,
@@ -327,21 +325,6 @@ void test("Kick status is delayed at 0 and once the list is older than 8 minutes
     kickStatusText(now - KICK_STATUS_DELAYED_MS - 1, now),
     KICK_STATUS_DELAYED,
   );
-});
-
-void test("a fresh poller heartbeat suppresses the client Kick refresh", () => {
-  const now = 5_000_000;
-  assert.equal(clientNeedsKickRefresh(false, now, now), false);
-  assert.equal(
-    clientNeedsKickRefresh(false, now - KICK_POLL_HEARTBEAT_FRESH_MS, now),
-    false,
-  );
-  assert.equal(
-    clientNeedsKickRefresh(false, now - KICK_POLL_HEARTBEAT_FRESH_MS - 1, now),
-    true,
-  );
-  assert.equal(clientNeedsKickRefresh(false, 0, now), true);
-  assert.equal(clientNeedsKickRefresh(true, 0, now), false);
 });
 
 void test("a new livestream id does not reuse the previous vod id", () => {
