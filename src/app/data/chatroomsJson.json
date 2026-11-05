@@ -1600,5 +1600,32 @@
     "id": 77344946,
     "np": true,
     "assumeFaction": ["sinnerpawn"]
+  },
+  "cyter": {
+    "id": 106558,
+    "np": true
+  },
+  "Curtisryan": {
+    "id": 1478481,
+    "np": true
+  },
+  "Zolo": {
+    "id": 1411041,
+    "np": true,
+    "assumeFaction": ["changgang"]
+  },
+  "OfficialTaco": {
+    "id": 2210588,
+    "np": true
+  },
+  "lordkebun": {
+    "id": 56466,
+    "np": true,
+    "assumeFaction": ["changgang"]
+  },
+  "mateo2lit": {
+    "id": 1016348,
+    "np": true,
+    "assumeFaction": ["changgang"]
   }
 }
