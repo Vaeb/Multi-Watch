@@ -428,11 +428,6 @@
     "np": true,
     "assumeFaction": ["besties", "pawnaddicts", "6chambers"]
   },
-  "sanesfx": {
-    "id": 7255776,
-    "np": true,
-    "assumeFaction": ["besties"]
-  },
   "taza-v": {
     "id": 51182564,
     "np": true,
