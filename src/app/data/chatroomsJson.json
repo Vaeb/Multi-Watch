@@ -68,7 +68,7 @@
   "SkiMaskDaniel": {
     "id": 2697388,
     "np": true,
-    "assumeFaction": ["hounds", "pawnaddicts", "police"]
+    "assumeFaction": ["hounds", "pawnaddicts"]
   },
   "IrishGT": {
     "id": 50840382,
@@ -82,8 +82,7 @@
   },
   "Nikez": {
     "id": 2402594,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "Peppo": {
     "id": 25518774,
@@ -296,7 +295,7 @@
   "rerolldota": {
     "id": 70561266,
     "np": true,
-    "assumeFaction": ["police", "doj"]
+    "assumeFaction": ["doj"]
   },
   "Lt_Custard": {
     "id": 2570847,
@@ -372,12 +371,11 @@
   "ClaytonERP": {
     "id": 52715994,
     "np": true,
-    "assumeFaction": ["police", "gruppe6"]
+    "assumeFaction": ["police", "gruppe6", "6gang"]
   },
   "KylieBitkin": {
     "id": 2733273,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "GlitterGlock19": {
     "id": 2483677,
@@ -664,7 +662,8 @@
   },
   "ZPapz": {
     "id": 2513940,
-    "np": true
+    "np": true,
+    "assumeFaction": ["police"]
   },
   "ash": {
     "id": 2719973,
@@ -724,7 +723,7 @@
   "Kemony": {
     "id": 2733117,
     "np": true,
-    "assumeFaction": ["hydragang", "burgershot", "police"]
+    "assumeFaction": ["hydragang", "burgershot"]
   },
   "ChasRP": {
     "id": 1346767,
@@ -940,7 +939,7 @@
   "Nottics": {
     "id": 7464668,
     "np": true,
-    "assumeFaction": ["sinnerpawn"]
+    "assumeFaction": ["sinnerpawn", "6gang"]
   },
   "NovaaBerries": {
     "id": 77514129,
@@ -970,12 +969,12 @@
   "WhiskeyMate": {
     "id": 107590764,
     "np": true,
-    "assumeFaction": ["police", "brickbois", "oldcountry"]
+    "assumeFaction": ["brickbois", "oldcountry"]
   },
   "Sarkwentv": {
     "id": 3591849,
     "np": true,
-    "assumeFaction": ["gruppe6", "police", "order"]
+    "assumeFaction": ["gruppe6", "order"]
   },
   "MEKABEAR": {
     "id": 51504,
@@ -1139,13 +1138,12 @@
   },
   "25Daves": {
     "id": 49043432,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "Alex3MM": {
     "id": 71064656,
     "np": true,
-    "assumeFaction": ["police", "sinnerpawn"]
+    "assumeFaction": ["sinnerpawn"]
   },
   "AlyOren": {
     "id": 1157724,
@@ -1228,8 +1226,7 @@
   },
   "GregsStory": {
     "id": 79638676,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "Hedisaurus": {
     "id": 9001990,
@@ -1238,8 +1235,7 @@
   },
   "HeyMadge": {
     "id": 2423359,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "illwac": {
     "id": 2317078,
@@ -1342,8 +1338,7 @@
   },
   "StonerMinded": {
     "id": 59174805,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "TheBBam": {
     "id": 25475111,
