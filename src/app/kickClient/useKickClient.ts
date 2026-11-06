@@ -3,6 +3,7 @@
 import { type RefObject, useCallback, useEffect, useState } from "react";
 import { type VirtuosoMessageListMethods } from "@virtuoso.dev/message-list";
 import { useKickStore } from "../stores/kickStore";
+import { appendWithinMessageCap } from "../utils/kickChatHistory";
 import { log } from "../utils/log";
 
 // [Client] If channel name not in list of chatrooms, send message to server
@@ -126,7 +127,11 @@ export const useKickClient = (
       const { type, message } = parseMessage(data.toString()) || {};
       // log(`[useKickClient] onMessage`, type, message);
       if (type === "ChatMessage" && message) {
-        messageListRef.current?.data.append(
+        const list = messageListRef.current?.data;
+        if (!list) return;
+        // Hidden panels stay mounted, so each list caps itself here.
+        appendWithinMessageCap(
+          list,
           [message],
           ({ atBottom, scrollInProgress }) => {
             if (atBottom || scrollInProgress) {
