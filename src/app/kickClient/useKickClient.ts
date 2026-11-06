@@ -57,10 +57,9 @@ const toChatMessage = (message: Record<string, any>): Message => {
     time: `${hours}:${minutes}`,
     author: message.sender.username,
     authorColor: message.sender.identity.color,
-    content: (message.content as string).replace(
-      /\[emote:(\d+):(\w+)\]/g,
-      (_, __, emoteName) => emoteName as string,
-    ),
+    // Keep the original text, including [emote:id:name] tokens. The chat
+    // view is what turns tokens and 7TV words into images.
+    content: message.content as string,
   };
 };
 
