@@ -7,8 +7,10 @@ import {
 } from "../../types";
 import { favoriteKey, filterFavoriteStreams } from "./favorites";
 import {
+  alsoLiveOnOtherPlatform,
   applyMultiPlatformStreams,
   kickStreamerKey,
+  type MultiPlatformStreams,
   preferenceOnFirstPaint,
 } from "./multiPlatformStreams";
 
@@ -28,6 +30,23 @@ const shown = (streams: RemoteStream[]) =>
     channelName: row.channelName,
     platform: row.platform ?? "twitch",
   }));
+
+const alsoLive = (
+  liveStreams: RemoteStream[],
+  chatrooms: Record<string, ChatroomsInfo>,
+  preference: MultiPlatformStreams,
+) => {
+  const lookup = alsoLiveOnOtherPlatform({
+    liveStreams,
+    chatrooms,
+    preference,
+  });
+  return liveStreams.map((row) => ({
+    channelName: row.channelName,
+    platform: row.platform ?? "twitch",
+    alsoLiveOn: lookup(row),
+  }));
+};
 
 void test("show all returns the same array", () => {
   const liveStreams = [stream("xQc", "kick"), stream("xQc"), stream("other")];
@@ -315,6 +334,220 @@ void test("a Kick row missing from chatrooms pairs by its own channel name", () 
     { channelName: "other", platform: "twitch" },
     { channelName: "Solo", platform: "kick" },
   ]);
+});
+
+void test("show all never marks a stream as also live on the other platform", () => {
+  const liveStreams = [stream("xQc"), stream("xQc", "kick"), stream("other")];
+  assert.deepEqual(alsoLive(liveStreams, { xQc: room() }, "all"), [
+    { channelName: "xQc", platform: "twitch", alsoLiveOn: null },
+    { channelName: "xQc", platform: "kick", alsoLiveOn: null },
+    { channelName: "other", platform: "twitch", alsoLiveOn: null },
+  ]);
+});
+
+void test("prefer Kick marks a Kick row purple when that person is also live on Twitch", () => {
+  const liveStreams = [
+    stream("before"),
+    stream("xQc"),
+    stream("xQc", "kick"),
+    stream("after"),
+  ];
+  const lookup = alsoLiveOnOtherPlatform({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "kick",
+  });
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "kick",
+  });
+
+  assert.deepEqual(
+    listed.map((row) => ({
+      channelName: row.channelName,
+      platform: row.platform ?? "twitch",
+      alsoLiveOn: lookup(row),
+    })),
+    [
+      { channelName: "before", platform: "twitch", alsoLiveOn: null },
+      { channelName: "xQc", platform: "kick", alsoLiveOn: "twitch" },
+      { channelName: "after", platform: "twitch", alsoLiveOn: null },
+    ],
+  );
+});
+
+void test("prefer Twitch marks a Twitch row green when that person is also live on Kick", () => {
+  const liveStreams = [
+    stream("before"),
+    stream("xQc"),
+    stream("xQc", "kick"),
+    stream("after"),
+  ];
+  const lookup = alsoLiveOnOtherPlatform({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "twitch",
+  });
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "twitch",
+  });
+
+  assert.deepEqual(
+    listed.map((row) => ({
+      channelName: row.channelName,
+      platform: row.platform ?? "twitch",
+      alsoLiveOn: lookup(row),
+    })),
+    [
+      { channelName: "before", platform: "twitch", alsoLiveOn: null },
+      { channelName: "xQc", platform: "twitch", alsoLiveOn: "kick" },
+      { channelName: "after", platform: "twitch", alsoLiveOn: null },
+    ],
+  );
+});
+
+void test("a streamer live only on the preferred platform has no other-platform dot", () => {
+  const liveStreams = [stream("onlyKick", "kick"), stream("onlyTwitch")];
+  const chatrooms = {
+    onlyKick: room(),
+    onlyTwitch: room(),
+  };
+
+  assert.deepEqual(alsoLive(liveStreams, chatrooms, "kick"), [
+    { channelName: "onlyKick", platform: "kick", alsoLiveOn: null },
+    { channelName: "onlyTwitch", platform: "twitch", alsoLiveOn: null },
+  ]);
+  assert.deepEqual(alsoLive(liveStreams, chatrooms, "twitch"), [
+    { channelName: "onlyKick", platform: "kick", alsoLiveOn: null },
+    { channelName: "onlyTwitch", platform: "twitch", alsoLiveOn: null },
+  ]);
+});
+
+void test("prefer Kick dots Kick MaximusBlack for Twitch LAGTVMaximusBlack and not a different Twitch MaximusBlack", () => {
+  const liveStreams = [
+    stream("LAGTVMaximusBlack"),
+    stream("other"),
+    stream("MaximusBlack"),
+    stream("MaximusBlack", "kick"),
+  ];
+  const lookup = alsoLiveOnOtherPlatform({
+    liveStreams,
+    chatrooms: { MaximusBlack: room("LAGTVMaximusBlack") },
+    preference: "kick",
+  });
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { MaximusBlack: room("LAGTVMaximusBlack") },
+    preference: "kick",
+  });
+
+  assert.deepEqual(
+    listed.map((row) => ({
+      channelName: row.channelName,
+      platform: row.platform ?? "twitch",
+      alsoLiveOn: lookup(row),
+    })),
+    [
+      { channelName: "other", platform: "twitch", alsoLiveOn: null },
+      { channelName: "MaximusBlack", platform: "twitch", alsoLiveOn: null },
+      {
+        channelName: "MaximusBlack",
+        platform: "kick",
+        alsoLiveOn: "twitch",
+      },
+    ],
+  );
+});
+
+void test("prefer Twitch dots Twitch LAGTVMaximusBlack for Kick MaximusBlack and not a different Twitch MaximusBlack", () => {
+  const liveStreams = [
+    stream("LAGTVMaximusBlack"),
+    stream("other"),
+    stream("MaximusBlack"),
+    stream("MaximusBlack", "kick"),
+  ];
+  const lookup = alsoLiveOnOtherPlatform({
+    liveStreams,
+    chatrooms: { MaximusBlack: room("LAGTVMaximusBlack") },
+    preference: "twitch",
+  });
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { MaximusBlack: room("LAGTVMaximusBlack") },
+    preference: "twitch",
+  });
+
+  assert.deepEqual(
+    listed.map((row) => ({
+      channelName: row.channelName,
+      platform: row.platform ?? "twitch",
+      alsoLiveOn: lookup(row),
+    })),
+    [
+      {
+        channelName: "LAGTVMaximusBlack",
+        platform: "twitch",
+        alsoLiveOn: "kick",
+      },
+      { channelName: "other", platform: "twitch", alsoLiveOn: null },
+      { channelName: "MaximusBlack", platform: "twitch", alsoLiveOn: null },
+    ],
+  );
+});
+
+void test("other-platform dots still pair when the chatroom key differs only by case", () => {
+  const liveStreams = [
+    stream("LAGTVMaximusBlack"),
+    stream("MaximusBlack", "kick"),
+  ];
+  const lookup = alsoLiveOnOtherPlatform({
+    liveStreams,
+    chatrooms: { maximusblack: room("LAGTVMaximusBlack") },
+    preference: "kick",
+  });
+  assert.equal(lookup(liveStreams[1]!), "twitch");
+});
+
+void test("two Kick rows with the same person key both get a Twitch dot when Kick is preferred", () => {
+  const liveStreams = [
+    stream("xQc"),
+    stream("xQc", "kick"),
+    stream("XQC", "kick"),
+  ];
+  const lookup = alsoLiveOnOtherPlatform({
+    liveStreams,
+    chatrooms: { xQc: room(), XQC: room() },
+    preference: "kick",
+  });
+
+  assert.equal(lookup(liveStreams[1]!), "twitch");
+  assert.equal(lookup(liveStreams[2]!), "twitch");
+});
+
+void test("other-platform dots use the unfiltered live list after preference already dropped the twin", () => {
+  const liveStreams = [stream("xQc"), stream("xQc", "kick")];
+  const chatrooms = { xQc: room() };
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms,
+    preference: "kick",
+  });
+  const lookupFromListed = alsoLiveOnOtherPlatform({
+    liveStreams: listed,
+    chatrooms,
+    preference: "kick",
+  });
+  const lookupFromLive = alsoLiveOnOtherPlatform({
+    liveStreams,
+    chatrooms,
+    preference: "kick",
+  });
+
+  assert.equal(lookupFromListed(listed[0]!), null);
+  assert.equal(lookupFromLive(listed[0]!), "twitch");
 });
 
 void test("a favorites filter of the prefer Kick list omits the hidden Twitch twin and keeps the Kick favorite", () => {

@@ -34,6 +34,31 @@ export function preferenceOnFirstPaint(
   return saved;
 }
 
+function chatroomsLowerMap(chatrooms: Record<string, ChatroomsInfo>) {
+  const chatroomsLower = new Map<string, ChatroomsInfo>();
+  for (const [name, info] of Object.entries(chatrooms)) {
+    chatroomsLower.set(name.toLowerCase(), info);
+  }
+  return chatroomsLower;
+}
+
+function personKey(
+  stream: RemoteStream,
+  chatroomsLower: Map<string, ChatroomsInfo>,
+): StreamerKey {
+  if (stream.platform === "kick") {
+    return kickStreamerKey(
+      chatroomsLower.get(stream.channelName.toLowerCase())?.twitch,
+      stream.channelName,
+    ) as StreamerKey;
+  }
+  return stream.channelName.toLowerCase() as StreamerKey;
+}
+
+function streamPlatform(stream: RemoteStream): Platform {
+  return stream.platform ?? "twitch";
+}
+
 export function applyMultiPlatformStreams({
   liveStreams,
   chatrooms,
@@ -46,30 +71,54 @@ export function applyMultiPlatformStreams({
   if (preference === "all") return liveStreams;
 
   const preferred: Platform = preference;
-  const chatroomsLower = new Map<string, ChatroomsInfo>();
-  for (const [name, info] of Object.entries(chatrooms)) {
-    chatroomsLower.set(name.toLowerCase(), info);
-  }
-
-  const personKey = (stream: RemoteStream): StreamerKey => {
-    if (stream.platform === "kick") {
-      return kickStreamerKey(
-        chatroomsLower.get(stream.channelName.toLowerCase())?.twitch,
-        stream.channelName,
-      ) as StreamerKey;
-    }
-    return stream.channelName.toLowerCase() as StreamerKey;
-  };
+  const chatroomsLower = chatroomsLowerMap(chatrooms);
 
   const liveOnPreferred = new Set<StreamerKey>();
   for (const stream of liveStreams) {
-    if ((stream.platform ?? "twitch") === preferred) {
-      liveOnPreferred.add(personKey(stream));
+    if (streamPlatform(stream) === preferred) {
+      liveOnPreferred.add(personKey(stream, chatroomsLower));
     }
   }
 
   return liveStreams.filter((stream) => {
-    if ((stream.platform ?? "twitch") === preferred) return true;
-    return !liveOnPreferred.has(personKey(stream));
+    if (streamPlatform(stream) === preferred) return true;
+    return !liveOnPreferred.has(personKey(stream, chatroomsLower));
   });
+}
+
+// liveStreams must be the unfiltered live list. Preference already dropped the twin.
+export function alsoLiveOnOtherPlatform({
+  liveStreams,
+  chatrooms,
+  preference,
+}: {
+  liveStreams: RemoteStream[];
+  chatrooms: Record<string, ChatroomsInfo>;
+  preference: MultiPlatformStreams;
+}): (stream: RemoteStream) => Platform | null {
+  if (preference === "all") return () => null;
+
+  const chatroomsLower = chatroomsLowerMap(chatrooms);
+  const liveOnKick = new Set<StreamerKey>();
+  const liveOnTwitch = new Set<StreamerKey>();
+  for (const stream of liveStreams) {
+    const key = personKey(stream, chatroomsLower);
+    if (streamPlatform(stream) === "kick") {
+      liveOnKick.add(key);
+    } else {
+      liveOnTwitch.add(key);
+    }
+  }
+
+  const liveOnBoth = new Set<StreamerKey>();
+  for (const key of liveOnKick) {
+    if (liveOnTwitch.has(key)) liveOnBoth.add(key);
+  }
+
+  const other: Platform = preference === "kick" ? "twitch" : "kick";
+
+  return (stream) => {
+    if (!liveOnBoth.has(personKey(stream, chatroomsLower))) return null;
+    return other;
+  };
 }

@@ -17,6 +17,7 @@ import { parseLookup } from "../../utils/parseLookup";
 import { filterNoPixelStreamsByFaction } from "../../utils/nopixelFilter";
 import { FAVORITES_FILTER, filterFavoriteStreams } from "../../utils/favorites";
 import {
+  alsoLiveOnOtherPlatform,
   applyMultiPlatformStreams,
   preferenceOnFirstPaint,
 } from "../../utils/multiPlatformStreams";
@@ -34,6 +35,7 @@ interface StreamIconProps {
   viewers: number;
   bottomText: string;
   color: string;
+  alsoLiveOn: Platform | null;
   onClick?: (...args: any[]) => any;
 }
 
@@ -78,6 +80,7 @@ const StreamIcon = ({
   viewers,
   bottomText,
   color,
+  alsoLiveOn,
   onClick,
 }: StreamIconProps) => {
   const favorited = usePersistStore(isFavorite(platform, channel));
@@ -115,13 +118,30 @@ const StreamIcon = ({
               >
                 {topText}
               </p>
-              <p
-                className={`flex-shrink-0 text-xs ${platform === "twitch" ? "text-purple-400" : "text-green-400"} opacity-70 group-hover/stream:opacity-100`}
-              >
-                {viewers < 1000
-                  ? viewers
-                  : `${parseFloat((viewers / 1e3).toFixed(1))}K`}
-              </p>
+              <div className="flex flex-shrink-0 items-center gap-1 opacity-70 group-hover/stream:opacity-100">
+                {alsoLiveOn ? (
+                  <span
+                    className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${alsoLiveOn === "twitch" ? "bg-purple-400" : "bg-green-400"}`}
+                    title={
+                      alsoLiveOn === "twitch"
+                        ? "Also live on Twitch"
+                        : "Also live on Kick"
+                    }
+                    aria-label={
+                      alsoLiveOn === "twitch"
+                        ? "Also live on Twitch"
+                        : "Also live on Kick"
+                    }
+                  />
+                ) : null}
+                <p
+                  className={`text-xs ${platform === "twitch" ? "text-purple-400" : "text-green-400"}`}
+                >
+                  {viewers < 1000
+                    ? viewers
+                    : `${parseFloat((viewers / 1e3).toFixed(1))}K`}
+                </p>
+              </div>
             </div>
             <p className="max-w-full truncate pr-5 text-xs opacity-60 group-hover/stream:opacity-80">
               {bottomText}
@@ -383,6 +403,16 @@ function NopixelBarComponent({
     [streams, receivedData.chatrooms, multiPlatformStreams],
   );
 
+  const alsoLiveOn = useMemo(
+    () =>
+      alsoLiveOnOtherPlatform({
+        liveStreams: streams,
+        chatrooms: receivedData.chatrooms,
+        preference: multiPlatformStreams,
+      }),
+    [streams, receivedData.chatrooms, multiPlatformStreams],
+  );
+
   const hasLiveFavorite = useMemo(
     () =>
       filterFavoriteStreams(listedStreams, favorites, favoriteFactions).length >
@@ -529,6 +559,7 @@ function NopixelBarComponent({
                 : stream.channelName
             }
             color={useColorsDark?.[stream.faction] ?? "#FFF"}
+            alsoLiveOn={alsoLiveOn(stream)}
             onClick={() => {
               addStream(
                 stream.channelName,
