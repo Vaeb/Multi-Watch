@@ -283,6 +283,7 @@ void test("chat markup renders kick and 7TV emotes as images and leaves other wo
   assert.ok(html.includes('alt="collectiblesGoldenNAHH"'));
   assert.ok(html.includes('title="collectiblesGoldenNAHH"'));
   assert.ok(html.includes("height:2em"));
+  assert.ok(html.includes("display:inline-block"));
   assert.ok(
     html.includes(
       `src="${sevenTvEmoteUrl("01FCY771D800007PQ2DF3GDTN6") ?? ""}"`,

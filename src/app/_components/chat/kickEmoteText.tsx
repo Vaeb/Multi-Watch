@@ -22,7 +22,14 @@ function EmoteImage({ name, url }: { name: string; url: string }) {
       draggable={false}
       decoding="async"
       loading="lazy"
-      style={{ height: "2em", width: "auto", verticalAlign: "middle" }}
+      // Tailwind preflight sets img { display: block }, which drops the
+      // emote onto its own line. inline-block keeps it in the text flow.
+      style={{
+        display: "inline-block",
+        height: "2em",
+        width: "auto",
+        verticalAlign: "middle",
+      }}
       onError={() => {
         setFailed(true);
       }}
