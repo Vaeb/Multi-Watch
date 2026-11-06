@@ -1029,7 +1029,7 @@
   "FirecrackThat": {
     "id": 1333171,
     "np": true,
-    "assumeFaction": ["clowns", "police"]
+    "assumeFaction": ["clowns"]
   },
   "JustTeetaa": {
     "id": 18398333,
@@ -1049,7 +1049,7 @@
   "Thio": {
     "id": 2477819,
     "np": true,
-    "assumeFaction": ["clowns", "police"]
+    "assumeFaction": ["clowns"]
   },
   "TotallyNotBelltower": {
     "id": 18864175,
@@ -1109,7 +1109,7 @@
   "ms_star": {
     "id": 2898133,
     "np": true,
-    "assumeFaction": ["doj", "pawnaddicts"]
+    "assumeFaction": ["doj", "pawnaddicts", "collective"]
   },
   "Sun_Bae": {
     "id": 32681089,
@@ -1176,8 +1176,7 @@
   },
   "bunbunns": {
     "id": 96548585,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "cheever7": {
     "id": 1377373,
