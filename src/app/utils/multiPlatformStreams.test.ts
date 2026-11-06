@@ -9,15 +9,17 @@ import { favoriteKey, filterFavoriteStreams } from "./favorites";
 import {
   alsoLiveOnOtherPlatform,
   applyMultiPlatformStreams,
+  displayedViewerCount,
   kickStreamerKey,
   type MultiPlatformStreams,
   preferenceOnFirstPaint,
 } from "./multiPlatformStreams";
 
-const stream = (channelName: string, platform?: Platform) =>
+const stream = (channelName: string, platform?: Platform, viewers = 0) =>
   ({
     channelName,
     platform,
+    viewers,
   }) as RemoteStream;
 
 const room = (twitch?: string): ChatroomsInfo => ({
@@ -525,6 +527,170 @@ void test("two Kick rows with the same person key both get a Twitch dot when Kic
 
   assert.equal(lookup(liveStreams[1]!), "twitch");
   assert.equal(lookup(liveStreams[2]!), "twitch");
+});
+
+void test("show all keeps each platform's own viewer count", () => {
+  const liveStreams = [
+    stream("xQc", undefined, 1500),
+    stream("xQc", "kick", 400),
+    stream("other", undefined, 80),
+  ];
+  const lookup = displayedViewerCount({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "all",
+  });
+  assert.equal(lookup(liveStreams[0]!), 1500);
+  assert.equal(lookup(liveStreams[1]!), 400);
+  assert.equal(lookup(liveStreams[2]!), 80);
+});
+
+void test("prefer Kick sums Kick and Twitch viewers for a dual-live person", () => {
+  const liveStreams = [
+    stream("before", undefined, 10),
+    stream("xQc", undefined, 1500),
+    stream("xQc", "kick", 400),
+    stream("after", undefined, 20),
+  ];
+  const lookup = displayedViewerCount({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "kick",
+  });
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "kick",
+  });
+
+  assert.deepEqual(
+    listed.map((row) => ({
+      channelName: row.channelName,
+      platform: row.platform ?? "twitch",
+      viewers: lookup(row),
+    })),
+    [
+      { channelName: "before", platform: "twitch", viewers: 10 },
+      { channelName: "xQc", platform: "kick", viewers: 1900 },
+      { channelName: "after", platform: "twitch", viewers: 20 },
+    ],
+  );
+});
+
+void test("prefer Twitch sums Kick and Twitch viewers for a dual-live person", () => {
+  const liveStreams = [
+    stream("before", undefined, 10),
+    stream("xQc", undefined, 1500),
+    stream("xQc", "kick", 400),
+    stream("after", undefined, 20),
+  ];
+  const lookup = displayedViewerCount({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "twitch",
+  });
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { xQc: room() },
+    preference: "twitch",
+  });
+
+  assert.deepEqual(
+    listed.map((row) => ({
+      channelName: row.channelName,
+      platform: row.platform ?? "twitch",
+      viewers: lookup(row),
+    })),
+    [
+      { channelName: "before", platform: "twitch", viewers: 10 },
+      { channelName: "xQc", platform: "twitch", viewers: 1900 },
+      { channelName: "after", platform: "twitch", viewers: 20 },
+    ],
+  );
+});
+
+void test("a streamer live only on one platform keeps that platform's viewer count", () => {
+  const liveStreams = [
+    stream("onlyKick", "kick", 321),
+    stream("onlyTwitch", undefined, 654),
+  ];
+  const chatrooms = {
+    onlyKick: room(),
+    onlyTwitch: room(),
+  };
+
+  const preferKick = displayedViewerCount({
+    liveStreams,
+    chatrooms,
+    preference: "kick",
+  });
+  const preferTwitch = displayedViewerCount({
+    liveStreams,
+    chatrooms,
+    preference: "twitch",
+  });
+  assert.equal(preferKick(liveStreams[0]!), 321);
+  assert.equal(preferKick(liveStreams[1]!), 654);
+  assert.equal(preferTwitch(liveStreams[0]!), 321);
+  assert.equal(preferTwitch(liveStreams[1]!), 654);
+});
+
+void test("prefer Kick sums Kick MaximusBlack with Twitch LAGTVMaximusBlack and not a different Twitch MaximusBlack", () => {
+  const liveStreams = [
+    stream("LAGTVMaximusBlack", undefined, 200),
+    stream("other", undefined, 5),
+    stream("MaximusBlack", undefined, 50),
+    stream("MaximusBlack", "kick", 100),
+  ];
+  const lookup = displayedViewerCount({
+    liveStreams,
+    chatrooms: { MaximusBlack: room("LAGTVMaximusBlack") },
+    preference: "kick",
+  });
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { MaximusBlack: room("LAGTVMaximusBlack") },
+    preference: "kick",
+  });
+
+  assert.deepEqual(
+    listed.map((row) => ({
+      channelName: row.channelName,
+      platform: row.platform ?? "twitch",
+      viewers: lookup(row),
+    })),
+    [
+      { channelName: "other", platform: "twitch", viewers: 5 },
+      { channelName: "MaximusBlack", platform: "twitch", viewers: 50 },
+      { channelName: "MaximusBlack", platform: "kick", viewers: 300 },
+    ],
+  );
+});
+
+void test("combined viewer counts use the unfiltered live list after preference already dropped the twin", () => {
+  const liveStreams = [
+    stream("xQc", undefined, 1500),
+    stream("xQc", "kick", 400),
+  ];
+  const chatrooms = { xQc: room() };
+  const listed = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms,
+    preference: "kick",
+  });
+  const fromListed = displayedViewerCount({
+    liveStreams: listed,
+    chatrooms,
+    preference: "kick",
+  });
+  const fromLive = displayedViewerCount({
+    liveStreams,
+    chatrooms,
+    preference: "kick",
+  });
+
+  assert.equal(fromListed(listed[0]!), 400);
+  assert.equal(fromLive(listed[0]!), 1900);
 });
 
 void test("other-platform dots use the unfiltered live list after preference already dropped the twin", () => {

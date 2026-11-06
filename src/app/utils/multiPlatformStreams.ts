@@ -59,6 +59,32 @@ function streamPlatform(stream: RemoteStream): Platform {
   return stream.platform ?? "twitch";
 }
 
+function dualLiveContext(
+  liveStreams: RemoteStream[],
+  chatrooms: Record<string, ChatroomsInfo>,
+) {
+  const chatroomsLower = chatroomsLowerMap(chatrooms);
+  const liveOnKick = new Set<StreamerKey>();
+  const liveOnTwitch = new Set<StreamerKey>();
+  const viewersByPerson = new Map<StreamerKey, number>();
+  for (const stream of liveStreams) {
+    const key = personKey(stream, chatroomsLower);
+    viewersByPerson.set(key, (viewersByPerson.get(key) ?? 0) + stream.viewers);
+    if (streamPlatform(stream) === "kick") {
+      liveOnKick.add(key);
+    } else {
+      liveOnTwitch.add(key);
+    }
+  }
+
+  const liveOnBoth = new Set<StreamerKey>();
+  for (const key of liveOnKick) {
+    if (liveOnTwitch.has(key)) liveOnBoth.add(key);
+  }
+
+  return { chatroomsLower, liveOnBoth, viewersByPerson };
+}
+
 export function applyMultiPlatformStreams({
   liveStreams,
   chatrooms,
@@ -98,27 +124,37 @@ export function alsoLiveOnOtherPlatform({
 }): (stream: RemoteStream) => Platform | null {
   if (preference === "all") return () => null;
 
-  const chatroomsLower = chatroomsLowerMap(chatrooms);
-  const liveOnKick = new Set<StreamerKey>();
-  const liveOnTwitch = new Set<StreamerKey>();
-  for (const stream of liveStreams) {
-    const key = personKey(stream, chatroomsLower);
-    if (streamPlatform(stream) === "kick") {
-      liveOnKick.add(key);
-    } else {
-      liveOnTwitch.add(key);
-    }
-  }
-
-  const liveOnBoth = new Set<StreamerKey>();
-  for (const key of liveOnKick) {
-    if (liveOnTwitch.has(key)) liveOnBoth.add(key);
-  }
-
+  const { chatroomsLower, liveOnBoth } = dualLiveContext(
+    liveStreams,
+    chatrooms,
+  );
   const other: Platform = preference === "kick" ? "twitch" : "kick";
 
   return (stream) => {
     if (!liveOnBoth.has(personKey(stream, chatroomsLower))) return null;
     return other;
+  };
+}
+
+export function displayedViewerCount({
+  liveStreams,
+  chatrooms,
+  preference,
+}: {
+  liveStreams: RemoteStream[];
+  chatrooms: Record<string, ChatroomsInfo>;
+  preference: MultiPlatformStreams;
+}): (stream: RemoteStream) => number {
+  if (preference === "all") return (stream) => stream.viewers;
+
+  const { chatroomsLower, liveOnBoth, viewersByPerson } = dualLiveContext(
+    liveStreams,
+    chatrooms,
+  );
+
+  return (stream) => {
+    const key = personKey(stream, chatroomsLower);
+    if (!liveOnBoth.has(key)) return stream.viewers;
+    return viewersByPerson.get(key) ?? stream.viewers;
   };
 }

@@ -19,6 +19,7 @@ import { FAVORITES_FILTER, filterFavoriteStreams } from "../../utils/favorites";
 import {
   alsoLiveOnOtherPlatform,
   applyMultiPlatformStreams,
+  displayedViewerCount,
   preferenceOnFirstPaint,
 } from "../../utils/multiPlatformStreams";
 
@@ -413,6 +414,16 @@ function NopixelBarComponent({
     [streams, receivedData.chatrooms, multiPlatformStreams],
   );
 
+  const viewerCount = useMemo(
+    () =>
+      displayedViewerCount({
+        liveStreams: streams,
+        chatrooms: receivedData.chatrooms,
+        preference: multiPlatformStreams,
+      }),
+    [streams, receivedData.chatrooms, multiPlatformStreams],
+  );
+
   const hasLiveFavorite = useMemo(
     () =>
       filterFavoriteStreams(listedStreams, favorites, favoriteFactions).length >
@@ -552,7 +563,7 @@ function NopixelBarComponent({
                 : filteredStreamsAdditional[i]!.tagText
             }
             imageUrl={stream.profileUrl}
-            viewers={stream.viewers}
+            viewers={viewerCount(stream)}
             bottomText={
               filteredStreamsAdditional[i]!.channelTop
                 ? filteredStreamsAdditional[i]!.tagText
