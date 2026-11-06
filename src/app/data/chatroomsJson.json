@@ -166,11 +166,6 @@
     "np": true,
     "assumeFaction": ["manor"]
   },
-  "MachoSL": {
-    "id": 61119548,
-    "np": true,
-    "assumeFaction": ["manor"]
-  },
   "JonLaw": {
     "id": 1836564,
     "np": true,
@@ -199,11 +194,6 @@
   },
   "imDEVYN": {
     "id": 133841,
-    "np": true,
-    "assumeFaction": ["manor"]
-  },
-  "fatboislimrp": {
-    "id": 92282790,
     "np": true,
     "assumeFaction": ["manor"]
   },
@@ -278,11 +268,6 @@
     "np": true,
     "assumeFaction": ["manor"]
   },
-  "Azza0_0": {
-    "id": 2020520,
-    "np": true,
-    "assumeFaction": ["manor"]
-  },
   "Biotox": {
     "id": 243173,
     "np": true,
@@ -344,7 +329,7 @@
     "id": 7863831,
     "np": true
   },
-  "Kam_EU": {
+  "KamEU": {
     "id": 55986509,
     "np": true,
     "twitch": "KamEU"
@@ -550,7 +535,7 @@
     "np": true,
     "assumeFaction": ["besties"]
   },
-  "ChopoNZ": {
+  "Chopo": {
     "id": 1327337,
     "np": true,
     "assumeFaction": ["besties"]
@@ -608,10 +593,6 @@
     "np": true,
     "assumeFaction": ["habibis", "sinnerpawn", "bpm"],
     "twitch": "Ray__C"
-  },
-  "zandr400": {
-    "id": 50013656,
-    "np": true
   },
   "qift": {
     "id": 48105250,
@@ -1155,7 +1136,7 @@
     "np": true,
     "assumeFaction": ["police"]
   },
-  "b_hoopla": {
+  "b-hoopla": {
     "id": 7636449,
     "np": true,
     "assumeFaction": ["police"]
@@ -1543,7 +1524,7 @@
     "np": true,
     "assumeFaction": ["bpm"]
   },
-  "Nitemare_Boba": {
+  "Nitemare-Boba": {
     "id": 3829712,
     "np": true,
     "assumeFaction": ["doc"]
@@ -1552,7 +1533,7 @@
     "id": 246956,
     "np": true
   },
-  "stevie_jay305": {
+  "stevie-jay305": {
     "id": 15284957,
     "np": true
   },
