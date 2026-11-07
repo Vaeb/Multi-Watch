@@ -106,10 +106,17 @@ export function applyMultiPlatformStreams({
     }
   }
 
-  return liveStreams.filter((stream) => {
+  const filtered = liveStreams.filter((stream) => {
     if (streamPlatform(stream) === preferred) return true;
     return !liveOnPreferred.has(personKey(stream, chatroomsLower));
   });
+
+  const count = displayedViewerCount({
+    liveStreams,
+    chatrooms,
+    preference,
+  });
+  return filtered.sort((a, b) => count(b) - count(a));
 }
 
 // liveStreams must be the unfiltered live list. Preference already dropped the twin.

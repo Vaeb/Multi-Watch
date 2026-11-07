@@ -570,9 +570,9 @@ void test("prefer Kick sums Kick and Twitch viewers for a dual-live person", () 
       viewers: lookup(row),
     })),
     [
-      { channelName: "before", platform: "twitch", viewers: 10 },
       { channelName: "xQc", platform: "kick", viewers: 1900 },
       { channelName: "after", platform: "twitch", viewers: 20 },
+      { channelName: "before", platform: "twitch", viewers: 10 },
     ],
   );
 });
@@ -602,9 +602,9 @@ void test("prefer Twitch sums Kick and Twitch viewers for a dual-live person", (
       viewers: lookup(row),
     })),
     [
-      { channelName: "before", platform: "twitch", viewers: 10 },
       { channelName: "xQc", platform: "twitch", viewers: 1900 },
       { channelName: "after", platform: "twitch", viewers: 20 },
+      { channelName: "before", platform: "twitch", viewers: 10 },
     ],
   );
 });
@@ -660,9 +660,9 @@ void test("prefer Kick sums Kick MaximusBlack with Twitch LAGTVMaximusBlack and 
       viewers: lookup(row),
     })),
     [
-      { channelName: "other", platform: "twitch", viewers: 5 },
-      { channelName: "MaximusBlack", platform: "twitch", viewers: 50 },
       { channelName: "MaximusBlack", platform: "kick", viewers: 300 },
+      { channelName: "MaximusBlack", platform: "twitch", viewers: 50 },
+      { channelName: "other", platform: "twitch", viewers: 5 },
     ],
   );
 });
@@ -714,6 +714,66 @@ void test("other-platform dots use the unfiltered live list after preference alr
 
   assert.equal(lookupFromListed(listed[0]!), null);
   assert.equal(lookupFromLive(listed[0]!), "twitch");
+});
+
+void test("prefer Kick ranks a dual-live Kick row by Kick plus Twitch viewers, not the remaining Kick count", () => {
+  const liveStreams = [
+    stream("highTwitch", undefined, 5000),
+    stream("dual", undefined, 4000),
+    stream("kickOnly", "kick", 2000),
+    stream("dual", "kick", 100),
+    stream("lowTwitch", undefined, 50),
+  ];
+  const result = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { dual: room() },
+    preference: "kick",
+  });
+
+  assert.deepEqual(shown(result), [
+    { channelName: "highTwitch", platform: "twitch" },
+    { channelName: "dual", platform: "kick" },
+    { channelName: "kickOnly", platform: "kick" },
+    { channelName: "lowTwitch", platform: "twitch" },
+  ]);
+  assert.equal(result[1], liveStreams[3]);
+});
+
+void test("prefer Twitch ranks a dual-live Twitch row by Kick plus Twitch viewers, not the remaining Twitch count", () => {
+  const liveStreams = [
+    stream("kickOnly", "kick", 8000),
+    stream("dual", "kick", 7000),
+    stream("midTwitch", undefined, 1000),
+    stream("dual", undefined, 200),
+  ];
+  const result = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { dual: room() },
+    preference: "twitch",
+  });
+
+  assert.deepEqual(shown(result), [
+    { channelName: "kickOnly", platform: "kick" },
+    { channelName: "dual", platform: "twitch" },
+    { channelName: "midTwitch", platform: "twitch" },
+  ]);
+  assert.equal(result[1], liveStreams[3]);
+});
+
+void test("show all does not re-rank by combined Kick plus Twitch viewers", () => {
+  const liveStreams = [
+    stream("highTwitch", undefined, 5000),
+    stream("dual", undefined, 4000),
+    stream("kickOnly", "kick", 2000),
+    stream("dual", "kick", 100),
+  ];
+  const result = applyMultiPlatformStreams({
+    liveStreams,
+    chatrooms: { dual: room() },
+    preference: "all",
+  });
+  assert.equal(result, liveStreams);
+  assert.deepEqual(shown(result), shown(liveStreams));
 });
 
 void test("a favorites filter of the prefer Kick list omits the hidden Twitch twin and keeps the Kick favorite", () => {
