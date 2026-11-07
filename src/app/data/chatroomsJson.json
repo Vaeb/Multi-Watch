@@ -154,7 +154,7 @@
   "tjnv": {
     "id": 63701083,
     "np": true,
-    "assumeFaction": ["casino", "doc", "degens", "brickhouse"]
+    "assumeFaction": ["degens", "brickhouse"]
   },
   "iateabattery": {
     "id": 2634803,
@@ -290,7 +290,7 @@
   "MattEU": {
     "id": 2825518,
     "np": true,
-    "assumeFaction": ["police", "sinnerpawn", "gruppe6", "collective"]
+    "assumeFaction": ["police", "sinnerpawn", "collective"]
   },
   "burn": {
     "id": 82713773,
@@ -309,7 +309,7 @@
   "52chains": {
     "id": 101941,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "gruppe6", "police"]
+    "assumeFaction": ["pawnaddicts", "police"]
   },
   "Sock22": {
     "id": 3054141,
@@ -586,12 +586,12 @@
   "Arro2k": {
     "id": 10258331,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "gruppe6", "6chambers"]
+    "assumeFaction": ["pawnaddicts", "6chambers"]
   },
   "RayC": {
     "id": 118956,
     "np": true,
-    "assumeFaction": ["habibis", "sinnerpawn", "bpm"],
+    "assumeFaction": ["habibis", "bpm"],
     "twitch": "Ray__C"
   },
   "qift": {
@@ -915,7 +915,7 @@
   "Nottics": {
     "id": 7464668,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "6gang"]
+    "assumeFaction": ["sinnerpawn", "6gang", "gruppe6"]
   },
   "NovaaBerries": {
     "id": 77514129,
@@ -980,7 +980,7 @@
   "aikobliss": {
     "id": 76272,
     "np": true,
-    "assumeFaction": ["burgershot", "brickhouse", "brickbois"]
+    "assumeFaction": ["burgershot", "brickhouse", "brickbois", "casino"]
   },
   "CannaYaps": {
     "id": 51902930,
@@ -1437,7 +1437,7 @@
   "icky619": {
     "id": 7574402,
     "np": true,
-    "assumeFaction": ["doj", "brickbois"]
+    "assumeFaction": ["doj", "brickbois", "nest"]
   },
   "acie": {
     "id": 2384927,
@@ -1527,7 +1527,7 @@
   "Nitemare-Boba": {
     "id": 3829712,
     "np": true,
-    "assumeFaction": ["doc"]
+    "assumeFaction": ["doc", "gruppe6"]
   },
   "Kaysan": {
     "id": 246956,
@@ -1602,5 +1602,15 @@
     "id": 1016348,
     "np": true,
     "assumeFaction": ["changgang"]
+  },
+  "FavoriteVT": {
+    "id": 7444151,
+    "np": true,
+    "assumeFaction": ["doc", "gruppe6"]
+  },
+  "edenitoo": {
+    "id": 62885385,
+    "np": true,
+    "assumeFaction": ["polish"]
   }
 }
