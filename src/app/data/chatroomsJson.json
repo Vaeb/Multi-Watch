@@ -82,12 +82,13 @@
   },
   "Nikez": {
     "id": 2402594,
-    "np": true
+    "np": true,
+    "assumeFaction": ["police"]
   },
   "Peppo": {
     "id": 25518774,
     "np": true,
-    "assumeFaction": ["hkpawn", "oldcountry"]
+    "assumeFaction": ["hkpawn", "oldcountry", "police"]
   },
   "Capped": {
     "id": 62909184,
@@ -370,7 +371,7 @@
   "kyle": {
     "id": 9975231,
     "np": true,
-    "assumeFaction": ["police", "slim"]
+    "assumeFaction": ["police", "slim", "doj"]
   },
   "MDRAKOO": {
     "id": 62441136,
@@ -591,7 +592,7 @@
   "RayC": {
     "id": 118956,
     "np": true,
-    "assumeFaction": ["habibis", "bpm"],
+    "assumeFaction": ["habibis"],
     "twitch": "Ray__C"
   },
   "qift": {
@@ -634,7 +635,7 @@
   "traycee": {
     "id": 123740,
     "np": true,
-    "assumeFaction": ["brickbois", "brickhouse"]
+    "assumeFaction": ["brickbois", "brickhouse", "police"]
   },
   "ZPapz": {
     "id": 2513940,
@@ -668,7 +669,7 @@
   "Nathankb": {
     "id": 63431167,
     "np": true,
-    "assumeFaction": ["hydragang"],
+    "assumeFaction": ["hydragang", "police"],
     "twitch": "nathankb_"
   },
   "moussy": {
