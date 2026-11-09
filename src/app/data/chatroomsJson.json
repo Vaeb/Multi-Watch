@@ -73,7 +73,7 @@
   "IrishGT": {
     "id": 50840382,
     "np": true,
-    "assumeFaction": ["hounds", "police", "pawnaddicts"]
+    "assumeFaction": ["hounds", "police"]
   },
   "ChrisTombstone": {
     "id": 1874404,
@@ -946,7 +946,7 @@
   "WhiskeyMate": {
     "id": 107590764,
     "np": true,
-    "assumeFaction": ["brickbois", "oldcountry"]
+    "assumeFaction": ["oldcountry"]
   },
   "Sarkwentv": {
     "id": 3591849,
@@ -1135,7 +1135,7 @@
   "AustinBean": {
     "id": 100732,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "pawnaddicts"]
   },
   "b-hoopla": {
     "id": 7636449,
@@ -1613,5 +1613,10 @@
     "id": 62885385,
     "np": true,
     "assumeFaction": ["polish"]
+  },
+  "Fahrenheit": {
+    "id": 7790477,
+    "np": true,
+    "assumeFaction": ["sinnerpawn"]
   }
 }
