@@ -73,7 +73,7 @@
   "IrishGT": {
     "id": 50840382,
     "np": true,
-    "assumeFaction": ["hounds", "police"]
+    "assumeFaction": ["hounds", "police", "pawnaddicts"]
   },
   "ChrisTombstone": {
     "id": 1874404,
