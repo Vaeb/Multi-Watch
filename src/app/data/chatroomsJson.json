@@ -635,7 +635,7 @@
   "traycee": {
     "id": 123740,
     "np": true,
-    "assumeFaction": ["brickbois", "brickhouse", "police"]
+    "assumeFaction": ["brickbois", "brickhouse", "police", "gruppe6"]
   },
   "ZPapz": {
     "id": 2513940,
@@ -1618,5 +1618,15 @@
     "id": 7790477,
     "np": true,
     "assumeFaction": ["sinnerpawn"]
+  },
+  "Cinna": {
+    "id": 132848607,
+    "np": true,
+    "assumeFaction": ["bne"]
+  },
+  "Bluebonnet": {
+    "id": 1744822,
+    "np": true,
+    "assumeFaction": ["police"]
   }
 }
