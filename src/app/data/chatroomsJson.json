@@ -52,7 +52,7 @@
   "Chidori-Senpai": {
     "id": 5873957,
     "np": true,
-    "assumeFaction": ["kc", "police"],
+    "assumeFaction": ["kc", "police", "pawnaddicts"],
     "twitch": "chidori_senpai"
   },
   "Reklez": {
