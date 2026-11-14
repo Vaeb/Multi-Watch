@@ -1453,7 +1453,7 @@
   "vawwn": {
     "id": 1132419,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "pawnaddicts"]
   },
   "Pengwin": {
     "id": 98541,
@@ -1628,5 +1628,15 @@
     "id": 1744822,
     "np": true,
     "assumeFaction": ["police"]
+  },
+  "UHN": {
+    "id": 62412807,
+    "np": true,
+    "assumeFaction": ["brickbois", "locksmiths"]
+  },
+  "plashir": {
+    "id": 76127106,
+    "np": true,
+    "assumeFaction": ["oldcountry", "hkpawn"]
   }
 }
