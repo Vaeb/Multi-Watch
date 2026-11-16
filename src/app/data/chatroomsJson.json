@@ -1638,5 +1638,15 @@
     "id": 76127106,
     "np": true,
     "assumeFaction": ["oldcountry", "hkpawn"]
+  },
+  "yaboidr3w": {
+    "id": 7909118,
+    "np": true,
+    "assumeFaction": ["police"]
+  },
+  "thedlinquent": {
+    "id": 1757187,
+    "np": true,
+    "assumeFaction": ["police"]
   }
 }
