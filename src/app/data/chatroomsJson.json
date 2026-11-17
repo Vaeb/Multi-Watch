@@ -314,8 +314,7 @@
   },
   "Sock22": {
     "id": 3054141,
-    "np": true,
-    "assumeFaction": ["police"]
+    "np": true
   },
   "Deansocool": {
     "id": 5579351,
@@ -1646,6 +1645,16 @@
   },
   "thedlinquent": {
     "id": 1757187,
+    "np": true,
+    "assumeFaction": ["police"]
+  },
+  "Cosmic": {
+    "id": 1595728,
+    "np": true,
+    "assumeFaction": ["police"]
+  },
+  "Coxybaws": {
+    "id": 3198999,
     "np": true,
     "assumeFaction": ["police"]
   }
