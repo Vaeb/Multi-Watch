@@ -1657,5 +1657,10 @@
     "id": 3198999,
     "np": true,
     "assumeFaction": ["police"]
+  },
+  "Garek": {
+    "id": 2843717,
+    "np": true,
+    "assumeFaction": ["sinnerpawn", "degens", "casino"]
   }
 }
