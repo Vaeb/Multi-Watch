@@ -272,7 +272,8 @@
   "Biotox": {
     "id": 243173,
     "np": true,
-    "twitch": "Biotoxz_"
+    "twitch": "Biotoxz_",
+    "assumeFaction": ["degens", "brickhouse"]
   },
   "CathFawr": {
     "id": 70865728,
@@ -360,7 +361,8 @@
   },
   "KylieBitkin": {
     "id": 2733273,
-    "np": true
+    "np": true,
+    "assumeFaction": ["police"]
   },
   "GlitterGlock19": {
     "id": 2483677,
@@ -451,7 +453,7 @@
   "Rissabear": {
     "id": 50600228,
     "np": true,
-    "assumeFaction": ["besties"]
+    "assumeFaction": ["besties", "collective"]
   },
   "poetic": {
     "id": 112330,
@@ -1040,7 +1042,7 @@
   "afro": {
     "id": 727386,
     "np": true,
-    "assumeFaction": ["doc"]
+    "assumeFaction": ["doc", "hkpawn"]
   },
   "DocWizard": {
     "id": 1150081,
@@ -1662,5 +1664,25 @@
     "id": 2843717,
     "np": true,
     "assumeFaction": ["sinnerpawn", "degens", "casino"]
+  },
+  "CharlTheMisfit": {
+    "id": 4465405,
+    "np": true,
+    "assumeFaction": ["pawnaddicts"]
+  },
+  "aTinyHorse": {
+    "id": 77851950,
+    "np": true,
+    "assumeFaction": ["doj"]
+  },
+  "Bafffty": {
+    "id": 15231828,
+    "np": true,
+    "assumeFaction": ["gruppe6"]
+  },
+  "agingercoin": {
+    "id": 40533396,
+    "np": true,
+    "assumeFaction": ["police"]
   }
 }
