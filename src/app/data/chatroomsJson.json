@@ -150,7 +150,7 @@
   "Harry": {
     "id": 1218150,
     "np": true,
-    "assumeFaction": ["degens", "casino", "brickhouse"]
+    "assumeFaction": ["degens", "brickhouse"]
   },
   "tjnv": {
     "id": 63701083,
@@ -357,7 +357,7 @@
   "ClaytonERP": {
     "id": 52715994,
     "np": true,
-    "assumeFaction": ["police", "gruppe6", "6gang"]
+    "assumeFaction": ["police", "gruppe6", "6gang", "casino"]
   },
   "KylieBitkin": {
     "id": 2733273,
@@ -448,7 +448,7 @@
   "Harmless": {
     "id": 47854692,
     "np": true,
-    "assumeFaction": ["besties", "police", "burgershot", "pawnaddicts", "6chambers"]
+    "assumeFaction": ["besties", "police", "burgershot", "pawnaddicts", "6chambers", "casino"]
   },
   "Rissabear": {
     "id": 50600228,
@@ -631,7 +631,7 @@
   "dasMEHDI": {
     "id": 2381527,
     "np": true,
-    "assumeFaction": ["sinnerpawn"]
+    "assumeFaction": ["sinnerpawn", "casino"]
   },
   "traycee": {
     "id": 123740,
@@ -771,7 +771,7 @@
   "Buddha": {
     "id": 32806,
     "np": true,
-    "assumeFaction": ["brickbois", "brickhouse", "degens", "casino"]
+    "assumeFaction": ["brickbois", "brickhouse", "degens"]
   },
   "AnthonyZ": {
     "id": 1822781,
@@ -797,7 +797,7 @@
   "Cydrose": {
     "id": 2444543,
     "np": true,
-    "assumeFaction": ["pawnaddicts", "police"]
+    "assumeFaction": ["pawnaddicts", "police", "casino"]
   },
   "DawnnnVT": {
     "id": 2627801,
@@ -842,7 +842,7 @@
   "crystalst": {
     "id": 99687,
     "np": true,
-    "assumeFaction": ["police", "casino", "brickbois", "gruppe6", "brickhouse"]
+    "assumeFaction": ["police", "brickbois", "gruppe6", "brickhouse"]
   },
   "6ixThree": {
     "id": 289188,
@@ -877,7 +877,7 @@
   "LonnieLightning": {
     "id": 2231866,
     "np": true,
-    "assumeFaction": ["slim"]
+    "assumeFaction": ["slim", "casino"]
   },
   "catherinereel": {
     "id": 66847409,
@@ -912,12 +912,12 @@
   "melodymaeee": {
     "id": 2831671,
     "np": true,
-    "assumeFaction": ["sinnerpawn"]
+    "assumeFaction": ["sinnerpawn", "casino"]
   },
   "Nottics": {
     "id": 7464668,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "6gang", "gruppe6"]
+    "assumeFaction": ["sinnerpawn", "6gang", "gruppe6", "casino"]
   },
   "NovaaBerries": {
     "id": 77514129,
@@ -932,7 +932,7 @@
   "youuney": {
     "id": 78747180,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "clowns", "gruppe6"]
+    "assumeFaction": ["sinnerpawn", "clowns", "gruppe6", "casino"]
   },
   "Hazan": {
     "id": 83133,
@@ -957,7 +957,7 @@
   "MEKABEAR": {
     "id": 51504,
     "np": true,
-    "assumeFaction": ["degens", "casino", "brickhouse"]
+    "assumeFaction": ["degens", "brickhouse"]
   },
   "AngelKnivez": {
     "id": 1989830,
@@ -982,7 +982,7 @@
   "aikobliss": {
     "id": 76272,
     "np": true,
-    "assumeFaction": ["burgershot", "brickhouse", "brickbois", "casino"]
+    "assumeFaction": ["burgershot", "brickhouse", "brickbois"]
   },
   "CannaYaps": {
     "id": 51902930,
@@ -1364,12 +1364,12 @@
   "crocc": {
     "id": 7717007,
     "np": true,
-    "assumeFaction": ["hkpawn", "oldcountry"]
+    "assumeFaction": ["hkpawn", "oldcountry", "casino"]
   },
   "kiva": {
     "id": 71935026,
     "np": true,
-    "assumeFaction": ["locksmiths"]
+    "assumeFaction": ["locksmiths", "casino"]
   },
   "zeusy9": {
     "id": 29449,
@@ -1379,7 +1379,7 @@
   "versa": {
     "id": 1390896,
     "np": true,
-    "assumeFaction": ["hkpawn", "oldcountry"]
+    "assumeFaction": ["hkpawn", "oldcountry", "casino"]
   },
   "kerazane": {
     "id": 20851470,
@@ -1389,7 +1389,7 @@
   "natettvrp": {
     "id": 1246540,
     "np": true,
-    "assumeFaction": ["slim", "loslimones"]
+    "assumeFaction": ["slim", "loslimones", "casino"]
   },
   "WackyTally": {
     "id": 22032417,
@@ -1618,7 +1618,7 @@
   "Fahrenheit": {
     "id": 7790477,
     "np": true,
-    "assumeFaction": ["sinnerpawn"]
+    "assumeFaction": ["sinnerpawn", "casino"]
   },
   "Cinna": {
     "id": 132848607,
@@ -1633,7 +1633,7 @@
   "UHN": {
     "id": 62412807,
     "np": true,
-    "assumeFaction": ["brickbois", "locksmiths"]
+    "assumeFaction": ["brickbois", "locksmiths", "casino"]
   },
   "plashir": {
     "id": 76127106,
@@ -1663,7 +1663,7 @@
   "Garek": {
     "id": 2843717,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "degens", "casino"]
+    "assumeFaction": ["sinnerpawn", "degens"]
   },
   "CharlTheMisfit": {
     "id": 4465405,
