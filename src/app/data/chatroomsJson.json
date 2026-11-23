@@ -631,7 +631,7 @@
   "dasMEHDI": {
     "id": 2381527,
     "np": true,
-    "assumeFaction": ["sinnerpawn", "casino"]
+    "assumeFaction": ["sinnerpawn", "casino", "doj"]
   },
   "traycee": {
     "id": 123740,
@@ -1131,7 +1131,7 @@
   "APPLESHAMPOO": {
     "id": 91742,
     "np": true,
-    "assumeFaction": ["police"]
+    "assumeFaction": ["police", "doj"]
   },
   "AustinBean": {
     "id": 100732,
@@ -1682,6 +1682,11 @@
   },
   "agingercoin": {
     "id": 40533396,
+    "np": true,
+    "assumeFaction": ["police"]
+  },
+  "dadsyuk": {
+    "id": 64072132,
     "np": true,
     "assumeFaction": ["police"]
   }
